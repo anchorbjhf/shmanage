@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "M_ZECGImpressionList";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        window.ondragstart = function () { window.event.returnValue = false; }
+        window.oncontextmenu = function () { window.event.returnValue = false; }
+        window.onselectstart = function () { event.returnValue = false; }
+        var ParentImpressionCode;
+        var ParentLevelCode;
+        var ParentName;
+        var LowerLevelImpressionCode;
+        var LowerLevelCode;
+        var LowerName;
+        var Isac;
+
+        $(document).ready(function () {
+            initTree();
+            $.setDivOnly("#TableForm");
+        });
+        $(window).resize(function () {
+            $.setDivOnly("#TableForm");
+        });
+        function initTree() {
+            $('#M_ZECGImpressionTree').tree({
+                url: '@Url.Content("~/DM/M_ZECGImpression/DataLoad")',
+                method: 'POST',
+                animate: true,
+                lines: true,
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    // 查找节点
+                    $('#M_ZECGImpressionTree').tree('select', node.target);
+                    var pnode = $('#M_ZECGImpressionTree').tree('getParent', node.target);
+                    if (pnode != null) {
+                        ParentImpressionCode = pnode.id;
+                        ParentName = pnode.text;
+                    } else {
+                        ParentImpressionCode = 0;
+                        ParentName = "无";
+                    };
+                    LowerLevelImpressionCode = node.id;
+                    LowerName = node.text;
+                    // 显示快捷菜单
+                    $('#menu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                },
+                formatter: function (node) {
+                    if (node.attributes.isAtion == false) {
+                        return '<span style="color:red">' + node.text + '</span>';
+                    } else {
+                        return node.text;
+                    }
+                }
+
+            });
+        }
+
+
+        function AddImpressionLevel() {
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentImpression').textbox('setText', ParentName);
+            $('#ParentID').val(ParentImpressionCode)
+            $('#Impression').textbox('clear');
+            $('#IsActive').combobox('setText',"有效" );
+            $('#SN').textbox('setValue', 255);
+            $('#PinYin').textbox('clear');
+            $('#M_ZECGImpressionEdit').dialog('open');
+            $('#btnadd').linkbutton('enable');
+        }
+        function AddImpressionLowerLevel() {
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentImpression').textbox('setText', LowerName);
+            $('#ParentID').val(LowerLevelImpressionCode);
+            $('#IsActive').combobox('setText', "有效");
+            $('#SN').textbox('setValue', 255);
+            $('#PinYin').textbox('clear');
+            $('#Impression').textbox('clear');
+            $('#M_ZECGImpressionEdit').dialog('open');
+            $('#btnadd').linkbutton('enable');
+        }
+        function EditImpressionInfo() {
+
+            $('#M_ZECGImpressionEdit').dialog('open');
+            $('#btnedit').linkbutton('enable');
+
+            $.GID("btnadd").style.display = "none";
+            $.GID("btnedit").style.display = "block";
+            $('#ParentImpression').textbox('setText', ParentName);
+            $('#ParentID').val(ParentImpressionCode);
+            $('#ID').val(LowerLevelImpressionCode);
+            $('#Impression').textbox('setText', LowerName);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/M_ZECGImpression/GetListByID")',
+                data:
+                    {
+                        ID: $('#ID').val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    if (jsData.model.IsActive)
+                    { var isa = "有效"; } else {
+                        var isa = "无效";
+                    };
+
+                    $('#IsActive').combobox('setText', isa);
+                    $('#SN').textbox("setText", jsData.model.SN);
+                    $('#PinYin').textbox("setText", jsData.model.PinYin);
+                     var Isac = jsData.model.IsActive;                
+                     $('#IsActs').val(Isac);
+                }
+            });
+                       
+        }
+      
+        function submitAddForm() {
+            var isValid = $("#M_ZECGImpressionEdit").form("validate");
+            if (isValid) {
+                $('#btnadd').linkbutton('disable')
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/M_ZECGImpression/AddImpression")',
+                    data:
+                        {
+                            PID: $('#ParentID').val(),
+                            ImpressionName: $('#Impression').textbox('getText'),
+                            IsActive: $('#IsActive').combobox('getValue'),
+                            SN: $('#SN').textbox('getText'),
+                            PinYin: $('#PinYin').textbox('getText')
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            initTree()
+                            $('#M_ZECGImpressionEdit').window('close');
+                        }, function () {
+                            $('#btnadd').linkbutton('enable');
+                        });
+                    }
+                });
+            }
+        }
+        function submitEditForm() {
+            $('#btnedit').linkbutton('disable');         
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/M_ZECGImpression/EditImpression")',
+                data:
+                    {
+                        PID: $('#ParentID').val(),
+                        SID: $('#ID').val(),
+                        ImpressionName: $('#Impression').textbox('getText'),
+                        IsActive: $('#IsActive').combobox('getValue'),
+                        SN: $('#SN').textbox('getText'),
+                        PinYin: $('#PinYin').textbox('getText'),
+                        isAct: $('#IsActs').val()
+                        
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        initTree();
+                        $('#M_ZECGImpressionEdit').window('close');
+                    }, function () {
+                        $('#btnedit').linkbutton('enable');
+                    });                  
+                }
+            });
+        };
+
+    </script>
+
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'心电图印象维护',iconCls:'icon-custom-Surplus'">
+        <ul id="M_ZECGImpressionTree"></ul>
+        <div id="menu" class="easyui-menu" style="width:150px;">
+            <div data-options="iconCls:'icon-custom-Surplus'" onclick="AddImpressionLevel()">添加平级印象</div>
+            <div data-options="iconCls:'icon-add'" onclick="AddImpressionLowerLevel()">添加下级印象</div>
+            <div data-options="iconCls:'icon-edit'" onclick="EditImpressionInfo()">修改信息</div>       
+        </div>
+    </div>
+</div>
+
+<div id="M_ZECGImpressionEdit" class="easyui-dialog" title="心电图印象编辑" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Surplus'" style="width:300px;height:330px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden">
+        <table style="width:99%">
+            <tr style="height: 40px">
+                <td style="width:60px">上级目录：</td>
+                <td>
+                    <input id="ParentImpression" class="easyui-textbox" style="width:160px" data-options="readonly:true" />
+                    <input id="ParentID" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height: 40px">
+                <td style="width: 60px">名称：</td>
+                <td>
+                    <input id="Impression" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                    <input id="ID" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height: 40px ">
+                <td style="width: 60px">是否有效：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 160px" id="IsActive" data-options="required:true,panelHeight:70, editable:false">
+                        <option value="true">有效</option>
+                        <option value="false">无效</option>
+                    </select> 
+                                       
+                    <input id="IsActs"  type="hidden" />
+                </td>
+            </tr>
+            <tr style="height: 40px">
+                <td style="width: 60px ">顺序号：</td>
+                <td>
+                    <input id="SN" class="easyui-numberbox" style="width:160px" data-options="required:true" />
+
+                </td>
+            </tr>
+            <tr style="height: 40px">
+                <td style="width: 60px">拼音头：</td>
+                <td>
+                    <input id="PinYin" class="easyui-textbox" style="width:160px" />
+
+                </td>
+            </tr>
+            <tr style="height: 40px ">
+                <td style="width: 60px ">说明：</td>
+                <td>
+                    <span style="width:160px">没有子目录的必须填写'拼音头'（拼音首字母小写）,有子目录的不用填</span>
+
+                </td>
+            </tr>
+            <tr style="height:30px">
+                <td colspan="2">
+                    <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改</a>
+                    <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

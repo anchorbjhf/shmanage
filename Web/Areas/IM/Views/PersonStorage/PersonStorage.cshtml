@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "人员仓库关系";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        });
+
+        //页面初始化
+        $(document).ready(function () {
+
+            $('#editWindow').window('close'); // 默认隐藏编辑窗口 
+
+            //取姓名
+            $.EUIcombobox("#name", {
+                url: '@Url.Content("~/IM/PersonStorage/GetName/")',
+                valueField: 'Name',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取工号
+            $.EUIcombobox("#workCode", {
+                url: '@Url.Content("~/IM/PersonStorage/GetWorkCode/")',
+                valueField: 'Name',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取角色类型
+            $.EUIcombobox("#roletypeName", {
+                url: '@Url.Content("~/IM/PersonStorage/GetRoleType/")',
+                valueField: 'ID',
+                textField: 'Name',
+                //editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取部门名称
+            $.EUIcombobox("#depID", {
+                url: '@Url.Content("~/IM/PersonStorage/GetDep/")',
+                valueField: 'ID',
+                textField: 'Name',
+                //editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            bindGrid();
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        })
+
+        function bindGrid() {
+            $('#grid').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/PersonStorage/DataLoad")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页
+                rownumbers: true,//显示页码
+                pageSize: 10,//设置 页容量
+                pageList: [10, 15, 20],//设置 页容量下拉框
+                queryParams: {
+                    name: $('#name').textbox('getValue'),
+                    workCode: $('#workCode').textbox('getValue'),
+                    depID: $('#depID').combobox('getValue'),
+                    roletypeName: $('#roletypeName').combobox('getValue')
+                },
+                columns: [[                 
+                   { title: '人员编码', field: 'uid', hidden:true},
+                   { title: '所属部门', field: 'depName', width: '13%', align:"center", sortable: false },
+                   { title: '角色类型', field: 'roleName', width: '13%',align: "center", sortable: false },
+                   { title: '姓名', field: 'userName', width: '10%', align: "center", sortable: false },
+                   { title: '工号', field: 'workCode', width: '10%', align: "center", sortable: false },
+                   { title: '仓库', field: 'storage', width: '52%', align: "center", sortable: false },
+                ]],
+                toolbar: [
+                    {
+                        id: 'btnedit',
+                        text: '编辑',
+                        iconCls: 'icon-edit',
+                        handler: function () {
+                            var row = $('#grid').datagrid('getSelected');
+                            if (row) {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Content("~/IM/PersonStorage/PersonStorageNewEdit/")' + row.uid,
+                                    success: function (jsonObj) {
+                                        if (jsonObj.Result)
+                                            $.handleJsonResult(jsonObj);
+                                        else {
+                                            $('#editWindow').window('open'); // 编辑窗口
+                                            $("#editWindow").html(jsonObj);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        alert(data.statusText);
+                                    }
+                                });
+                            }
+                            else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ]
+            })
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'人员仓库关系',iconCls:'icon-custom-Entry'">
+        <div id="SearchBar" data-options="region:'center'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>姓名：</td>
+                    <td>
+                        <input id="name" class="easyui-combobox"  />
+                    </td>
+                    <td>工号：</td>
+                    <td>
+                        <input id="workCode" class="easyui-combobox" />
+                    </td>
+                    <td>所属部门：</td>
+                    <td>
+                        <input id="depID" class="easyui-combobox" />
+                    </td>
+                    <td>角色类型：</td>
+                    <td>
+                        <input id="roletypeName" class="easyui-combobox" />
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="bindGrid()">查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="grid"></table>
+        </div>
+    </div>
+</div>
+<div id="editWindow" class="easyui-window" title="编辑页面" style="width:360px;height:420px;"
+     data-options="iconCls:'icon-save',modal:true">
+</div>

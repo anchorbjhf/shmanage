@@ -1,0 +1,518 @@
+﻿@{
+    ViewBag.Title = "LinkPersonalSimple";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            PersonSimpleStream();
+        });
+
+
+        function percentNum(num, num2) {
+            return (Math.round(num / num2 * 10000) / 100.00 + "%"); //小数点后两位百分比
+        }
+        //将只有秒数的时间翻译成时分秒
+        function formatSecondTime(secondtime) {
+            var resualt = "";
+            if (parseInt(secondtime) >= 3600) {
+                resualt = parseInt(secondtime / 3600) + " 小时" + parseInt((secondtime % 3600) / 60) + " 分" + ((secondtime % 3600) % 60) + " 秒";
+            }
+            else if (parseInt(secondtime) >= 60 && parseInt(secondtime) < 3600) {
+                resualt = parseInt(secondtime / 60) + " 分" + (secondtime % 60) + " 秒";
+            }
+            else {
+                resualt = secondtime + " 秒";
+            }
+            return resualt;
+        }
+
+        function PersonSimpleStream() {
+            if ($('#IFHasStation').val()) {
+               
+                getPersonalInfo();
+            }
+            else if ($('#IFHasCenter').val()) {
+
+                getCenterInfo();
+            }
+            else {
+                getTotalInfo();
+            }
+        }
+
+
+        function getPersonalInfo() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/BB/TJRedirectLink/GetPersonalStatistics")',
+                data:
+                {
+                    beginTime: $.GetMonthFirstday(),
+                    endTime: $.GetTomorrow()
+                },
+                dataType: "json",
+                success: function (jsData) {
+                    //个人调度块
+                    if (jsData.PSInfo.PTaskTimes > 0) {
+                        $('#PTaskTimes').html(jsData.PSInfo.PTaskTimes);
+
+                        $('#PFirstAidTimes').val(jsData.PSInfo.PFirstAidTimes);
+                        $('#PTransTimes').val(jsData.PSInfo.PTransTimes);
+                        $('#PGoHomeTimes').val(jsData.PSInfo.PGoHomeTimes);
+
+
+                        $('#PDays').html(jsData.PSInfo.PDays + " 班");
+                        $('#PTaskTimesEveryDay').html(parseFloat(jsData.PSInfo.PTaskTimesEveryDay).toFixed(2));
+
+                        var vPAvgSendTime = jsData.PSInfo.PAvgSendTime;
+                        $('#PAvgSendTime').html(formatSecondTime(vPAvgSendTime));
+                        var vPAvgArriveTime = jsData.PSInfo.PAvgArriveTime;
+                        $('#PAvgArriveTime').html(formatSecondTime(vPAvgArriveTime));
+                        var vPAvgLocalAidTime = jsData.PSInfo.PAvgLocalAidTime;
+                        $('#PAvgLocalAidTime').html(formatSecondTime(vPAvgLocalAidTime));
+                        var vPAvgTransTime = jsData.PSInfo.PAvgTransTime
+                        $('#PAvgTransTime').html(formatSecondTime(vPAvgTransTime));
+                        var vPAvgHospitalTransTime = jsData.PSInfo.PAvgHospitalTransTime;
+                        $('#PAvgHospitalTransTime').html(formatSecondTime(vPAvgHospitalTransTime));
+                        var vPAvgReactTime = jsData.PSInfo.PAvgReactTime;
+                        $('#PAvgReactTime').html(formatSecondTime(vPAvgReactTime));
+                        var vPAvgTurnTime = jsData.PSInfo.PAvgTurnTime;
+                        $('#PAvgTurnTime').html(formatSecondTime(vPAvgTurnTime));
+                    }
+                    //个人收费块
+                    if (jsData.PSChargeInfo.PCharge > 0) {
+                        $('#PKilometer').html(jsData.PSChargeInfo.PKilometer + " 公里");
+                        $('#PCharge').html(jsData.PSChargeInfo.PCharge + " 元");
+                        $('#PChargeCarFee').val(jsData.PSChargeInfo.PChargeCarFee);
+                        $('#PChargeWaitFee').val(jsData.PSChargeInfo.PChargeWaitFee);
+                        $('#PChargeAidFee').val(jsData.PSChargeInfo.PChargeAidFee);
+                    }
+
+                    //个人病历块
+                    //急救处理率
+                    var vPDisposeNumber = jsData.PSPRInfo.PDisposeNumber;
+                    $('#PDisposeNumber').val(vPDisposeNumber);
+
+                    var vPPRNumberExceptRefuseTreatment = jsData.PSPRInfo.PPRNumberExceptRefuseTreatment;
+                    $('#PPRNumberExceptRefuseTreatment').val(vPPRNumberExceptRefuseTreatment);
+
+                    if (vPPRNumberExceptRefuseTreatment != 0) {
+                        $('#PDisposePercent').html(percentNum(vPDisposeNumber, vPPRNumberExceptRefuseTreatment));
+                    }
+                    else {
+                        $('#PDisposePercent').html("0%");
+                    }
+
+                    //静脉开通率
+                    var vPVeinNumber = jsData.PSPRInfo.PVeinNumber;
+                    $('#PVeinNumber').val(vPVeinNumber);
+
+                    var vPPRNumber = jsData.PSPRInfo.PPRNumber;
+                    $('#PPRNumber').val(vPPRNumber);
+
+                    if (vPPRNumber != 0) {
+                        $('#PVeinPercent').html(percentNum(vPVeinNumber, vPPRNumber));
+                    }
+                    else {
+                        $('#PVeinPercent').html("0%");
+                    }
+                    //ROSC
+                    var vPROSCNumber = jsData.PSPRInfo.PROSCNumber;
+                    $('#PROSCNumber').val(vPROSCNumber);
+
+                    var vPCPRNumber = jsData.PSPRInfo.PCPRNumber;
+                    $('#PCPRNumber').val(vPCPRNumber);
+
+                    if (vPCPRNumber != 0) {
+                        $('#PROSCPercent').html(percentNum(vPROSCNumber, vPCPRNumber));
+                    }
+                    else {
+                        $('#PROSCPercent').html("0%");
+                    }
+                    setpPToolTip();
+                }
+            });
+        }
+        function getCenterInfo() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/BB/TJRedirectLink/GetCenterStatistics")',
+                data:
+                {
+                    beginTime: $.GetMonthFirstday(),
+                    endTime: $.GetTomorrow()
+                },
+                dataType: "json",
+                success: function (jsData) {
+                    //个人调度块
+                    if (jsData.CSInfo.CTaskTimes > 0) {
+                        $('#PTaskTimes').html(jsData.CSInfo.CTaskTimes);
+                        $('#PFirstAidTimes').val(jsData.CSInfo.CFirstAidTimes);
+                        $('#PTransTimes').val(jsData.CSInfo.CTransTimes);
+                        $('#PGoHomeTimes').val(jsData.CSInfo.CGoHomeTimes);
+
+
+                        $('#PDays').html(jsData.CSInfo.CDays + " 班");
+                        $('#PTaskTimesEveryDay').html(parseFloat(jsData.CSInfo.CTaskTimesEveryDay).toFixed(2));
+
+                        var vPAvgSendTime = jsData.CSInfo.CAvgSendTime;
+                        $('#PAvgSendTime').html(formatSecondTime(vPAvgSendTime));
+                        var vPAvgArriveTime = jsData.CSInfo.CAvgArriveTime;
+                        $('#PAvgArriveTime').html(formatSecondTime(vPAvgArriveTime));
+                        var vPAvgLocalAidTime = jsData.CSInfo.CAvgLocalAidTime;
+                        $('#PAvgLocalAidTime').html(formatSecondTime(vPAvgLocalAidTime));
+                        var vPAvgTransTime = jsData.CSInfo.CAvgTransTime;
+                        $('#PAvgTransTime').html(formatSecondTime(vPAvgTransTime));
+                        var vPAvgHospitalTransTime = jsData.CSInfo.CAvgHospitalTransTime;
+                        $('#PAvgHospitalTransTime').html(formatSecondTime(vPAvgHospitalTransTime));
+                        var vPAvgReactTime = jsData.CSInfo.CAvgReactTime;
+                        $('#PAvgReactTime').html(formatSecondTime(vPAvgReactTime));
+                        var vPAvgTurnTime = jsData.CSInfo.CAvgTurnTime;
+                        $('#PAvgTurnTime').html(formatSecondTime(vPAvgTurnTime));
+                    }
+                    //个人收费块
+                    if (jsData.PSChargeInfo.CCharge > 0) {
+                        $('#PKilometer').html(jsData.CSChargeInfo.CKilometer + " 公里");
+                        $('#PCharge').html(jsData.CSChargeInfo.CCharge + " 元");
+                        $('#PChargeCarFee').val(jsData.CSChargeInfo.CChargeCarFee);
+                        $('#PChargeWaitFee').val(jsData.CSChargeInfo.CChargeWaitFee);
+                        $('#PChargeAidFee').val(jsData.CSChargeInfo.CChargeAidFee);
+                    }
+
+                    //个人病历块
+                    //急救处理率
+                    var vPDisposeNumber = jsData.CSPRInfo.CDisposeNumber;
+                    $('#PDisposeNumber').val(vPDisposeNumber);
+
+                    var vPPRNumberExceptRefuseTreatment = jsData.CSPRInfo.CPRNumberExceptRefuseTreatment;
+                    $('#PPRNumberExceptRefuseTreatment').val(vPPRNumberExceptRefuseTreatment);
+
+                    if (vPPRNumberExceptRefuseTreatment != 0) {
+                        $('#PDisposePercent').html(percentNum(vPDisposeNumber, vPPRNumberExceptRefuseTreatment));
+                    }
+                    else {
+                        $('#PDisposePercent').html("0%");
+                    }
+
+                    //静脉开通率
+                    var vPVeinNumber = jsData.CSPRInfo.CVeinNumber;
+                    $('#PVeinNumber').val(vPVeinNumber);
+
+                    var vPPRNumber = jsData.CSPRInfo.CPRNumber;
+                    $('#PPRNumber').val(vPPRNumber);
+
+                    if (vPPRNumber != 0) {
+                        $('#PVeinPercent').html(percentNum(vPVeinNumber, vPPRNumber));
+                    }
+                    else {
+                        $('#PVeinPercent').html("0%");
+                    }
+                    //ROSC
+                    var vPROSCNumber = jsData.CSPRInfo.CROSCNumber;
+                    $('#PROSCNumber').val(vPROSCNumber);
+
+                    var vPCPRNumber = jsData.CSPRInfo.CCPRNumber;
+                    $('#PCPRNumber').val(vPCPRNumber);
+
+                    if (vPCPRNumber != 0) {
+                        $('#PROSCPercent').html(percentNum(vPROSCNumber, vPCPRNumber));
+                    }
+                    else {
+                        $('#PROSCPercent').html("0%");
+                    }
+                    setpPToolTip();
+                }
+            });
+        }
+        function getTotalInfo() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/BB/TJRedirectLink/GetTotalStatistics")',
+                data:
+                {
+                    beginTime: $.GetMonthFirstday(),
+                    endTime: $.GetTomorrow()
+                },
+                dataType: "json",
+                success: function (jsData) {
+                    //个人调度块
+                    if (jsData.CSInfo.TTaskTimes > 0) {
+                        $('#PTaskTimes').html(jsData.CSInfo.TTaskTimes);
+
+                        $('#PFirstAidTimes').val(jsData.CSInfo.TFirstAidTimes);
+                        $('#PTransTimes').val(jsData.CSInfo.TTransTimes);
+                        $('#PGoHomeTimes').val(jsData.CSInfo.TGoHomeTimes);
+
+                        $('#PDays').html(jsData.CSInfo.TDays + " 班");
+                        $('#PTaskTimesEveryDay').html(parseFloat(jsData.CSInfo.TTaskTimesEveryDay).toFixed(2));
+
+                        var vPAvgSendTime = jsData.CSInfo.TAvgSendTime;
+                        $('#PAvgSendTime').html(formatSecondTime(vPAvgSendTime));
+                        var vPAvgArriveTime = jsData.CSInfo.TAvgArriveTime;
+                        $('#PAvgArriveTime').html(formatSecondTime(vPAvgArriveTime));
+                        var vPAvgLocalAidTime = jsData.CSInfo.TAvgLocalAidTime;
+                        $('#PAvgLocalAidTime').html(formatSecondTime(vPAvgLocalAidTime));
+                        var vPAvgTransTime = jsData.CSInfo.TAvgTransTime;
+                        $('#PAvgTransTime').html(formatSecondTime(vPAvgTransTime));
+                        var vPAvgHospitalTransTime = jsData.CSInfo.TAvgHospitalTransTime;
+                        $('#PAvgHospitalTransTime').html(formatSecondTime(vPAvgHospitalTransTime));
+                        var vPAvgReactTime = jsData.CSInfo.TAvgReactTime;
+                        $('#PAvgReactTime').html(formatSecondTime(vPAvgReactTime));
+                        var vPAvgTurnTime = jsData.CSInfo.TAvgTurnTime;
+                        $('#PAvgTurnTime').html(formatSecondTime(vPAvgTurnTime));
+                    }
+                    //个人收费块
+                    if (jsData.PSChargeInfo.TCharge > 0) {
+                        $('#PKilometer').html(jsData.CSChargeInfo.TKilometer + " 公里");
+                        $('#PCharge').html(jsData.CSChargeInfo.TCharge + " 元");
+                        $('#PChargeCarFee').val(jsData.CSChargeInfo.TChargeCarFee);
+                        $('#PChargeWaitFee').val(jsData.CSChargeInfo.TChargeWaitFee);
+                        $('#PChargeAidFee').val(jsData.CSChargeInfo.TChargeAidFee);
+                    }
+
+                    //个人病历块
+                    //急救处理率
+                    var vPDisposeNumber = jsData.CSPRInfo.TDisposeNumber;
+                    $('#PDisposeNumber').val(vPDisposeNumber);
+
+                    var vPPRNumberExceptRefuseTreatment = jsData.CSPRInfo.TPRNumberExceptRefuseTreatment;
+                    $('#PPRNumberExceptRefuseTreatment').val(vPPRNumberExceptRefuseTreatment);
+
+                    if (vPPRNumberExceptRefuseTreatment != 0) {
+                        $('#PDisposePercent').html(percentNum(vPDisposeNumber, vPPRNumberExceptRefuseTreatment));
+                    }
+                    else {
+                        $('#PDisposePercent').html("0%");
+                    }
+
+                    //静脉开通率
+                    var vPVeinNumber = jsData.CSPRInfo.TVeinNumber;
+                    $('#PVeinNumber').val(vPVeinNumber);
+
+                    var vPPRNumber = jsData.CSPRInfo.TPRNumber;
+                    $('#PPRNumber').val(vPPRNumber);
+
+                    if (vPPRNumber != 0) {
+                        $('#PVeinPercent').html(percentNum(vPVeinNumber, vPPRNumber));
+                    }
+                    else {
+                        $('#PVeinPercent').html("0%");
+                    }
+                    //ROSC
+                    var vPROSCNumber = jsData.CSPRInfo.TROSCNumber;
+                    $('#PROSCNumber').val(vPROSCNumber);
+
+                    var vPCPRNumber = jsData.CSPRInfo.TCPRNumber;
+                    $('#PCPRNumber').val(vPCPRNumber);
+
+                    if (vPCPRNumber != 0) {
+                        $('#PROSCPercent').html(percentNum(vPROSCNumber, vPCPRNumber));
+                    }
+                    else {
+                        $('#PROSCPercent').html("0%");
+                    }
+                    setpPToolTip();
+                }
+            });
+        }
+        function setpPToolTip() {
+
+            var pTimesDetial = ' 急救：' + $('#PFirstAidTimes').val() + '次， 转院：' + $('#PTransTimes').val() + '次， 回家：' + $('#PGoHomeTimes').val() + '次。   ';
+            //此段内容为，ajax取 急救、转院、回家的出车数 ，然后赋值给content 的内容。显示在tooltip里。
+            $('#ptooltipTT').tooltip({
+                position: 'right',
+                content: pTimesDetial,
+                onShow: function () {
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#DCDAEF',
+                        borderColor: '#DCDAEF'
+                    });
+                }
+            });
+            var pDPDetial = '已治疗：' + $('#PDisposeNumber').val() + '， 共救治（不包括拒绝治疗）：' + $('#PPRNumberExceptRefuseTreatment').val() + "    ";
+            $('#ptooltipDP').tooltip({
+                position: 'right',
+                content: pDPDetial,
+                onShow: function () {
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#D2F1F6',
+                        borderColor: '#D2F1F6'
+                    });
+                }
+            });
+            var pPCDetial = ' 车费：' + $('#PChargeCarFee').val() + '元, 治疗费：' + $('#PChargeAidFee').val() + '元, 等候费：' + $('#PChargeWaitFee').val() + '元。   ';
+            $('#ptooltipPC').tooltip({
+                position: 'left',
+                content: pPCDetial,
+                onShow: function () {
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#FFD4CF',
+                        borderColor: '#FFD4CF'
+                    });
+                }
+            });
+            var pVPDetial = '静脉开通数：' + $('#PVeinNumber').val() + ' , 病历数：' + $('#PPRNumber').val() + "    ";
+            $('#ptooltipVP').tooltip({
+                position: 'left',
+                content: pVPDetial,
+                onShow: function () {
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#FFE48D',
+                        borderColor: '#FFE48D'
+                    });
+                }
+            });
+            var pROSCDetial = '复苏成功数：' + $('#PROSCNumber').val() + ' ， 心肺复苏数：' + $('#PCPRNumber').val() + "    ";
+            $('#ptooltipROSC').tooltip({
+                position: 'right',
+                content: pROSCDetial,
+                onShow: function () {
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#A8C0EC',
+                        borderColor: '#A8C0EC'
+                    });
+                }
+            });
+        }
+
+    </script>
+}
+
+<div style="width:98%; margin-left:6px; margin-right:6px">
+
+    <div>
+        <input name="IFHasStation" type="hidden" id="IFHasStation" value="@ViewBag.IFHasStation" />
+        <input name="IFHasCenter" type="hidden" id="IFHasCenter" value="@ViewBag.IFHasCenter" />
+        <input name="ChargeCarFee" type="hidden" id="PChargeCarFee" />
+        <input name="ChargeWaitFee" type="hidden" id="PChargeWaitFee" />
+        <input name="ChargeAidFee" type="hidden" id="PChargeAidFee" />
+        <input name="FirstAidTimes" type="hidden" id="PFirstAidTimes" />
+        <input name="TransTimes" type="hidden" id="PTransTimes" />
+        <input name="GoHomeTimes" type="hidden" id="PGoHomeTimes" />
+        <input name="DisposeNumber" type="hidden" id="PDisposeNumber" />
+        <input name="PRNumberExceptRefuseTreatment" type="hidden" id="PPRNumberExceptRefuseTreatment" />
+        <input name="VeinNumber" type="hidden" id="PVeinNumber" />
+        <input name="PRNumber" type="hidden" id="PPRNumber" />
+        <input name="ROSCNumber" type="hidden" id="PROSCNumber" />
+        <input name="CPRNumber" type="hidden" id="PCPRNumber" />
+    </div>
+    <div style="margin: 0 0 0 0; width: 98%;">
+        <table border="0" cellpadding="0" cellspacing="0" style="width: 96%; font-size:small;  text-align: left; margin-left: 5px; margin-right: 5px">
+            
+            
+            
+            <tr style="height:35px;">
+
+                <td align="right" style=" width:19%;">
+                    <label id="ptooltipTT">出车次数:</label>
+                </td>
+                <td style=" width:30%;">
+                    <span id="PTaskTimes" style="width:100px;"></span>
+                </td>
+                <td align="right" style=" width:19%;">
+                    当班数:
+                </td>
+                <td style=" width:30%;">
+                    <span id="PDays" style="width:100px;"></span>
+                </td>
+            </tr>
+
+            <tr style="height:35px;">
+                <td align="right">
+                    人均班出车次数:
+                </td>
+                <td>
+                    <span id="PTaskTimesEveryDay" style="width:100px;"></span>
+                </td>
+                <td align="right">
+                    平均出车时间:
+                </td>
+                <td>
+                    <span id="PAvgSendTime" style="width:100px;"></span>
+                </td>
+            </tr>
+
+            <tr style="height:35px;">
+                <td align="right">平均到达现场时间:</td>
+                <td>
+                    <span id="PAvgArriveTime" style="width:100px;"></span>
+                </td>
+                <td align="right">平均现场抢救时间:</td>
+                <td>
+                    <span id="PAvgLocalAidTime" style="width:100px;"></span>
+                </td>
+            </tr>
+
+            <tr style="height:35px;">
+                <td align="right">平均运送时间:</td>
+                <td>
+                    <span id="PAvgTransTime" style="width:100px;"></span>
+                </td>
+
+                <td align="right">平均医院交接时间:</td>
+                <td>
+                    <span id="PAvgHospitalTransTime" style="width:100px;"></span>
+                </td>
+
+            </tr>
+            <tr style="height:35px;">
+                <td align="right">平均反应时间:</td>
+                <td>
+                    <span id="PAvgReactTime" style="width:100px;"></span>
+                </td>
+
+
+                <td align="right">平均周转时间:</td>
+                <td>
+                    <span id="PAvgTurnTime" style="width:100px;"></span>
+                </td>
+            </tr>
+
+            <tr style="height:35px;">
+                <td align="right">收费公里数:</td>
+                <td>
+                    <span id="PKilometer" style="width:100px;"></span>
+                </td>
+                <td align="right">
+                    <label id="ptooltipPC">收费金额:</label>
+                </td>
+                <td>
+                    <span id="PCharge" style="width:100px;"></span>
+                </td>
+
+            </tr>
+
+            <tr style="height:28px;">
+                <td align="right">
+                    <label id="ptooltipDP">急救处理率:</label>
+                </td>
+                <td>
+                    <span id="PDisposePercent" style="width:100px;"></span>
+                </td>
+                <td align="right">
+                    <label id="ptooltipVP">静脉开通率:</label>
+                </td>
+                <td>
+                    <span id="PVeinPercent" style="width:100px;"></span>
+                </td>
+            </tr>
+            <tr style="height:28px;">
+                <td align="right">
+                    <label id="ptooltipROSC">复苏成功率:</label>
+                </td>
+                <td colspan="2">
+                    <span id="PROSCPercent" style="width:100px;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" colspan="4"> 注：以上业务统计为本月初至本次登陆时刻 </td>
+                <td> </td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>

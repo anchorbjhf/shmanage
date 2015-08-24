@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0F12205E-B95E-4E69-BC3D-E48D57E6991F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Anke.SHManage.IDAL</RootNamespace>
+    <AssemblyName>Anke.SHManage.IDAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IAcceptEventDAL.cs" />
+    <Compile Include="IAlarmEventDAL.cs" />
+    <Compile Include="IBaseDAL.cs" />
+    <Compile Include="IDAL.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IDAL.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IDALContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IDALContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IDALContextFactory.cs" />
+    <Compile Include="IDALExt\II_ApplyDAL.cs" />
+    <Compile Include="IDALExt\II_EntryDALExt.cs" />
+    <Compile Include="IDALExt\II_MaterialDAL.cs" />
+    <Compile Include="IDALExt\II_StoragePersonDALExt.cs" />
+    <Compile Include="IDALExt\II_StorageRoleDALExt.cs" />
+    <Compile Include="IDALExt\II_SurplusDALExt.cs" />
+    <Compile Include="IDALExt\IP_PermissionDALExt.cs" />
+    <Compile Include="IDALExt\IP_UserDALExt.cs" />
+    <Compile Include="IDALExt\II_DeliveryDALExt.cs" />
+    <Compile Include="IEventInfoDAL.cs" />
+    <Compile Include="IMobileDAL\IMobileTaskDAL.cs" />
+    <Compile Include="IPatientDAL\IM_DictionaryDAL.cs" />
+    <Compile Include="IPatientDAL\IM_DictionaryTreeDAL.cs" />
+    <Compile Include="IPatientDAL\IM_PatientChargeDAL.cs" />
+    <Compile Include="IPatientDAL\IM_PatientRecordDAL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="IDAL.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IDAL.cs</LastGenOutput>
+    </None>
+    <None Include="IDALContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IDALContext.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{51415eb8-7b82-4ee7-a643-11f5eba4f65e}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

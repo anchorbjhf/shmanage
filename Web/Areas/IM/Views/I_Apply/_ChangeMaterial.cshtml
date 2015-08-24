@@ -1,0 +1,62 @@
+﻿<script type="text/javascript">
+    function changeMaterial() {
+        var selected = $('#gridChangeMaterialList').datagrid('getSelected');
+        if (selected) {
+            changeMaterials(selected.MaterialID, selected.RealBatchNo, selected.BatchNo, selected.Surplus, selected.ValidityDate);
+            $('#ChangeMaterialList').dialog('close');
+        } else {
+            $.messager.alert('提示', '请选择数据行', 'info', function () {
+            });
+        }
+    }
+    function bindChangeMaterialList(Mid, Scode) {
+        $("#gridChangeMaterialList").datagrid({
+            width: 'auto',
+            height: '210',
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: true,
+            type: "POST",
+            url: '@Url.Content("~/IM/I_Surplus/GetMaterialSurplusList")',
+            queryParams: {
+                SurplusCode: Scode,
+                MaterialID: Mid
+            },
+            loadMsg: '数据加载中请稍后……',
+            pagination: true,//启用分页，默认每页10行
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            pageSize: 5,//设置 页容量5为
+            pageList: [5, 10, 20],//设置 页容量下拉框
+            //[{"ID":9,"MaterialID":2,"BatchNo":"220150415","EntryCounts":2,"Surplus":2,"SurplusPrice":4.0000,"StorageCode":"00001","ValidityDate":"\/Date(1429027200000)\/","MaterialName":"感冒药","StorageName":"中心仓储总库"}]
+            frozenColumns: [
+                [
+               { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+               { title: '批次号', field: 'RealBatchNo', width: '10%', sortable: false, formatter: $.formatRealBatchNo },
+               { field: "MaterialManufacturer", title: "生产厂家", width: '12%', align: "center" },
+               { field: "MaterialVendor", title: "供应商", width: '12%', align: "center" },
+               { field: "MaterialUnitName", title: "单位", width: '5%', align: "center" },
+               { field: "MaterialSpecification", title: "规格", width: '5%', align: "center" },
+               { title: '有效期', field: 'ValidityDate', width: '10%', align: 'center', sortable: false, formatter: $.formatValidityDate },
+               { field: 'Surplus', width: '10%', title: '当前结余', align: 'right', sortable: false },
+               { title: '仓库', field: 'StorageName', width: '15%', sortable: false },
+               { title: 'ID', field: 'ID', sortable: false, hidden: true },
+               { title: 'StorageCode', field: 'StorageCode', sortable: false, hidden: true },
+               { title: 'MaterialID', field: 'MaterialID', sortable: false, hidden: true },
+               { title: 'BatchNo', field: 'BatchNo', sortable: false, hidden: true }
+                ]
+            ]
+        });
+    }
+</script>
+
+
+<div id="ChangeMaterialList" class="easyui-dialog" title="更换物资清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cChange'" style="width:800px;height:300px;padding:0px;">
+    <div data-options="region:'north'" style="background: #fafafa; overflow: hidden;height:210px">
+        <table id="gridChangeMaterialList"></table>
+    </div>
+    <div data-options="region:'center'" style="overflow: hidden; padding: 10px;width:740px; text-align:right">
+        <a href="javascript:void(0)" id="btnRatify" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="changeMaterial()">确认更换</a>
+    </div>
+</div>

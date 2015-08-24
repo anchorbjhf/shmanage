@@ -1,0 +1,224 @@
+﻿
+<script type="text/javascript">
+
+    function PrimaryDiagnosesLoad() {
+        $('#PrimaryDiagnosesTree').tree({
+            //method: 'get',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            animate: true,
+            checkbox: true,
+            onlyLeafCheck: true,
+            queryParams: {
+                tableName: 'M_ZICDNew',
+                ParentID: '0',
+                TypeID: ''
+            },
+            onLoadError: function () {
+                //alert("获取数据失败！可能是已经超时，请重新登录！");
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;<b>获取数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function (node, data) {
+
+                //加载成功后，如果有值就勾选，并且展开上级目录！
+                if ($('#HidPrimaryDiagnosesIDs').val() != "") {
+                    var PrimaryDiagnoses = $('#HidPrimaryDiagnosesIDs').val().substring(0, $('#HidPrimaryDiagnosesIDs').val().length - 1);
+                    var array = PrimaryDiagnoses.split(',');
+                    for (var i = 0; i < array.length ; i++) {
+                        var node = $('#PrimaryDiagnosesTree').tree('find', array[i]);
+                        //alert(array[i]);
+                        if (node != null) {
+                            $(this).tree('check', node.target);
+                            var parent = $(this).tree('getParent', node.target);
+                        }
+                        if (parent != null) {
+                            $(this).tree('expand', parent.target);
+                            var parent1 = $(this).tree('getParent', parent.target);
+                            if (parent1 != null) {
+                                $(this).tree('expand', parent1.target);
+                                var parent2 = $(this).tree('getParent', parent1.target);
+                                if (parent2 != null) {
+                                    $(this).tree('expand', parent2.target);
+                                    var parent3 = $(this).tree('getParent', parent2.target);
+                                    if (parent3 != null) {
+                                        $(this).tree('expand', parent3.target);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //如果“病种分类”选择了内容，加载成功后，找到“初步印象”的对应的大类并且展开
+                var DiseasesClassification = SplitArray(GetCheckBox("DiseasesClassification")); //病种分类
+                if (DiseasesClassification != "") {
+                    var id = 0;
+                    if (data != null) {
+                        //
+                        for (var i = 0; i < data.length; i++) {
+                            var array = DiseasesClassification.split(',');
+                            for (var j = 0; j < array.length ; j++) {
+                                if (data[i] != null) {
+                                    if (data[i].text == array[j]) {
+                                        id = data[i].id;
+                                        var node = $(this).tree('find', id);//找到病种分类选择的ID
+                                        $(this).tree('expand', node.target);//展开病种分类选择的
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //性别选择男或者女后，初步印象对应的隐藏
+                var Sex = SplitArray(GetCheckBox("Sex")); //性别
+                if (Sex != "") {
+                    if (Sex == "男") {
+                        var node = $(this).tree('find', 14288);//找到ID为“子宫肿瘤”
+                        $(this).tree('remove', node.target);//移除一个节点和它的子节点
+                        var node1 = $(this).tree('find', 14289);//找到ID为“卵巢肿瘤”
+                        $(this).tree('remove', node1.target);//移除一个节点和它的子节点
+
+                        var node2 = $(this).tree('find', 12);//找到ID为“妇产科疾病”
+                        $(this).tree('remove', node2.target);//移除一个节点和它的子节点
+
+                    }
+                    if (Sex == "女") {
+                        var node = $(this).tree('find', 14256);//找到ID为“前列腺增生”
+                        $(this).tree('remove', node.target);//移除一个节点和它的子节点
+
+                    }
+                }
+
+                var Age = $('#Age').numberbox('getValue');//年龄
+                var AgeType = $('#AgeType').combobox('getValue'); //年龄类型
+                if (AgeType == "岁") {
+                    if (Age > 14) {
+                        var node = $(this).tree('find', 13);//找到ID为“儿科疾病”
+                        $(this).tree('remove', node.target);//移除一个节点和它的子节点
+                    }
+                }
+            },
+            onDblClick: function (node) {
+                $(this).tree(node.state === 'closed' ? 'expand' : 'collapse', node.target);//双击展开，再次双击折叠
+                node.state = node.state === 'closed' ? 'open' : 'closed';
+            },
+            onCheck: function (node, checked) {
+                var value = $('#HidPDiagnosesID').val();//本页面的编码串
+                var text = $('#HidPDiagnosesName').val();//本页面的名称串
+                if (checked == true) {
+                    if (node != null) {
+                        if (value.indexOf(node.id + ",") < 0) {
+                            value += node.id + ",";
+                            text += node.text + ",";
+                        }
+                    }
+                }
+                else {
+                    value = value.replace(node.id + ",", "");
+                    text = text.replace(node.text + ",", "");
+                }
+                $('#HidPDiagnosesID').val(value);
+                $('#HidPDiagnosesName').val(text);
+                //$('#SSPrimaryDiagnoses').val(text);//选择名称串
+
+            }
+        });
+    }
+
+    //#region 弹出信息窗口
+    /*
+    title:标题
+    msgString:提示信息
+    msgType:信息类型 [error,info,question,warning]
+    */
+    function msgShow(title, msgString, msgType) {
+        $.messager.alert(title, msgString, msgType);
+    }
+    //#endregion
+
+    //#region 获取初步印象的选择项
+    function GetPrimaryDiagnosesDetaile() {
+        $('#PrimaryDiagnoses').val("");//清空
+        $('#HidPrimaryDiagnosesNames').val("");//清空
+        $('#HidPrimaryDiagnosesIDs').val("");//清空
+        var text = $('#HidPDiagnosesName').val();
+        var value = $('#HidPDiagnosesID').val();
+        $('#PrimaryDiagnoses').val(text);
+        $('#HidPrimaryDiagnosesIDs').val(value);//心电图印象编码串
+        $('#HidPrimaryDiagnosesNames').val(text);//心电图印象名称串
+        $('#HidPDiagnosesID').val("");//清空
+        $('#HidPDiagnosesName').val("");//清空
+        $('#SSPrimaryDiagnoses').val("");//选择名称串
+        HidInstrumentalExamination();//重新加载-是否显示
+        $('#SelectPrimaryDiagnoses').window('close');
+    }
+    //#endregion
+
+    function ClearPrimaryDiagnoses() {
+        $('#HidPDiagnosesID').val("");//清空
+        $('#HidPDiagnosesName').val("");//清空
+        //$('#SSPrimaryDiagnoses').val("");//选择名称串
+        $("#PrimaryDiagnosesPinYin").val("");
+        $('#PrimaryDiagnosesPinYin').textbox('setText', "");//拼音
+    }
+
+    function PinYinSearch() {
+        var PinYin = $("#PrimaryDiagnosesPinYin").val();
+        var ParentID = "";
+        if (PinYin == "") {
+            ParentID = 0;
+        }
+        searchBindByPinYin("", PinYin, ParentID);
+    }
+
+    function searchBindByPinYin(urinfo, keyWord, ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            dataType: "json",
+            data: {
+                tableName: 'M_ZICDNew',
+                ParentID: ParentID,
+                TypeID: ''
+            },
+            success: function (jsData) {
+                var value = $('#HidPDiagnosesID').val();
+                $('#HidPrimaryDiagnosesIDs').val(value);//初步印象编码串
+                if (keyWord == "") {
+                    $("#PrimaryDiagnosesTree").tree("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                            jsData.remove(jsData[i]);
+                            i--;
+                        }
+                    }
+                    $("#PrimaryDiagnosesTree").tree("loadData", jsData);
+                }
+                //boolSearch = true;
+            }
+        });
+    }
+</script>
+
+
+<div id="SelectPrimaryDiagnoses" class="easyui-window" title="初步印象" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPatientRecord'" style="width:300px;height:600px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div class="easyui-panel" style="padding:5px;" data-options="region:'center'">
+            @*<input id="SSPrimaryDiagnoses" type="text" style="width:98%;" disabled="disabled" data-options="background-color: #E0E0E0;" />*@
+            @*<br />*@
+            <span class="font">【拼音首字母小写】：</span>
+            <input id="PrimaryDiagnosesPinYin" class="easyui-textbox" type="text" style="width:60%;" data-options="onChange:function (newValue, oldValue) { PinYinSearch(); }" />
+            &nbsp;&nbsp;<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" href="javascript:void(0)" onclick="PinYinSearch()">查询</a>
+            <br />
+            <ul id="PrimaryDiagnosesTree"></ul>
+
+            <input name="HidPDiagnosesID" type="hidden" id="HidPDiagnosesID" />
+            <input name="HidPDiagnosesName" type="hidden" id="HidPDiagnosesName" />
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" href="javascript:void(0)" onclick="GetPrimaryDiagnosesDetaile()">确认</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#SelectPrimaryDiagnoses').window('close')">关闭</a>
+        </div>
+    </div>
+</div>

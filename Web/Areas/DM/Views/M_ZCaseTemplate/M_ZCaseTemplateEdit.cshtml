@@ -1,0 +1,140 @@
+﻿<script type="text/javascript">
+
+   
+
+    //新增
+    function submitAddForm() {
+        var isValid = $("#NewDiseaseList").form("validate");
+        if (isValid) {
+            $('#btnadd').linkbutton('disable');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/M_ZCaseTemplate/DiseaseAdd")',
+                data:
+                    {
+                        Info: JSON.stringify(DiseaseModel(false))
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        $('#NewDiseaseList').dialog("close");
+                        $("#gridDiseaseList").datagrid("reload");
+                    }, function () {
+                        $('#btnadd').linkbutton('enable');
+                    });
+                }
+            });
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+    }
+    //修改
+    function submitEditForm() {
+        $.messager.confirm('提示', '确认修改该数据?', function (r) {
+            if (r) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/M_ZCaseTemplate/DiseaseEdit")',
+                    data:
+                        {
+                            Info: JSON.stringify(DiseaseModel(true))
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#NewDiseaseList').dialog("close");
+                            $("#gridDiseaseList").datagrid("reload");
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    //获取填写所有值
+    function DiseaseModel(isEdit) {
+        var obj = new Object();
+        if (isEdit)
+          obj.ID = $('#ID').val();
+        obj.Name = $("#Name").textbox('getText');       
+        obj.SN = $("#SN").numberbox('getValue');;
+        obj.AlarmReason = $("#AlarmReason").textbox('getText');
+        obj.HistoryOfPresentIllness = $("#HistoryOfPresentIllness").textbox('getText');
+        obj.IsActive = $("#IsActive").combobox('getValue');
+        return obj;
+    }
+    //新增入口
+    function initAddInfo() {
+        //将修改按钮禁用
+        $('#btnedit').linkbutton('disable');
+        $.GID("btnedit").style.display = "none";
+        $('#btnadd').linkbutton('enable');
+        $.GID("btnadd").style.display = "block";      
+        $('#ID').val("");
+        $("#Name").textbox("clear");      
+        $("#SN").numberbox("clear");
+        $("#AlarmReason").textbox('clear');
+        $("#HistoryOfPresentIllness").textbox('clear');
+        $("#IsActive").combobox("setText", "有效");
+    }
+    function initUpdateInfo() {
+        $('#btnadd').linkbutton('disable');
+        $.GID("btnadd").style.display = "none";
+        $('#btnedit').linkbutton('enable');
+        $.GID("btnedit").style.display = "block";
+        
+    }
+</script>
+
+<div id="NewDiseaseList" class="easyui-dialog" title="编辑页面" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cWuZiWeiHu'" style="width:550px;height:440px;padding:10px;">
+    
+    <table>
+        <tr style="height: 40px">
+            <td style="width: 100px">名称：</td>
+            <td>
+                <input id="Name" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                <input id="ID" type="hidden" />
+            </td>
+        </tr>
+        <tr style="height: 40px ">
+            <td style="width: 100px">是否有效：</td>
+            <td>
+                <select class="easyui-combobox" style="width: 160px" id="IsActive" data-options="required:true,panelHeight:70, editable:false">
+                    <option value="true">有效</option>
+                    <option value="false">无效</option>
+                </select>
+            </td>
+        </tr>
+        <tr style="height: 40px">
+            <td style="width: 100px ">顺序号：</td>
+            <td>
+                <input id="SN" class="easyui-numberbox" style="width:160px" data-options="required:true" />
+
+            </td>
+        </tr>
+        <tr style="height: 100px">
+            <td style="width: 90px">主诉：</td>
+            <td style="height:100px">
+                <input id="AlarmReason" class="easyui-textbox" style="width: 430px; height: 80px" data-options="multiline:true" />
+
+            </td>
+        </tr>
+        <tr style="height: 100px ">
+            <td style="width: 100px ">现病史：</td>
+            <td style="height:100px">
+                <input id="HistoryOfPresentIllness" class="easyui-textbox" style="width:430px;height:100px" data-options="multiline:true" />
+
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr style="height:30px">
+            <td colspan="5">
+                <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改</a>
+                <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增</a>
+            </td>
+        </tr>        
+    </table>
+
+</div>

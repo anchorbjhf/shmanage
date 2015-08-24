@@ -1,0 +1,378 @@
+﻿@{
+    ViewBag.Title = "物资基本信息";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script type="text/javascript">
+
+        //页面初始化
+        $(document).ready(function () {
+            initSearch();
+            bindGrid();
+            fillCombobox(); //分部视图使用
+        });
+
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridMaterialList");
+        });
+        function initSearch() {
+            var urlstr = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeByUserInfo")';
+            $.EUIcomboboxTree("#MaterialType", {
+                url: urlstr,//ajax后台取数据路径，返回的是json格式的数据
+                OneOption: [{
+                    id: "",
+                    text: "--请选择--",
+                }],
+                datainfo: {},
+                onSelect: function (rec) {
+                    if (rec.id == "") {
+                        $("#MaterialID").val("");
+                        $("#MaterialTypeInfo").val("");
+                        return;
+                    }
+                    var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetMaterial?mType=")' + rec.id;
+                    $("#MaterialTypeInfo").val(rec.id);
+                    $("#Material").combogrid({
+                        prompt: '--请选择--',
+                        panelWidth: 320,
+                        idField: 'ID',
+                        textField: 'Name',
+                        groupField: 'QRCode',
+                        columns: [[
+                            { field: 'MCode', title: '代码', width: 50, align: 'right' },
+                            { field: 'Name', title: '名称', width: 100 },
+                            { field: 'UnitName', title: '单位', width: 50 },
+                            { field: 'Specification', title: '规格', width: 50, align: 'right' },
+                            { field: 'RealPrice', title: '售价', width: 50 },
+                            { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                        ]],
+                        fitColumns: true,
+                        filter: function (inputText, row) {
+                            var opts = $(this).combogrid('options');
+                            if (row[opts.groupField] == inputText) {
+                                return true;
+                            } else if (row[opts.textField] == inputText) {
+                                return true;
+                            } else {
+                                if (boolSearch) {
+                                    boolSearch = false;
+                                    searchBindMeterialbyName(urlstr3, inputText);
+                                }
+                            }
+                        },
+                        onChange: function (n, o) {
+                            if (n == "") {
+                                searchBindMeterialbyName(urlstr3, n);
+                                $("#MaterialID").val("");
+                            }
+                        },
+                        onSelect: function (rec) {
+                            var g = $("#Material").combogrid("grid");	// 获取数据表格对象
+                            var r = g.datagrid('getSelected');	// 获取选择的行
+                            $("#MaterialID").val($('#Material').combobox('getValue'));
+                        }
+                    });
+                    searchBindMeterialbyName(urlstr3, "");
+                }
+            });
+
+            var urlstr4 = '@Url.Content("~/IM/AllDictionary/GetMaterialList")';
+            $("#Material").combogrid({
+                prompt: '--请选择--',
+                panelWidth: 320,
+                idField: 'ID',
+                textField: 'Name',
+                groupField: 'QRCode',
+                columns: [[
+                     { field: 'MCode', title: '代码', width: 50, align: 'right' },
+                     { field: 'Name', title: '名称', width: 100 },
+                     { field: 'UnitName', title: '单位', width: 50 },
+                     { field: 'Specification', title: '规格', width: 50, align: 'right' },
+                     { field: 'RealPrice', title: '售价', width: 50 },
+                     { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                ]],
+                fitColumns: true,
+                filter: function (inputText, row) {
+                    var opts = $(this).combogrid('options');
+                    if (row[opts.groupField] == inputText) {
+                        return true;
+                    } else if (row[opts.textField] == inputText) {
+                        return true;
+                    } else {
+                        if (boolSearch) {
+                            boolSearch = false;
+                            searchBindMeterialbyName(urlstr4, inputText);
+                        }
+                    }
+                },
+                onChange: function (n, o) {
+                    if (n == "") {
+                        searchBindMeterialbyName(urlstr4, n);
+                        $("#MaterialID").val("");
+                    }
+                },
+                onSelect: function (rec) {
+                    var g = $("#Material").combogrid("grid");	// 获取数据表格对象
+                    var r = g.datagrid('getSelected');	// 获取选择的行
+                    $("#MaterialID").val($('#Material').combobox('getValue'));
+                }
+            });
+            searchBindMeterialbyName(urlstr4, "");
+        }
+        function searchBindMeterialbyName(urinfo, keyWord) {
+            $.ajax({
+                type: 'POST',
+                url: urinfo,
+                dataType: "json",
+                success: function (jsData) {
+                    if (keyWord == "") {
+                        $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                    } else {
+                        for (var i = 0; i < jsData.length; i++) {
+                            if (jsData[i].Name.indexOf(keyWord) < 0) {
+                                if (jsData[i].MCode.indexOf(keyWord) < 0) {
+                                    if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                                        jsData.remove(jsData[i]);
+                                        i--;
+                                    }
+                                }
+                            }
+                        }
+                        $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                    }
+                    boolSearch = true;
+                }
+            });
+        }
+        //初始化加载数据
+        function bindGrid() {
+            $('#gridMaterialList').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                singleSelect: true,
+                loadMsg: '数据加载中请稍后……',
+                url: '@Url.Content("~/IM/MaterialList/DataLoad")',
+                striped: true,
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量5为
+                pageList: [10, 15, 20],//设置 页容量下拉框
+                queryParams: {
+                    vender: $('#vender').textbox('getText'),
+                    facturer: $('#facturer').textbox('getText'),
+                    isActive: $('#isActive').combobox('getValue'),
+                    MaterialType: $('#MaterialTypeInfo').val(),
+                    MaterialID: $('#MaterialID').val()
+                },
+                frozenColumns: [[
+                   { field: "MTypeName", title: "物资分类", width: '10%', align: "center" },
+                   { field: "Name", title: "物资名称", width: '10%', align: "left" },
+                   { field: "MCode", title: "物资代码", width: '10%', align: "center" },
+                   { field: "PinYin", title: "拼音头代码", width: '10%', align: "center" },
+                   { field: "UnitName", title: "度量单位", width: '5%', align: "center" },
+                   { field: "Specification", title: "规格", width: '5%', align: "center" },
+                   { field: "Manufacturer", title: "生产厂家", width: '12%', align: "center" },
+                   { field: "Vendor", title: "供应商", width: '12%', align: "center" },
+                   { field: "AlarmCounts", title: "警示基数", width: '5%', align: "right" },
+                   { field: "RealPrice", title: "销售价格", width: '5%', align: "right" },
+                   {
+                       field: "IsActive", title: "是否有效", width: '5%',
+                       formatter: function (value, rowData, rowIndex) {
+                           if (value == true) {
+                               return "有效";
+                           }
+                           else {
+                               return "无效";
+                           }
+                       }
+                   },
+                   { field: "Remark", title: "备注", width: '10%', align: "left" },
+                   { field: "CreatorDate", title: "CreatorDate", hidden: true },
+                   { field: "Unit", title: "Unit", hidden: true },
+                   { field: "MTypeID", title: "MTypeID", hidden: true },
+                   { field: "ID", title: "ID", hidden: true },
+                   { field: "FeeScale", title: "FeeScale", hidden: true },
+                   { field: "LimitMaxPrice", title: "LimitMaxPrice", hidden: true },
+                   { field: "GiveMedicineWay", title: "GiveMedicineWay", hidden: true },
+                   { field: "OtherTypeName", title: "其他分类", hidden: true },
+                   { field: "OtherTypeID", title: "OtherTypeID", hidden: true },
+                   { field: "SN", title: "SN", hidden: true }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.IsActive == false) {
+                        return 'color:red';
+                    }
+                },
+                toolbar: [
+                   {
+                       id: 'btnAdd',
+                       text: '新增物资',
+                       iconCls: 'icon-add',
+                       handler: function () {
+                           $('#NewMaterialList').dialog('open');
+                           initAddInfo();
+                       }
+                   }, '-',
+                   {
+                       id: 'btnEdit',
+                       text: '修改物资',
+                       iconCls: 'icon-edit',
+                       handler: function () {
+                           var row = $('#gridMaterialList').datagrid('getSelected');
+                           if (row) {
+                               initUpdateInfo(row);
+                               $("#ID").val(row.ID);
+                               $("#Name").textbox("setText", row.Name);
+                               $("#Specification").textbox("setText", row.Specification);
+                               $("#MCode").textbox("setText", row.MCode);
+                               $("#PinYin").textbox("setText", row.PinYin);
+                               $("#Manufacturer").textbox("setText", row.Manufacturer);
+                               $("#Vendor").textbox("setText", row.Vendor);
+                               $("#AlarmCounts").numberbox("setValue", row.AlarmCounts);
+                               $("#Remark").textbox("setText", row.Remark);
+                               $("#Unit").combobox("setValue", row.Unit);
+                               $("#RealPrice").textbox("setValue", row.RealPrice);
+                               $("#MType").combotree("setValue", row.MTypeID);
+                               $("#MaterialTypeInfo").val(row.MTypeID);
+                               $("#FeeScale").textbox("setValue", row.FeeScale);
+                               $("#LimitMaxPrice").textbox("setValue", row.LimitMaxPrice);
+                               $("#OtherType").combotree("setValue", row.OtherTypeID);
+                               $("#OtherTypeInfo").val(row.OtherTypeID);
+                               $("#GiveMedicineWay").combobox("setValue", row.GiveMedicineWay);
+                               $("#SN").numberbox("setValue", row.SN);
+                               //if ($("#IsActive").combobox("setValue", row.IsActive) == true) { return "有效";}
+                               //else return "无效";
+                               $('#NewMaterialList').dialog('open');
+                           } else {
+                               $.messager.alert('提示', '请选择数据行', 'info', function () {
+                               });
+                           }
+                       }
+                   }, '-',
+                   {
+                       id: 'btnJinYong',
+                       text: '<span style="color:red">禁用</span>物资',
+                       iconCls: 'icon-custom-cJinYong',
+                       handler: function () {
+                           MaterialDisable(false);
+                       }
+                   }, '-',
+                   {
+                       id: 'btnQiYong',
+                       text: '<span style="color:darkgreen">启用</span>物资',
+                       iconCls: 'icon-custom-cQiYong',
+                       handler: function () {
+                           MaterialDisable(true);
+                       }
+                   }
+                ],
+                onSelect: function (index, row) {
+                    if (row.IsActive) {
+                        $('#btnQiYong').linkbutton('disable');
+                        $('#btnJinYong').linkbutton('enable');
+                    } else {
+                        $('#btnQiYong').linkbutton('enable');
+                        $('#btnJinYong').linkbutton('disable');
+                    }
+                }
+            });
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridMaterialList");
+        }
+        function reSearch() {
+            $('#gridMaterialList').datagrid({
+                queryParams: {
+                    vender: $('#vender').textbox('getText'),
+                    facturer: $('#facturer').textbox('getText'),
+                    isActive: $('#isActive').combobox('getValue'),
+                    MaterialType: $('#MaterialTypeInfo').val(),
+                    MaterialID: $('#MaterialID').val()
+                }
+            });
+        }
+        //delete
+        function MaterialDisable(boolDisable) {
+            var rowData = $('#gridMaterialList').datagrid('getSelected');
+            var str;
+            if (boolDisable)
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:darkgreen'>有效</span>”吗？";
+            else
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:red'>无效</span>”吗？";
+            if (rowData) {
+
+                $.messager.confirm('提示', str, function (r) {
+                    if (!r) {
+                        return;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/IM/MaterialList/MaterialDisable")',
+                        data:
+                            {
+                                id: rowData.ID,
+                                disable: boolDisable
+                            },
+                        dataType: "json",
+                        success: function (jsData) {
+                            $.handleJsonResult(jsData, function () {
+                                $("#gridMaterialList").datagrid("reload");
+                            });
+                        }
+                    });
+                });
+            }
+            else {
+                $.messager.alert('提示', '请选择数据行', 'info', function () { });
+            }
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:' 库存基础信息维护',iconCls:'icon-custom-cWuZiWeiHu'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>生产厂家：</td>
+                    <td align="left" valign="middle">
+                        <input class="easyui-textbox" style="width: 160px" id="facturer">
+                    </td>
+                    <td>供应商：</td>
+                    <td align="left" valign="middle" style="color:darkgreen">
+                        <input class="easyui-textbox" style="width: 160px" id="vender">
+                    </td>
+                    <td>
+                        是否有效：
+                    </td>
+                    <td>
+                        <select class="easyui-combobox" style="width: 160px" id="isActive" data-options="panelHeight:70, editable:false">
+                            <option value="">--全部--</option>
+                            <option value="true">有效</option>
+                            <option value="false">无效</option>
+                        </select>
+                    </td>
+                    <td rowspan="2">
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分类：</td>
+                    <td>
+                        <input id="MaterialType" class="easyui-combobox" style="width:160px" />
+                        <input id="MaterialTypeInfo" type="hidden" />
+                    </td>
+                    <td>物资：</td>
+                    <td>
+                        <input id="Material" class="easyui-combogrid" style="width:160px" />
+                        <input id="MaterialID" type="hidden" />
+                    </td>
+                    <td colspan="2"></td>
+
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridMaterialList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/IM/Views/MaterialList/_MaterialPage.cshtml")

@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "出库单查询";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        //页面初始化
+        $(document).ready(function () {
+
+            // 取出库类型的字典表 （在AllDictionary/GetMSDictionaryInfo 是调用字典表，传TypeCode即可）
+            $.EUIcombobox("#deliveryType", {
+                url: '@Url.Content("~/IM/AllDictionary/GetMSDictionaryInfo?TypeCode=MatertalOutType")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //物资来源，下拉框选项获取
+            $.EUIcombobox("#entryStorageCode", {
+                url: '@Url.Content("~/IM/MaterialDeliveryOrder/GetStorage")',
+                //url: '/IM/MaterialDeliveryOrder/GetStorage',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+
+            //物资去向，下拉框选项获取
+            $.EUIcombobox("#receivingStoreID", {
+                url: '@Url.Content("~/IM/MaterialDeliveryOrder/GetStorage")',
+                //url: '/IM/MaterialDeliveryOrder/GetStorage',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            bindGrid();
+        })
+
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#do");
+        });
+
+        function bindGrid() {
+            $('#do').datagrid({
+
+
+                //title: '出库单',
+                iconCls: 'icon-custom-Entry',
+                rownumbers: true,
+                singleSelect: true,
+                width: 'auto',
+                height: 'auto',
+                //fit:true,
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/MaterialDeliveryOrder/DataLoad")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                queryParams: {
+                    startTime: $("#startTime").datebox('getValue'),
+                    endTime: $('#endTime').datebox('getValue'),
+                    deliveryType: $('#deliveryType').combobox('getValue'),
+                    deliveryCode: $('#deliveryCode').textbox('getValue') == null ? "" : $('#deliveryCode').textbox('getValue'),
+                    entryStorageCode: $('#entryStorageCode').combobox('getValue') == null ? "" : $('#entryStorageCode').combobox('getValue'),
+                    receivingStoreID: $('#receivingStoreID').combobox('getValue') == null ? "" : $('#receivingStoreID').combobox('getValue'),
+                    operatorName: $('#operatorName').textbox('getValue') == null ? "" : $('#operatorName').textbox('getValue'),
+                    consigneeName: $('#consigneeName').textbox('getValue') == null ? "" : $('#consigneeName').textbox('getValue'),
+                    mName: $('#mName').textbox('getValue') == null ? "" : $('#mName').textbox('getValue'),
+                    mCode: $('#mCode').textbox('getValue') == null ? "" : $('#mCode').textbox('getValue')
+                },
+                frozenColumns: [[
+                  { field: "mName", title: "名称", width: '8%', align: "center" },
+                  { field: "DeliveryCode", title: "出库单号", width: '10%', align: "center" },
+                  { field: "DeliveryTime", title: "出库时间", width: '10%', align: "center", sortable: false, formatter: $.formatTime },
+                  { field: "OperatorName", title: "经办人", width: '10%', align: "center" },
+                  { field: "ConsigneeName", title: "认领人", width: '10%', align: "center" },
+                  { field: "EntryStorageName", title: "物资来源", width: '10%', align: "center" },
+                  { field: "ReceivingStoreName", title: "物资去向", width: '10%', align: "center" },
+                  { field: "TotalDelivery", title: "出库数量", width: '5%', align: "center" },
+                  { field: "BatchNo", title: "批次号", width: '10%', align: "center" },
+                  { field: "DeliveryType", title: "出库类型", width: '10%', align: "center" },
+                  { field: "Remark", title: "备注", width: '7%', align: "center" }
+                  //{ field: "Detail", title: "详情", width: 80, align: "center", iconCls: "icon-add", formatter: "formatDetail" }
+
+                ]]
+            });
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#do");
+        }
+
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'出库单',iconCls:'icon-custom-Entry'">
+        <div id="tbb" style="padding: 5px; height: auto">
+
+            <table style="width:100%" cellpadding="0" cellspacing="0" border="0">
+
+                <tr>
+                    <td height="30px">&nbsp;</td>
+                    <td align="right" valign="middle">@Html.Label("startTime", "出库时刻:")</td>
+                    <td align="left" valign="middle" colspan="3" style="width:30%">
+                        <input class="easyui-datetimebox" style="width:155px" value=@ViewData["startTime"] id="startTime">
+                        至:
+                        <input class="easyui-datetimebox" style="width:155px" value=@ViewData["endTime"] id="endTime">
+                    </td>
+                    <td align="right" valign="middle" style="width:9%">@Html.Label("deliveryType", "出库单类型:")</td>
+                    <td align="left" valign="middle">
+                        <select class="easyui-combobox" style="width: 125px" id="deliveryType"></select>
+                    </td>
+                    <td align="right" valign="middle">@Html.Label("deliveryCode", "出库单号:")</td>
+                    <td align="left" valign="middle">
+                        <input class="easyui-textbox"  style="width: 150px" id="deliveryCode">
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td height="30px">
+                        &nbsp;
+                    </td>
+                    <td align="right" valign="middle">@Html.Label("entryStorageCode", "物资来源:")</td>
+                    <td align="left" valign="middle" colspan="2">
+                        <select class="easyui-combobox" style="width:150px" id="entryStorageCode"></select>
+                    </td>
+                    <td align="right" valign="middle" colspan="2">@Html.Label("operatorName", "经办人:")</td>
+                    <td align="left" valign="middle"><input class="easyui-textbox" style="width:120px" id="operatorName"></td>
+                    <td align="right" valign="middle">@Html.Label("mName", "物资名称:")</td>
+                    <td align="left" valign="middle"><input class="easyui-textbox"  style="width:125px" id="mName"></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td height="30px">&nbsp;</td>
+                    <td align="right" valign="middle">@Html.Label("receivingStoreID", "物资去向:")</td>
+                    <td align="left" valign="middle" colspan="2">
+                        <select class="easyui-combobox"  style="width: 150px" id="receivingStoreID"></select>
+                    </td>
+                    <td align="right" valign="middle" colspan="2">@Html.Label("consigneeName", "认领人:")</td>
+                    <td align="left" valign="middle"><input class="easyui-textbox" style="width:120px" id="consigneeName"></td>
+                    <td align="right" valign="middle"> @Html.Label("mCode", "物资代码:")</td>
+                    <td align="left" valign="middle"><input class="easyui-textbox"  style="width: 125px" id="mCode"></td>
+                    <td align="right" valign="middle"><a href="#" class="easyui-linkbutton" iconcls="icon-search" onclick="bindGrid()">查询</a>&nbsp; &nbsp;&nbsp;</td>
+                </tr>
+            </table>
+
+        </div>
+        <div style="margin: 10px 0;">
+            <table id="do"></table>
+        </div>
+    </div>
+</div>
+

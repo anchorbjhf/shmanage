@@ -1,0 +1,352 @@
+﻿@{
+    ViewBag.Title = "救治措施基本信息";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script type="text/javascript">
+
+        //页面初始化
+        $(document).ready(function () {
+            initSearch();
+            bindGrid();
+            fillCombobox(); //分部视图使用
+        });
+
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridMeasureList");
+        });
+        function initSearch() {
+            var urlstr = '@Url.Content("~/IM/AllDictionary/GetMeasureType")';
+            $.EUIcomboboxTree("#MeasureType", {
+                url: urlstr,//ajax后台取数据路径，返回的是json格式的数据
+                OneOption: [{
+                    id: "",
+                    text: "--请选择--",
+                }],
+                datainfo: {},
+                onSelect: function (rec) {
+                    if (rec.id == "") {
+                        $("#MeasureID").val("");
+                        $("#MeasureTypeInfo").val("");
+                        return;
+                    }
+                    var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetMeasure?measureType=")' + rec.id;
+                    $("#MeasureTypeInfo").val(rec.id);
+                    $("#Measure").combogrid({
+                        prompt: '--请选择--',
+                        panelWidth: 320,
+                        idField: 'ID',
+                        textField: 'Name',
+                        groupField: 'QRCode',
+                        columns: [[
+                            { field: 'Name', title: '名称', width: 100 },
+                            { field: 'UnitName', title: '单位', width: 50 },
+                            { field: 'RealPrice', title: '售价', width: 50 },
+                            { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                        ]],
+                        fitColumns: true,
+                        filter: function (inputText, row) {
+                            var opts = $(this).combogrid('options');
+                            if (row[opts.groupField] == inputText) {
+                                return true;
+                            } else if (row[opts.textField] == inputText) {
+                                return true;
+                            } else {
+                                if (boolSearch) {
+                                    boolSearch = false;
+                                    searchBindMeterialbyName(urlstr3, inputText);
+                                }
+                            }
+                        },
+                        onChange: function (n, o) {
+                            if (n == "") {
+                                searchBindMeterialbyName(urlstr3, n);
+                                $("#MeasureID").val("");
+                            }
+                        },
+                        onSelect: function (rec) {
+                            var g = $("#Measure").combogrid("grid");	// 获取数据表格对象
+                            var r = g.datagrid('getSelected');	// 获取选择的行
+                            $("#MeasureID").val($('#Measure').combobox('getValue'));
+                        }
+                    });
+                    searchBindMeterialbyName(urlstr3, "");
+                }
+            });
+
+            var urlstr5 = '@Url.Content("~/IM/AllDictionary/GetMeasureList")';
+            $("#Measure").combogrid({
+                prompt: '--请选择--',
+                panelWidth: 320,
+                idField: 'ID',
+                textField: 'Name',
+                groupField: 'QRCode',
+                columns: [[
+                    { field: 'Name', title: '名称', width: 100 },
+                    { field: 'UnitName', title: '单位', width: 50 },
+                    { field: 'RealPrice', title: '售价', width: 50 },
+                    { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                ]],
+                fitColumns: true,
+                filter: function (inputText, row) {
+                    var opts = $(this).combogrid('options');
+                    if (row[opts.groupField] == inputText) {
+                        return true;
+                    } else if (row[opts.textField] == inputText) {
+                        return true;
+                    } else {
+                        if (boolSearch) {
+                            boolSearch = false;
+                            searchBindMeterialbyName(urlstr5, inputText);
+                        }
+                    }
+                },
+                onChange: function (n, o) {
+                    if (n == "") {
+                        searchBindMeterialbyName(urlstr5, n);
+                        $("#MeasureID").val("");
+                    }
+                },
+                onSelect: function (rec) {
+                    var g = $("#Measure").combogrid("grid");	// 获取数据表格对象
+                    var r = g.datagrid('getSelected');	// 获取选择的行
+                    $("#MeasureID").val($('#Measure').combobox('getValue'));
+                }            
+            });
+                searchBindMeterialbyName(urlstr5, "");
+        }
+        function searchBindMeterialbyName(urinfo, keyWord) {
+            $.ajax({
+                type: 'POST',
+                url: urinfo,
+                dataType: "json",
+                success: function (jsData) {
+                    if (keyWord == "") {
+                        $("#Measure").combogrid("grid").datagrid("loadData", jsData);
+                    } else {
+                        for (var i = 0; i < jsData.length; i++) {
+                            if (jsData[i].Name.indexOf(keyWord) < 0) {
+                                //if (jsData[i].MCode.indexOf(keyWord) < 0) {
+                                   // if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                                        jsData.remove(jsData[i]);
+                                        i--;
+                                    //}
+                                //}
+                            }
+                        }
+                        $("#Measure").combogrid("grid").datagrid("loadData", jsData);
+                    }
+                    boolSearch = true;
+                }
+            });
+        }
+        //初始化加载数据
+        function bindGrid() {
+            $('#gridMeasureList').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                singleSelect: true,
+                loadMsg: '数据加载中请稍后……',
+                url: '@Url.Content("~/DM/Measures/DataLoad")',
+                striped: true,
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量5为
+                pageList: [10, 15, 20],//设置 页容量下拉框
+                queryParams: {                    
+                    isActive: $('#isActive').combobox('getValue'),
+                    MeasureType: $('#MeasureTypeInfo').val(),
+                    MeasureID: $('#MeasureID').val()
+                },
+                frozenColumns: [[
+                   { field: "MeasureTypeName", title: "分类", width: '12%',align: "center"},
+                   //{ field: "MTypeName", title: "分类", width: '10%', align: "center"},
+                   { field: "Name", title: "名称", width: '20%', align: "center" },
+                   { field: "PinYin", title: "拼音头代码", width: '12%', align: "center" },
+                   { field: "UnitName", title: "度量单位", width: '8%', align: "center" },
+                   { field: "RealPrice", title: "销售价格", width: '10%', align: "center" },
+                   {
+                       field: "IsActive", title: "是否有效", width: '8%', align: "center",
+                       formatter: function (value, rowData, rowIndex) {
+                           if (value == true) {
+                               return "有效";
+                           }
+                           else {
+                               return "无效";
+                           }
+                       }
+                   },
+                   { field: "Remark", title: "备注", width: '20%', align: "left" },
+                   { field: "CreatorDate", title: "CreatorDate", hidden: true },
+                   { field: "Unit", title: "Unit", hidden: true },
+                   { field: "MTypeID", title: "MTypeID", hidden: true },
+                   { field: "ID", title: "ID", hidden: true },
+                   { field: "FeeScale", title: "FeeScale", hidden: true },
+                   { field: "LimitMaxPrice", title: "LimitMaxPrice", hidden: true },
+                   { field: "GiveMedicineWay", title: "GiveMedicineWay", hidden: true },
+                   { field: "OtherTypeID", title: "OtherTypeID", hidden: true },
+                   { field: "SN", title: "SN", hidden: true }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.IsActive == false) {
+                        return 'color:red';
+                    }
+                },
+                toolbar: [
+                   {
+                       id: 'btnAdd',
+                       text: '新增',
+                       iconCls: 'icon-add',
+                       handler: function () {
+                           $('#NewMeasureList').dialog('open');
+                           initAddInfo();
+                       }
+                   }, '-',
+                   {
+                       id: 'btnEdit',
+                       text: '修改',
+                       iconCls: 'icon-edit',
+                       handler: function () {
+                           var row = $('#gridMeasureList').datagrid('getSelected');
+                           if (row) {
+                               initUpdateInfo(row);
+                               $("#ID").val(row.ID);
+                               $("#Name").textbox("setText", row.Name);
+                               $("#PinYin").textbox("setText", row.PinYin);
+                               $("#Remark").textbox("setText", row.Remark);
+                               $("#Unit").combobox("setValue", row.Unit);
+                               $("#RealPrice").textbox("setValue", row.RealPrice);
+                               $("#MType").combobox("setValue", row.MTypeID);
+                              
+                               //$("#MeasureTypeInfo").val(row.MTypeID);
+                               $("#AlarmCounts").numberbox("setValue", row.AlarmCounts);
+                               $("#FeeScale").textbox("setValue", row.FeeScale);
+                               $("#LimitMaxPrice").textbox("setValue", row.LimitMaxPrice);
+                               $("#MeasureTypeID").combotree("setValue", row.OtherTypeID);
+                               $("#MeasureTypeInfo").val(row.OtherTypeID);
+                               $("#SN").numberbox("setValue", row.SN);
+                               $('#IsActive').combobox('setText', row.IsActive == true ? "有效" : "无效");
+                           
+                               $('#NewMeasureList').dialog('open');
+                           } else {
+                               $.messager.alert('提示', '请选择数据行', 'info', function () {
+                               });
+                           }
+                       }
+                   }, '-',
+                   {
+                       id: 'btnJinYong',
+                       text: '<span style="color:red">禁用</span>',
+                       iconCls: 'icon-custom-cJinYong',
+                       handler: function () {
+                           MeasureDisable(false);
+                       }
+                   }, '-',
+                   {
+                       id: 'btnQiYong',
+                       text: '<span style="color:darkgreen">启用</span>',
+                       iconCls: 'icon-custom-cQiYong',
+                       handler: function () {
+                           MeasureDisable(true);
+                       }
+                   }
+                ],
+                onSelect: function (index, row) {
+                    if (row.IsActive) {
+                        $('#btnQiYong').linkbutton('disable');
+                        $('#btnJinYong').linkbutton('enable');
+                    } else {
+                        $('#btnQiYong').linkbutton('enable');
+                        $('#btnJinYong').linkbutton('disable');
+                    }
+                }
+            });
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridMeasureList");
+        }
+        function reSearch() {
+            $('#gridMeasureList').datagrid({
+                queryParams: {                   
+                    isActive: $('#isActive').combobox('getValue'),
+                    MeasureType: $('#MeasureTypeInfo').val(),
+                    MeasureID: $('#MeasureID').val()
+                }
+            });
+        }
+        //delete
+        function MeasureDisable(boolDisable) {
+            var rowData = $('#gridMeasureList').datagrid('getSelected');
+            var str;
+            if (boolDisable)
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:darkgreen'>有效</span>”吗？";
+            else
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:red'>无效</span>”吗？";
+            if (rowData) {
+
+                $.messager.confirm('提示', str, function (r) {
+                    if (!r) {
+                        return;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/DM/Measures/MeasureDisable")',
+                        data:
+                            {
+                                id: rowData.ID,
+                                disable: boolDisable
+                            },
+                        dataType: "json",
+                        success: function (jsData) {
+                            $.handleJsonResult(jsData, function () {
+                                $("#gridMeasureList").datagrid("reload");
+                            });
+                        }
+                    });
+                });
+            }
+            else {
+                $.messager.alert('提示', '请选择数据行', 'info', function () { });
+            }
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:' 救治措施基础信息维护',iconCls:'icon-custom-cWuZiWeiHu'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>分类：</td>
+                    <td>
+                        <input id="MeasureType" class="easyui-combobox" style="width:160px" />
+                        <input id="MeasureTypeInfo" type="hidden" />
+                    </td>
+                    <td>名称：</td>
+                    <td>
+                        <input id="Measure" class="easyui-combogrid" style="width:160px" />
+                        <input id="MeasureID" type="hidden" />
+                    </td>
+                    <td colspan="2"></td>
+                    <td>
+                        是否有效：
+                    </td>
+                    <td>
+                        <select class="easyui-combobox" style="width: 160px" id="isActive" data-options="panelHeight:70, editable:false">
+                            <option value="">--全部--</option>
+                            <option value="true">有效</option>
+                            <option value="false">无效</option>
+                        </select>
+                    </td>
+                    <td rowspan="2">
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridMeasureList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/DM/Views/Measures/MeasuresEdit.cshtml")
+
+

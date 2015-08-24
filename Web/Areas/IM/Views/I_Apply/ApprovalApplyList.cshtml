@@ -1,0 +1,229 @@
+﻿@{
+    ViewBag.Title = "审批申领列表";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+
+        //页面加载
+        $(document).ready(function () {
+            $.InitDateTime();
+            var urlstr = '@Url.Content("~/IM/AllDictionary/GetMSDictionaryInfo?TypeCode=ApplyType")';
+            $.EUIcombobox("#ApplyType", {
+                url: urlstr,
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            var urlstr1 = '@Url.Content("~/IM/AllDictionary/GetUsers")';
+            $.EUIcombobox("#SelectUsers", {
+                url: urlstr1,
+                valueField: 'UserID',
+                textField: 'Name',
+                editable: true,
+                datainfo: {},
+                OneOption: [{
+                    ID: "",
+                    Name: "全部人员"
+                }]
+            });
+            if ('@ViewBag.CheckAll' == 'False') {//是否可以查询所有人
+                $('#SelectUsers').combobox({ disabled: true });
+                $('#SelectUsers').combobox('setValue', '@ViewBag.userId');
+            }
+            bindGrid();
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridApprovalList");
+
+            $('#CheckEntryDetailList').window({
+                onBeforeClose: function () { //当面板关闭之前触发的事件
+                    $("#gridEntryList").datagrid("reload");
+                    initJurisdiction();
+                }
+            });
+        });
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridApprovalList");
+        });
+        //权限判断
+        function initJurisdiction() {
+            if ('@ViewBag.Edit' == 'False') { //修改功能
+                $('#btnDelete').linkbutton('disable');
+            }
+            if ('@ViewBag.Approval' == 'False') { // 审批功能
+                $('#btnApproval').linkbutton('disable');
+            }
+
+        }
+        function reSearch() {
+            $("#gridApprovalList").datagrid({
+                queryParams: {
+                    StartDate: $('#StartDate').datebox('getValue'),
+                    EndDate: $('#EndDate').datebox('getValue'),
+                    SelectUsers: $('#SelectUsers').combobox('getValue'),
+                    ApplyType: $('#ApplyType').combobox('getValue')
+                }
+            });
+        }
+        function bindGrid() {
+            $("#gridApprovalList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/IM/I_Apply/GetApplyList")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                queryParams: {
+                    StartDate: $('#StartDate').datebox('getValue'),
+                    EndDate: $('#EndDate').datebox('getValue'),
+                    SelectUsers: $('#SelectUsers').combobox('getValue'),
+                    ApplyType: $('#ApplyType').combobox('getValue')
+                },
+                //{"ApplyCode":"201505271610190","ApplyReceivingStoreID":4,"ApplyTime":"\/Date(1432714207000)\/","ApplyType":"ApplyType-1","ApplyUserID":0,"ApprovalTime":null,"ApprovalUserID":null,"Remark":"","ApplyUserName":"管理员","ApprovalUserName":null,"ApplyTypeName":"提交申领单","ApplyReceivingStoreName":"总务物资仓库"}
+                frozenColumns: [[
+                   { title: '申请单类型', field: 'ApplyTypeName', width: '10%', sortable: false },
+                   { title: '申请日期', field: 'ApplyTime', width: '10%', sortable: false, formatter: $.formatTime },
+                   { title: '申请单号', field: 'ApplyCode', width: '10%', sortable: false },
+                   { title: '申请人', field: 'ApplyUserName', width: '15%', sortable: false },
+                   { title: '申请目标仓库', field: 'ApplyReceivingStoreName', width: '15%', sortable: false },
+                   { title: '审批人', field: 'ApprovalUserName', width: '10%', sortable: false },
+                   { title: '审批时间', field: 'ApprovalTime', width: '20%', sortable: false, formatter: $.formatTime },
+                   { title: '备注', field: 'Remark', width: '20%', sortable: false },
+                   { title: 'ApplyReceivingStoreID', field: 'ApplyReceivingStoreID', sortable: false, hidden: true },
+                   { title: 'ApplyCode', field: 'ApplyCode', sortable: false, hidden: true },
+                   { title: 'ApplyUserID', field: 'ApplyUserID', sortable: false, hidden: true },
+                   { title: 'ApplyType', field: 'ApplyType', sortable: false, hidden: true },
+                   { title: 'ApprovalUserID', field: 'ApprovalUserID', sortable: false, hidden: true }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.ApplyType == "ApplyType-2") {
+                        return 'color:darkgreen;';
+                    } else if (row.ApplyType == "ApplyType-3") {
+                        return 'color:red;';
+                    } else if (row.ApplyType == "ApplyType-4") {
+                        return 'color:gray;';
+                    }
+
+                },
+                toolbar: [
+                    {
+                        id: 'btnApproval',
+                        text: '审批申领单',
+                        iconCls: 'icon-custom-cApply',
+                        handler: function () {
+                            var selected = $('#gridApprovalList').datagrid('getSelected');
+                            if (selected) {
+                                initPage(selected.ApplyCode, selected.ApplyUserName, selected.ApplyUserID, selected.ApplyReceivingStoreName, selected.ApplyReceivingStoreID, selected.ApplyCode);
+                                $('#ApprovalDetailList').dialog('open');
+                            } else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }, '-',
+                    {
+                        id: 'btnDelete',
+                        text: '作废申领单',
+                        iconCls: 'icon-custom-Delete',
+                        handler: function () {
+                            var selected = $('#gridApprovalList').datagrid('getSelected');
+                            if (selected) {
+                                $('#btnDelete').linkbutton('disable');
+                                $.messager.confirm('作废申领单提示', "确认作废[申领人：" + selected.ApplyUserName + "]的申领单？", function (r) {
+                                    if (r) {
+                                        CancelApproval(selected.ApplyCode);
+                                    }
+                                });
+                            } else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ],
+                onSelect: function (index, row) {
+                    if (row.ApplyType == "ApplyType-1") {
+                        $('#btnDelete').linkbutton('enable');
+                        $('#btnApproval').linkbutton('enable');
+                        initJurisdiction();
+                    } else {
+                        $('#btnDelete').linkbutton('disable');
+                        $('#btnApproval').linkbutton('disable');
+                    }
+
+
+                }
+            });
+            initJurisdiction();
+        }
+        function CancelApproval(id) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/I_Apply/CancelApply")',
+                data:
+                    {
+                        ApprovalId: id
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        $("#gridApprovalList").datagrid("reload");
+                    }, function () {
+                        $('#btnDelete').linkbutton('enable');
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'审批申领列表',iconCls:'icon-custom-cApproval'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>查询时间：</td>
+                    <td>
+                        <input id="StartDate" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                    </td>
+                    <td>至</td>
+                    <td>
+                        <input id="EndDate" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                    </td>
+                    <td>申领人：</td>
+                    <td>
+                        <input id="SelectUsers" class="easyui-combobox" style="width:150px" />
+                    </td>
+                    <td>申领类型：</td>
+                    <td>
+                        <input id="ApplyType" class="easyui-combobox" />
+                    </td>
+                    <td rowspan="2">
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        注：<span style="color:darkgreen">已批准的申领单</span>&nbsp;|&nbsp;<span style="color:red">已拒绝的申领单</span>&nbsp;|&nbsp;<span style="color:gray">已作废的申领单</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridApprovalList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/IM/Views/I_Apply/_ApprovalDetail.cshtml")
+@Html.Partial("~/Areas/IM/Views/I_Apply/_EditApplyDetail.cshtml")
+@Html.Partial("~/Areas/IM/Views/I_Apply/_ChangeMaterial.cshtml")

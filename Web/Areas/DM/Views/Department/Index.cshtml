@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "部门管理";
+    Layout = "~/Areas/DM/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            $("#tbList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/DM/Department/Index")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量为 5
+                pageList: [15, 20, 30],//设置 页容量下拉框
+                columns: [[
+                    {
+                        field: 'ID', title: 'ID', width: 20
+                    },
+
+                    { field: 'PdepName', title: '父部门', width: 100 },
+                    { field: 'Name', title: '部门名称', width: 100 },
+                    { field: 'Remark', title: '备注' }
+                ]],
+                toolbar: [{
+                    iconCls: 'icon-add',
+                    text: "新增",
+                    handler: addRow
+                }, '-', {
+                    iconCls: 'icon-remove',
+                    text: "删除",
+                    handler: removeRow
+                }, '-', {
+                    iconCls: 'icon-edit',
+                    text: "编辑",
+                    handler: editRow
+                }],
+                onSelect: function (rowI, rowD) {
+                    selectedRowIndex = rowI;//将选中行的下标 设置给全局变量
+                }
+            });
+
+            $.setGridOnly("#TableForm", "#tbList");
+        })
+
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridOnly("#TableForm", "#tbList");
+        });
+
+        //选中行的下标
+        var selectedRowIndex = -1;
+
+        //编辑按钮方法
+        function editRow() {
+
+            $("#selDep").combotree({
+                prompt: '--请选择--',
+                url: '@Url.Content("~/DM/Department/GetAllDepart")',//ajax后台取数据路径，返回的是json格式的数据
+                required: true,
+                method: 'POST',
+                onSelect: function (rec) {
+                    $("#ParentID").val(rec.id);
+                }
+            });
+
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+                $.ajax({
+                    type: 'post',
+                    async: false, //设置同步方式
+                    url: '@Url.Content("~/DM/Department/GetDepView")',
+                    data: { id: rowData.ID },
+                    success: function (jsonObj) {
+                        if (jsonObj.Result) {
+                            $.handleJsonResult(jsonObj)
+                        }
+                        else {
+                            $("#tbContent").html(jsonObj);
+                            $('#editWindow').dialog('open'); // 编辑窗口
+
+                            setTimeout(function () {
+                                var ParentID = $("#ParentID").val();
+                                if (ParentID > 0) {
+                                    $("#selDep").combotree('setValue', ParentID);
+                                }
+                            }, 100);
+
+                        }
+                    },
+                    error: function (data) {
+                        alert(data.statusText);
+                    }
+                });
+            }
+        }
+
+        //新增按钮方法
+        function addRow() {
+
+            $("#selDep").combotree({
+                prompt: '--请选择--',
+                url: '@Url.Content("~/DM/Department/GetAllDepart")',//ajax后台取数据路径，返回的是json格式的数据
+                required: true,
+                method: 'POST',
+                onSelect: function (rec) {
+                    $("#ParentID").val(rec.id);
+                }
+            });
+
+            $.ajax({
+                type: 'post',
+                async: false, //设置同步方式
+                //cache: false,//缓存
+                url: '@Url.Content("~/DM/Department/GetDepView")',
+                data: "id=-1",
+                success: function (jsonObj) {
+                    if (jsonObj.Result) {
+                        $.handleJsonResult(jsonObj)
+                    }
+                    else {
+
+                        setTimeout(function () {
+                            $("#selDep").combotree('setValue', 1);
+                        }, 150);
+
+                        $("#tbContent").html(jsonObj);
+                        $('#editWindow').dialog('open'); // 编辑窗口
+                    }
+                },
+                error: function (data) {
+                    alert(data.statusText);
+                }
+            });
+        }
+
+        //保存部门修改
+        function SaveDepartment() {
+            $.ajax({
+                type: "post",
+                url: '@Url.Content("~/DM/Department/SaveDepartment")',
+                data: $("#DepForm").serialize(), // { ID: '22', Name: 'Name', PID: '11' },
+                success: function (jsonObj) {
+                    if (jsonObj.Result)
+                    {
+                        $.handleJsonResult(jsonObj, function () {
+                            $("#editWindow").dialog("close");
+                        });
+
+                        $("#tbList").datagrid("reload");// 刷新页面
+                    }
+                },
+                error: function (data) { alert(data.statusText); }
+            });
+        }
+
+        //删除方法
+        function removeRow() {
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+                $.post("@Url.Content("~/DM/Department/DelDepartment")", "id=" + rowData.ID, function (jsonObj) {
+                    $.handleJsonResult(jsonObj, function () {
+                        $("#tbList").datagrid("reload");//删除成功后 刷新页面
+                    });
+                }, "JSON");
+            }
+            else {
+                alert("请先选中要删除的数据行！");
+            }
+        }
+    </script>
+}
+
+
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+
+    <table id="tbList"></table>
+
+    <div id="editWindow" class="easyui-dialog" title="部门编辑"
+         data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-save'" style="width: 410px; height: 350px; ">
+        <div class="easyui-layout" data-options="fit:true">
+            <form id="DepForm" method="post">
+                <div data-options="region:'north',border:false" style="text-align:center; padding: 5px;">
+                   <span>父部门ID:</span> <input id="selDep" style="width:200px">
+                </div>
+
+                <div id="tbContent" data-options="region:'center'" style="padding:10px;">
+
+                </div>
+
+                <div data-options="region:'south',border:false" style="text-align:right;padding:5px;">
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="SaveDepartment()">保存</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

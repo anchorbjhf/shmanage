@@ -1,0 +1,274 @@
+﻿@{
+    Layout = "~/Areas/DM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+
+            $("#tbList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/DM/Role/Index")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量为 5
+                pageList: [15, 20, 30],//设置 页容量下拉框
+                columns: [[
+                    {
+                        field: 'IsActvie', title: '是否启用', width: 20, formatter: function (value) {
+                            return value ? "√" : "X";
+                        }
+                    },
+                    { field: 'ID', title: '编码', width: 100 },
+                    //{
+                    //    field: 'Department', title: '部门', width: 100, formatter: function (value) {
+                    //        return value.Name;
+                    //    }
+                    //},
+                    { field: 'Name', title: '角色名', width: 100 },
+                    { field: 'Remark', title: '备注', width: 100 }
+                ]],
+                toolbar: [{
+                    iconCls: 'icon-add',
+                    text: "新增",
+                    handler: addRow
+                }, '-', {
+                    iconCls: 'icon-remove',
+                    text: "删除",
+                    handler: removeRow
+                }, '-', {
+                    iconCls: 'icon-edit',
+                    text: "编辑",
+                    handler: editRow
+                }, '-', {
+                    iconCls: 'icon-search',
+                    text: "分配权限",
+                    handler: providePermission
+                }],
+                onSelect: function (rowI, rowD) {
+                    selectedRowIndex = rowI;//将选中行的下标 设置给全局变量
+                },
+                onDblClickRow: function () {
+                    editRow();
+                }
+            });
+
+            $.setGridOnly("#TableForm", "#tbList");
+        })
+
+
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridOnly("#TableForm", "#tbList");
+        });
+
+        //选中行的下标
+        var selectedRowIndex = -1;
+
+        //编辑按钮方法
+        function editRow() {
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+               // $('#editWindow').dialog('open');
+
+                $.ajax({
+                    type: 'post',
+                    async: false, //设置同步方式
+                    //cache: false,//缓存
+                    url: '@Url.Content("~/DM/Role/GetRoleView")',
+                    data: { id: rowData.ID },
+                    success: function (jsonObj) {
+                       
+                        if (jsonObj.Result)
+                            $.handleJsonResult(jsonObj);
+                        else {
+                            $("#tbContent").html(jsonObj);
+                            $('#editWindow').dialog('open'); // 编辑窗口                            
+                        }
+                    },
+                    error: function (data) {
+                        alert(data.statusText);
+                    }
+                });
+            }
+        }
+
+        //新增按钮方法
+        function addRow() {
+            //$('#editWindow').dialog('open');
+            @*$.get("@Url.Content("~/DM/Role/GetRoleView/")", null, function (jsonObj) {
+                if (jsonObj.Result)
+                    $.handleJsonResult(jsonObj);
+                else
+                    $("#editWindow").html(jsonObj);
+
+            });*@
+
+            $.ajax({
+                type: 'post',
+                //async: false, //设置同步方式
+                //cache: false,//缓存
+                url: '@Url.Content("~/DM/Role/GetRoleView")',
+                data: "id=-1",
+                success: function (jsonObj) {
+                    if (jsonObj.Result) {
+                        $.handleJsonResult(jsonObj)
+                    }
+                    else {
+                        $("#tbContent").html(jsonObj);
+                        $('#editWindow').dialog('open'); // 编辑窗口
+                    }
+                },
+                error: function (data) {
+                    alert(data.statusText);
+                }
+            });
+        
+        }
+
+        //保存角色修改
+        function SaveRole() {
+            $.ajax({
+                type: "post",
+                url: '@Url.Content("~/DM/Role/SaveRole")',
+                data: $("#RoleForm").serialize(), // { ID: '22', Name: 'Name', PID: '11' },
+                success: function (jsonObj) {
+                    if (jsonObj.Result) {
+                        $.handleJsonResult(jsonObj, function () {
+                            $("#editWindow").dialog("close");
+                        });
+
+                        $("#tbList").datagrid("reload");// 刷新页面
+                    }
+                },
+                error: function (data) { alert(data.statusText); }
+            });
+        }
+
+        //删除方法
+        function removeRow() {
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+                $.post("@Url.Content("~/DM/Pemission/delpemission")", "id=" + rowData.pid, function (jsonObj) {
+                    $.handleJsonResult(jsonObj, function () {
+                        $("#tbList").datagrid("reload");//删除成功后 刷新页面
+                    });
+                }, "JSON");
+            }
+        }
+
+        //加载权限树
+        function providePermission() {
+            //获取选中 的 角色数据
+            var roleData = $("#tbList").datagrid("getSelected");
+            if (roleData) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Content("~/DM/Role/getRoleTree/")' + roleData.ID,
+                    cache: false,//缓存
+                    success: function (jsonObj) {
+                        if (jsonObj.Result)
+                            $.handleJsonResult(jsonObj);
+                        else {
+                            $("#treeArea").html(jsonObj);
+                            $("#winPers").dialog("open");
+                        }
+                    },
+                    error: function (data) {
+                        alert(data.statusText);
+                    }
+                });
+            } else {
+                $.alertMsg("请选中要分配权限的角色~~", "系统提示");
+            }
+        }
+
+        //保存角色权限
+        function SaveNewPermission() {
+            var nodeIds = "";
+            //获取所有的树
+            var $trees = $("#treeArea > ul");
+            //遍历所有树
+            for (var i = 0; i < $trees.length; i++) {
+                //获取每颗树里的 选中的节点
+                var nodes = $($trees[i]).tree("getChecked");
+                //获取每颗树里  子节点有被选中的父节点
+                var nodes2 = $($trees[i]).tree('getChecked', 'indeterminate');
+                //将两个节点数组合并
+                nodes = nodes.concat(nodes2);
+                //遍历节点
+                for (var j = 0; j < nodes.length; j++) {
+                    nodeIds += nodes[j].id + ",";
+                }
+            }
+            //-------------------------------------
+            //提交要修改的角色新的权限
+            var roleId = $("#roleId").val();//获取要修改的角色id
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/Role/SetRolePer")',
+                data:
+                    {
+                        rId: roleId,
+                        rolePerIds: nodeIds
+                    },
+                success: function (jsonObj) {
+                    if (jsonObj.Result)
+                        $.handleJsonResult(jsonObj);
+
+                   $("#winPers").dialog("close");
+                },
+                error: function (data) {
+                    alert(data.statusText);
+                }
+            });
+
+        }
+    </script>
+}
+
+
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <table id="tbList"></table>
+    <div id="editWindow" class="easyui-dialog" title="角色编辑"
+         data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-save'" style="width: 410px; height: 350px; ">
+        <div class="easyui-layout" data-options="fit:true">
+            <form id="RoleForm" method="post">
+                <div data-options="region:'north',border:false" style="text-align:center; padding: 5px;">
+
+                </div>
+
+                <div id="tbContent" data-options="region:'center'" style="padding:10px;">
+
+                </div>
+
+                <div data-options="region:'south',border:false" style="text-align:right;padding:5px;">
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="SaveRole()">保存</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id="winPers" class="easyui-dialog" title="分配权限"
+     data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-save'" style="width: 850px; height: 400px; ">
+    <div class="easyui-layout" data-options="fit:true">
+        <div id="treeArea" data-options="region:'center'" style="padding:10px;">
+
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:right;padding:5px;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="SaveNewPermission()">保存</a>
+        </div>
+    </div>
+</div>
+
+

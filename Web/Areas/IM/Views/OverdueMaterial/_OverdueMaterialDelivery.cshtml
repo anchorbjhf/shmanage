@@ -1,0 +1,108 @@
+﻿<script type="text/javascript">
+    function submitForm() {
+        var sname = $('#SurplusMaterialName').textbox('getText');
+        var vdate = $('#SurplusValidityDate').textbox('getText');
+        var counts =  $("#DeliveryCounts").val();
+        $.messager.confirm('提示确认', '确认将[物资：【' + sname + '】</br>有效期：【' + vdate + '】</br>数量：【' + counts + '】]报废吗?', function (r) {
+            if (r) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/IM/OverdueMaterial/SaveScrapOverdueMaterial")',
+                    data:
+                        {
+                            RealBatchNo: $("#RealBatchNo").val(),
+                            BatchNo: $("#BatchNo").val(),
+                            MaterialID: $("#MaterialID").val(),
+                            DeliveryCounts: $("#DeliveryCounts").val(),
+                            StorageCode: $("#StorageCode").val(),
+                            Remark: $("#SurplusRemark").val()
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $("#gridOverdueMList").datagrid("reload")
+                            $('#OverdueSurplusInfo').dialog("close");
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<div id="OverdueSurplusInfo" class="easyui-dialog" title="过期物资确认" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cGuoQi'" style="width:305px;height:320px;padding:5px;">
+    <input type="hidden" id="RealBatchNo">
+    <input type="hidden" id="BatchNo">
+    <input type="hidden" id="MaterialID">
+    <input type="hidden" id="DeliveryCounts">
+    <input type="hidden" id="StorageCode">
+    <table>
+        <tr>
+            <td>批次号：</td>
+            <td>
+                <input id="SurplusRealBatchNo" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                物资名称：
+            </td>
+            <td>
+                <input id="SurplusMaterialName" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                生产厂家：
+            </td>
+            <td>
+                <input id="SurplusMaterialManufacturer" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                供应商：
+            </td>
+            <td>
+                <input id="SurplusMaterialVendor" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                有效期：
+            </td>
+            <td>
+                <input id="SurplusValidityDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                仓库：
+            </td>
+            <td>
+                <input id="SurplusStorage" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                数量：
+            </td>
+            <td>
+                <input id="editEntryCounts" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                <input id="SurplusRemark" class="easyui-textbox" data-options="multiline:true" style="width:200px;height:50px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right">
+                <a href="javascript:void(0)" id="btnEdit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitForm()">确认物资过期</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>

@@ -1,0 +1,73 @@
+﻿@model Anke.SHManage.Model.ViewModel.LoginInfo
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <title>UserLogin</title>
+
+    <style type="text/css">
+        #divMsg {
+            display: none;
+            /*visibility:hidden;*/
+        }
+
+        .text {
+            border: 1px solid #0094ff;
+        }
+    </style>
+
+    @Scripts.Render("~/JqueryJS")
+    <script src="~/Scripts/jquery.AnkeExtend.js"></script>
+
+    <script type="text/javascript">
+        // 登录成功调用此方法
+        function Success(data) {
+            $.handleJsonResult(data, function () {
+                @*window.location = "@Url.Content("~/")" +data.RedirectURL; //跳转到目标页*@
+                window.location = data.RedirectURL;
+            });
+        }
+    </script>
+
+</head>
+<body style="background-color: #02554b;text-align:center;">
+    <div style="background: url('@Url.Content("~/Images/Top/Login.png")') no-repeat center center; width: 1024px; height: 550px; margin: 0px auto; ">
+        <div style="position:absolute; margin:270px 600px">
+            @using (Ajax.BeginForm(new AjaxOptions() //微软异步表单
+    {
+        HttpMethod = "post",
+        Url = Url.Content("~/Home/UserLoginByInfo"),
+        OnSuccess = "Success",
+        LoadingElementId = "divMsg"
+    }))
+            {
+
+                <table>
+                    <tr>
+                        <td>
+                            <img src="~/Images/Top/user.png" />
+                        </td>
+                        <td>@Html.TextBoxFor(u => u.LoginName)</td>
+                        <td>@Html.ValidationMessageFor(u => u.LoginName)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="~/Images/Top/lock.png" />
+                        </td>
+                        <td>@Html.PasswordFor(u => u.PassWord)</td>
+                        <td>@Html.ValidationMessageFor(u => u.PassWord)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:right"><input type="submit" value="登录" /></td>
+                    </tr>
+                </table>
+            }
+            <div id="divMsg">加载中~~~ </div>
+        </div>
+    </div>
+</body>
+</html>

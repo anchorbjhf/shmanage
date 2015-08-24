@@ -1,0 +1,239 @@
+﻿<script type="text/javascript">
+    var Materials;
+    var userSCode;
+    var ACode;
+    var userid;
+    var userN;
+    function initPage(ApplyCode, userName, userID, userStorage, userStorageCode, ApplyId) {
+        userSCode = userStorageCode;
+        ACode = ApplyCode;
+        userid = userID;
+        userN = userName;
+        $('#btnReject').linkbutton('enable');
+        $('#btnRatify').linkbutton('enable');
+
+        $.InitControlDateTime("#ApplyDateTime");
+        $("#AppleyRemark").textbox("clear");
+        $('#ApplyName').textbox('setValue', userName);
+        $("#ApplyStorage").textbox("clear");
+        $('#ApplyStorage').textbox('setValue', userStorage);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/IM/I_Apply/GetApplyDetail")',
+            data:
+                {
+                    ApplyID: ApplyId
+                },
+            dataType: "json",
+            success: function (jsData) {
+                Materials = jsData;
+                initDetailGird(jsData);
+            }
+        });
+    }
+    function changeMaterials(mid, realBatchNo, batchNo, Surplus, ValidityDate) {
+        Materials.forEach(function (m) {
+            if (m.MaterialID == mid) {
+                m.RealBatchNo = realBatchNo;
+                m.BatchNo = batchNo;
+                m.Surplus = Surplus;
+                m.ValidityDate = ValidityDate;
+            }
+        });
+        $("#gridAprovalDetailList").datagrid("loadData", Materials);
+    }
+    function initDetailGird(jslist) {
+        $("#gridAprovalDetailList").datagrid({
+            scrollbarSize: 18,
+            rownumbers: true,
+            singleSelect: true,
+            width: 'auto',
+            height: 245,
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            loadMsg: '数据加载中请稍后……',
+            pagination: false,//启用分页，默认每页10行m
+            //[{"ApplyDetailCode":"2015052716101900","ApplyCode":"201505271610190","MaterialID":239,"RealBatchNo":"20180802","BatchNo":"23920150630","ApplyTime":"\/Date(1432714207000)\/","ApplyCounts":1,"ApplyUserID":0,"SelfStorageCode":4,"ApplyTargetStorageCode":2,"Remark":"","ApprovalCounts":1,"Surplus":490,"MaterialName":"肾上腺素","ApplyUserName":"管理员","SelfStorageName":"总务物资仓库","ApplyTargetStorageName":"装备部药品仓库"}]
+            columns: [
+                [
+                   { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+                   { title: '批次号', field: 'RealBatchNo', width: '8%', sortable: false },
+                   { title: '有效期', field: 'ValidityDate', width: '10%', sortable: false, formatter: $.formatValidityDate },
+                   { title: '出库仓库', field: 'ApplyTargetStorageName', width: '10%', sortable: false },
+                   { title: '申领时间', field: 'ApplyTime', width: '10%', sortable: false, formatter: $.formatTime },
+                   { title: '申领数量', field: 'ApplyCounts', width: '7%', sortable: false },
+                   { title: '库存结余数量', field: 'Surplus', width: '8%', sortable: false },
+                   {
+                       field: 'ApprovalCounts', title: '审批出库数量', width: '10%',
+                       formatter: function (value, rec, rowIndex) {
+                           return "<input id=\"ApplyCounts" + rowIndex + "\" name = \"ApplyCounts\"  style=\"width:80px\" value='" + value + "'/>";
+                       }
+                   },
+                   {
+                       field: 'Remark', title: '备注', width: '16%',
+                       formatter: function (value, rec, rowIndex) {
+                           return "  <input id=\"ApplyDetailRemark" + rowIndex + "\" name = \"ApplyDetailRemarks\" value='" + value + "'/>";
+                       }
+                   },
+                    {
+                        field: 'opt', title: '更换物资', width: '10%', align: 'center', frozen: 'true',
+                        formatter: function (value, rec, rowIndex) {
+                            return '<a  class="pandiancls" href="javascript:void(0)"  onclick="clickRow(' + rec.MaterialID + ',' + rec.ApplyTargetStorageCode + ')">更换物资</a>';
+                        }
+                    },
+                   { title: 'ApplyTargetStorageCode', field: 'ApplyTargetStorageCode', sortable: false, hidden: true },
+                   { title: 'MaterialID', field: 'MaterialID', sortable: false, hidden: true },
+                   { title: 'ApplyDetailCode', field: 'ApplyDetailCode', sortable: false, hidden: true },
+                   { title: 'ApplyCode', field: 'ApplyCode', sortable: false, hidden: true },
+                   { title: 'ApplyTargetStorageCode', field: 'ApplyTargetStorageCode', sortable: false, hidden: true },
+
+                ]
+            ],
+            onLoadSuccess: function (data) {
+                $('.pandiancls').linkbutton({
+                    text: '更换物资',
+                    plain: true,
+                    iconCls: 'icon-custom-cChange'
+                });
+                setApprovalControl();
+            }
+        });
+
+        $("#gridAprovalDetailList").datagrid("loadData", jslist);
+
+    }
+    function clickRow(id, scode) {
+        bindChangeMaterialList(id, scode);
+        $('#ChangeMaterialList').dialog('open');
+    }
+    function submitRatifyApplyForm() {
+        $('#btnReject').linkbutton('disable');
+        $('#btnRatify').linkbutton('disable');
+        var jsData = new Array();
+        var i = 0;
+        var rows = $('#gridAprovalDetailList').datagrid('getRows');
+        $("input[name='ApplyCounts']").each(function () {
+            var obj = new Object();
+            obj.DeliveryDetailCode = rows[i].ApplyDetailCode;
+            obj.DeliveryCode = rows[i].ApplyCode;
+            obj.EntryStorageCode = rows[i].ApplyTargetStorageCode;
+            obj.MaterialID = rows[i].MaterialID;
+            obj.BatchNo = rows[i].BatchNo;
+            obj.RealBatchNo = rows[i].RealBatchNo;
+            obj.DeliveryTime = $('#ApplyDateTime').datetimebox('getValue');
+            obj.TargetStorageCode = userSCode;
+            obj.Remark = "";
+            obj.DeliveryCounts = $(this).val();
+            obj.TargetEntryDetailCode = rows[i].ApplyDetailCode;
+            jsData.push(obj);
+            i++;
+        });
+        var j = 0;
+        $("input[name='ApplyDetailRemarks']").each(function () {
+            jsData[j].Remark = $(this).val();
+            j++;
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/I_Apply/RatifyApply")',
+            data:
+                {
+                    ConsigneeID: userid,
+                    DeliveryCode: ACode,
+                    DeliveryDate: $("#ApplyDateTime").datebox('getValue'),
+                    ReceivingStoreID: userSCode,
+                    Remark: $("#ApplyRemark").val(),
+                    sDeliveryDetailInfo: JSON.stringify(jsData)
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    Materials.length = 0;
+                    $("#gridApprovalList").datagrid("reload");
+                    $('#ApprovalDetailList').dialog("close");
+                }, function () {
+                    $('#btnReject').linkbutton('enable');
+                    $('#btnRatify').linkbutton('enable');
+                });
+            }
+        });
+    }
+    function submitRejectApplyForm() {
+        $.messager.confirm('拒绝申领提示', "确认拒绝[申领人：" + userN + "]的申领单？", function (r) {
+            if (r) {
+                RejectApproval(ACode);
+            }
+        });
+    }
+    function RejectApproval(id) {
+        $('#btnReject').linkbutton('disable');
+        $('#btnRatify').linkbutton('disable');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/I_Apply/RejectApply")',
+            data:
+                {
+                    ApprovalId: id
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    Materials.length = 0;
+                    $("#gridApprovalList").datagrid("reload");
+                    $('#ApprovalDetailList').dialog("close");
+                }, function () {
+                    $('#btnReject').linkbutton('enable');
+                    $('#btnRatify').linkbutton('enable');
+                });
+            }
+        });
+    }
+
+    function setApprovalControl() {
+        for (var i = 0; i < Materials.length; i++) {
+            $.initDataGridTextBoxNum("#ApplyCounts" + i, Materials[i].Surplus, true);
+            $('#ApplyDetailRemark' + i).textbox({
+                multiline: true,
+                width: 140,
+                height: 30
+            });
+        }
+    }
+</script>
+<div id="ApprovalDetailList" class="easyui-dialog" title="申领单详细清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cGoodsFull'" style="width:1000px;height:400px;padding:0px;">
+    <div data-options="region:'north'" style="background: #fafafa; overflow: hidden;height:250px">
+        <table id="gridAprovalDetailList"></table>
+    </div>
+    <div data-options="region:'center'" style="overflow: hidden; padding: 10px;width:900px;">
+        <table>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">申领时间：</td>
+                <td width="200px" style="vertical-align:text-top">
+                    <input id="ApplyDateTime" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                </td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">申领人：</td>
+                <td width="200px">
+                    <input id="ApplyName" class="easyui-textbox" data-options="readonly:true" />
+                </td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">申领去向：</td>
+                <td width="200px">
+                    <input id="ApplyStorage" class="easyui-textbox" data-options="readonly:true" />
+                </td>
+            </tr>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">备注：</td>
+                <td colspan="3">
+                    <input id="ApplyRemark" class="easyui-textbox" data-options="multiline:true" style="width:400px;height:50px">
+                </td>
+                <td colspan="2" style="text-align:right; vertical-align:bottom">
+                    <a href="javascript:void(0)" id="btnReject" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="submitRejectApplyForm()">拒绝申领</a>
+
+                    <a href="javascript:void(0)" id="btnRatify" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="submitRatifyApplyForm()">批准申领</a>
+                    &nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

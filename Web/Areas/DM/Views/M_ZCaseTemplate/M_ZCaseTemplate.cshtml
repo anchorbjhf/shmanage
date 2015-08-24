@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "M_ZCaseTemplate";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+
+        //页面初始化
+        $(document).ready(function () {
+            initSearch();
+            bindGrid();          
+        });
+
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridDiseaseList");
+        });
+        function initSearch() {
+            
+            var urlstr = '@Url.Content("~/DM/M_ZCaseTemplate/GetDiseasesList")';                          
+            $.EUIcombobox("#Disease",{
+                url: urlstr,
+                valueField: 'ID',
+                textField: 'Name',  
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--",
+                }]
+            })
+            }
+               
+        //初始化加载数据
+        function bindGrid() {
+            $('#gridDiseaseList').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                singleSelect: true,
+                loadMsg: '数据加载中请稍后……',
+                url: '@Url.Content("~/DM/M_ZCaseTemplate/DataLoad")',
+                striped: true,
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量5为
+                pageList: [10, 15, 20],//设置 页容量下拉框
+                queryParams: {
+                    isActive: $('#strIsActive').combobox('getValue'),
+                    ID: $('#Disease').combobox('getValue')
+                },
+                frozenColumns: [[
+                   
+                   { field: "ID", title: "ID", hidden: true },
+                   { field: "Name", title: "名称", width: '15%', align: "left" },
+                   { field: "AlarmReason", title: "主诉", width: '30%'},
+                   { field: "HistoryOfPresentIllness", title: "现病史",width: '45%',},              
+                   { field: "SN", title: "SN", hidden: true },
+                   {
+                       field: "IsActive", title: "是否有效", width: '7%', align: "center",
+                       formatter: function (value, rowData, rowIndex) {
+                           if (value == true) {
+                               return "有效";
+                           }
+                           else {
+                               return "无效";
+                           }
+                       }
+                   }
+                  
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.IsActive == false) {
+                        return 'color:red';
+                    }
+                },
+                toolbar: [
+                   {
+                       id: 'btnAdd',
+                       text: '新增',
+                       iconCls: 'icon-add',
+                       handler: function () {
+                           $('#NewDiseaseList').dialog('open');
+                           initAddInfo();
+                       }
+                   }, '-',
+                   {
+                       id: 'btnEdit',
+                       text: '修改',
+                       iconCls: 'icon-edit',
+                       handler: function () {
+                           var row = $('#gridDiseaseList').datagrid('getSelected');
+                           if (row) {
+                               initUpdateInfo(row);
+                               $("#ID").val(row.ID);
+                               $("#Name").textbox("setText", row.Name);                                                            
+                               $("#AlarmReason").textbox("setText", row.AlarmReason);
+                               $("#HistoryOfPresentIllness").textbox("setText", row.HistoryOfPresentIllness);                               
+                               $("#SN").numberbox("setValue", row.SN);                       
+                               $('#IsActive').combobox('setText', row.IsActive==true ? "有效":"无效");                                                           
+                               $('#NewDiseaseList').dialog('open');
+                           } else {
+                               $.messager.alert('提示', '请选择数据行', 'info', function () {
+                               });
+                           }
+                       }
+                   }, '-',
+                   {
+                       id: 'btnJinYong',
+                       text: '<span style="color:red">禁用</span>',
+                       iconCls: 'icon-custom-cJinYong',
+                       handler: function () {
+                           DiseaseDisable(false);
+                       }
+                   }, '-',
+                   {
+                       id: 'btnQiYong',
+                       text: '<span style="color:darkgreen">启用</span>',
+                       iconCls: 'icon-custom-cQiYong',
+                       handler: function () {
+                           DiseaseDisable(true);
+                       }
+                   }
+                ],
+                onSelect: function (index, row) {
+                    if (row.IsActive) {
+                        $('#btnQiYong').linkbutton('disable');
+                        $('#btnJinYong').linkbutton('enable');
+                    } else {
+                        $('#btnQiYong').linkbutton('enable');
+                        $('#btnJinYong').linkbutton('disable');
+                    }
+                }
+            });
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridDiseaseList");
+        }
+        function reSearch() {
+            $('#gridDiseaseList').datagrid({
+                queryParams: {
+                    isActive: $('#strIsActive').combobox('getValue'),                   
+                    ID: $('#Disease').combobox('getValue')
+                }
+            });
+        }
+        //delete
+        function DiseaseDisable(boolDisable) {
+            var rowData = $('#gridDiseaseList').datagrid('getSelected');
+            var str;
+            if (boolDisable)
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:darkgreen'>有效</span>”吗？";
+            else
+                str = "确定将【" + rowData.Name + "】设置为“<span style='color:red'>无效</span>”吗？";
+            if (rowData) {
+
+                $.messager.confirm('提示', str, function (r) {
+                    if (!r) {
+                        return;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/DM/M_ZCaseTemplate/DiseaseDisable")',
+                        data:
+                            {
+                                id: rowData.ID,
+                                disable: boolDisable
+                            },
+                        dataType: "json",
+                        success: function (jsData) {
+                            $.handleJsonResult(jsData, function () {
+                                $("#gridDiseaseList").datagrid("reload");
+                            });
+                        }
+                    });
+                });
+            }
+            else {
+                $.messager.alert('提示', '请选择数据行', 'info', function () { });
+            }
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:' 病种分类维护',iconCls:'icon-custom-cWuZiWeiHu'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>               
+                <td>名称：</td>
+                <td>
+                    <input id="Disease" class="easyui-combobox" style="width:160px" />
+                    
+                </td>
+                <td colspan="2"></td>
+                <td>
+                    是否有效：
+                </td>
+                <td>
+                    <select class="easyui-combobox" style="width: 160px" id="strIsActive" data-options="panelHeight:70, editable:false">
+                        <option value="">--全部--</option>
+                        <option value="true">有效</option>
+                        <option value="false">无效</option>
+                    </select>
+                </td>
+                <td rowspan="2">
+                    <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                </td>
+                </tr>                             
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridDiseaseList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/DM/Views/M_ZCaseTemplate/M_ZCaseTemplateEdit.cshtml")
+
+

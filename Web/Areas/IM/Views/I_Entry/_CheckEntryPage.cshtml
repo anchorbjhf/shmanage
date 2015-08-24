@@ -1,0 +1,332 @@
+﻿
+<script type="text/javascript">
+    function redEntryDetail() {
+        $('#btnPostRed').linkbutton('disable');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/IM/I_Entry/SaveRedEntryDetiail")',
+            data:
+                {
+                    EntryDetailCode: $("#redEntryDetailCodeHide").val(),
+                    StroageCode: $("#redEntryStroageCodeHide").val(),
+                    EntryRemark: $("#redEntryDetailPageRemark").val()
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    initCheckDetailGrid($("#EntryCode").val());
+                    $('#RedEntryDetailinfo').window('close');
+                }, function () {
+                    $('#btnPostRed').linkbutton('enable');
+                });
+            }
+        }); 
+    }
+    function editTotalPriceEntryDetail() {
+        var isValid = $("#EditEntryDetailinfo").form("validate");
+        if (isValid) {
+            $('#btnPostEdit').linkbutton('disable');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/IM/I_Entry/EditEntryTotalPriceDetiail")',
+                data:
+                    {
+                        EntryDetailCode: $("#editEntryDetailCodeHide").val(),
+                        TotalPrice: $("#editTotalPrice").val(),
+                        EntryRemark: $("#editEntryDetailPageRemark").val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        initCheckDetailGrid($("#EntryCode").val());
+                        $('#EditEntryDetailinfo').window('close');
+                    }, function () {
+                        $('#btnPostEdit').linkbutton('enable');
+                    });
+                }
+            });
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+
+    }
+    function initCheckDetailGrid(eCode, eType) {
+        $("#EntryCode").val(eCode);
+        $("#gridCheckEntryDetailList").datagrid({
+            url: '@Url.Content("~/IM/I_Entry/LoadCheckEntryDetailList")',
+            queryParams: {
+                EntryCode: eCode
+            },
+            rownumbers: true,
+            singleSelect: true,
+            width: 'auto',
+            height: 360,
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            loadMsg: '数据加载中请稍后……',
+            pagination: false,//启用分页，默认每页10行
+            //[{"EntryDetailCode":"20150412174450041","EntryCode":"201504121744500","MaterialID":5,"BatchNo":"520160309","EntryDate":"\/Date(1428831867000)\/","EntryCounts":3,"TotalPrice":165.0000,"ValidityDate":"\/Date(1457452800000)\/","OperatorCode":4,"StorageCode":"00006","Remark":"34534534345345345","Specification":"","Unit":"盒","RelatedOrderNum":"345453","RedEntryDetailCode":"","StorageName":"中区仓储"}]
+            frozenColumns: [[
+               { title: '批次号', field: 'RealBatchNo', width: '10%', sortable: false },
+               { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+               { title: '入库日期', field: 'EntryDate', width: '10%', sortable: false, formatter: $.formatTime },
+               { title: '有效期', field: 'ValidityDate', width: '10%', sortable: false, formatter: $.formatValidityDate },
+               { title: '总数量', field: 'EntryCounts', width: '10%', sortable: false },
+               { title: '总金额', field: 'TotalPrice', width: '10%', sortable: false },
+               { title: '规格', field: 'Specification', width: '5%', sortable: false },
+               { title: '仓库', field: 'StorageName', width: '10%', sortable: false },
+               { title: '单据号', field: 'RelatedOrderNum', width: '5%', sortable: false },
+               { title: '备注', field: 'Remark', width: '20%', sortable: false },
+               { title: 'EntryCode', field: 'EntryCode', sortable: false, hidden: true },
+               { title: 'BatchNo', field: 'BatchNo', sortable: false, hidden: true },
+               { title: 'EntryDetailCode', field: 'EntryDetailCode', sortable: false, hidden: true },
+               { title: 'StorageCode', field: 'StorageCode', sortable: false, hidden: true },
+               { title: 'RelatedOrderNum', field: 'RelatedOrderNum', sortable: false, hidden: true }
+            ]],
+            rowStyler: function (index, row) {
+                if (row.RedEntryDetailCode == row.EntryDetailCode) {
+                    return 'color:red;';
+                }
+            },
+            onSelect: function (index, row) {
+                if (row.RedEntryDetailCode == row.EntryDetailCode) {
+                    $('#btnRedadd').linkbutton('disable');
+                    $('#btnCountMoneyEdit').linkbutton('disable');
+                }
+            },
+            toolbar: [
+                {
+                    id: 'btnRedadd',
+                    text: '红冲入库信息',
+                    iconCls: 'icon-custom-Red',
+                    handler: function () {
+                        var selected = $('#gridCheckEntryDetailList').datagrid('getSelected');
+                        if (selected) {
+                            if (selected.EntryDetailCode == selected.RedEntryDetailCode) {
+                                $.messager.alert('提示', '该入库信息已经被红冲处理！无法再次进行红冲操作！', 'info', function () {
+                                });
+                            } else {
+                                $("#redEntryDetailCode").textbox({ prompt: selected.EntryDetailCode });
+                                $("#redEntryDetailCodeHide").val(selected.EntryDetailCode);
+                                $("#redEntryStroageCodeHide").val(selected.StorageCode);
+                                $("#redEntryBatchNo").textbox({ prompt: selected.BatchNo });
+                                $("#redMaterial").textbox({ prompt: selected.MaterialName });
+                                $("#redEntryDate").textbox({ prompt: $.formatTime(selected.EntryDate) });
+                                $("#redStorage").textbox({ prompt: selected.StorageName });
+                                $("#redEntryCounts").textbox({ prompt: selected.EntryCounts });
+                                $("#redTotalPrice").textbox({ prompt: selected.TotalPrice });
+                                $("#redValidityDate").textbox({ prompt: $.formatValidityDate(selected.ValidityDate) });
+                                $("#redEntryDetailPageRemark").textbox('clear');
+                                $('#RedEntryDetailinfo').dialog('open');
+                                $('#btnPostRed').linkbutton('enable');
+                            }
+
+                        } else {
+                            $.messager.alert('提示', '请选择数据行', 'info', function () {
+                            });
+                        }
+                    }
+                },
+                {
+                    id: 'btnCountMoneyEdit',
+                    text: '修改价格信息',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var selected = $('#gridCheckEntryDetailList').datagrid('getSelected');
+                        if (selected) {
+                            $("#editEntryDetailCode").textbox({ prompt: selected.EntryDetailCode });
+                            $("#editEntryDetailCodeHide").val(selected.EntryDetailCode);
+                            $("#editEntryBatchNo").textbox({ prompt: selected.RealBatchNo });
+                            $("#editMaterial").textbox({ prompt: selected.MaterialName });
+                            $("#editEntryDate").textbox({ prompt: $.formatTime(selected.EntryDate) });
+                            $("#editStorage").textbox({ prompt: selected.StorageName });
+                            $("#editEntryCounts").textbox({ prompt: selected.EntryCounts });
+                            $("#editValidityDate").textbox({ prompt: $.formatValidityDate(selected.ValidityDate) });
+                            $("#editTotalPrice").textbox('clear');
+                            $("#editEntryDetailPageRemark").textbox('clear');
+                            $('#EditEntryDetailinfo').dialog('open');
+                            $('#btnPostEdit').linkbutton('enable');
+                        } else {
+                            $.messager.alert('提示', '请选择数据行', 'info', function () {
+                            });
+                        }
+                    }
+                }
+            ]
+        });
+        if (eType == "MatertalInType-2") {
+            $('#btnRedadd').linkbutton('disable');
+            $('#btnCountMoneyEdit').linkbutton('disable');
+        }
+        if (eType == "MatertalInType-3") {
+            $('#btnRedadd').linkbutton('disable');
+        }
+        initJurisdiction();
+    }
+</script>
+
+<div id="CheckEntryDetailList" class="easyui-window" title="查看入库详细清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-search'" style="width:1000px;height:400px;padding:0px;">
+    <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+        <table id="gridCheckEntryDetailList"></table>
+    </div>
+</div>
+<div id="RedEntryDetailinfo" class="easyui-dialog" title="红冲入库详细清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Red'" style="width:355px;height:380px;padding:5px;">
+    <input id="EntryCode" type="hidden">
+    <table>
+        <tr>
+            <td width="100px">红冲单号：</td>
+            <td width="250px">
+                <input id="redEntryDetailCode" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+                <input type="hidden" id="redEntryDetailCodeHide" />
+                <input type="hidden" id="redEntryStroageCodeHide" />
+            </td>
+        </tr>
+        <tr>
+            <td>批次号：</td>
+            <td>
+                <input id="redEntryBatchNo" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                物资名称：
+            </td>
+            <td>
+                <input id="redMaterial" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                入库时间：
+            </td>
+            <td>
+                <input id="redEntryDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                仓库：
+            </td>
+            <td>
+                <input id="redStorage" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                数量：
+            </td>
+            <td>
+                <input id="redEntryCounts" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                总金额：
+            </td>
+            <td>
+                <input id="redTotalPrice" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                有效期：
+            </td>
+            <td>
+                <input id="redValidityDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                <input id="redEntryDetailPageRemark" class="easyui-textbox" data-options="multiline:true" style="width:200px;height:50px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right">
+                <a href="javascript:void(0)" id="btnPostRed" class="easyui-linkbutton" data-options="iconCls:'icon-custom-Red'" onclick="redEntryDetail()">红冲入库单</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="EditEntryDetailinfo" class="easyui-dialog" title="财务总价修改" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-edit'" style="width:355px;height:380px;padding:5px;">
+    <input id="editEntryCode" type="hidden">
+    <table>
+        <tr>
+            <td width="100px">单号：</td>
+            <td width="250px">
+                <input id="editEntryDetailCode" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+                <input type="hidden" id="editEntryDetailCodeHide">
+            </td>
+        </tr>
+        <tr>
+            <td>批次号：</td>
+            <td>
+                <input id="editEntryBatchNo" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                物资名称：
+            </td>
+            <td>
+                <input id="editMaterial" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                入库时间：
+            </td>
+            <td>
+                <input id="editEntryDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                仓库：
+            </td>
+            <td>
+                <input id="editStorage" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                数量：
+            </td>
+            <td>
+                <input id="editEntryCounts" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                有效期：
+            </td>
+            <td>
+                <input id="editValidityDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                总金额：
+            </td>
+            <td>
+                <input id="editTotalPrice" class="easyui-numberbox" style="width:160px" data-options="precision:2,groupSeparator:',',decimalSeparator:'.',prefix:'￥',required:true" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                <input id="editEntryDetailPageRemark" class="easyui-textbox" data-options="multiline:true" style="width:200px;height:50px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right">
+                <a href="javascript:void(0)" id="btnPostEdit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editTotalPriceEntryDetail()">修改入库单</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>

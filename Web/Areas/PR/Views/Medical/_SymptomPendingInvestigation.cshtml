@@ -1,0 +1,145 @@
+﻿
+<script type="text/javascript">
+
+    function SymptomPendingInvestigationLoad() {
+        $('#SymptomPendingInvestigationTree').tree({
+            //method: 'get',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            animate: true,
+            checkbox: true,
+            onlyLeafCheck: true,
+            queryParams: {
+                tableName: 'M_ZSymptomPendingInvestigation',
+                ParentID: '0',
+                TypeID: ''
+            },
+            onLoadError: function () {
+                //alert("获取数据失败！可能是已经超时，请重新登录！");
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>获取数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function () {
+                //加载成功后，如果有值就勾选，并且展开上级目录！
+                if ($('#HidSymptomPendingInvestigationIDs').val() != "") {
+                    var SymptomPendingInvestigation = $('#HidSymptomPendingInvestigationIDs').val().substring(0, $('#HidSymptomPendingInvestigationIDs').val().length - 1);
+                    var array = SymptomPendingInvestigation.split(',');
+                    for (var i = 0; i < array.length ; i++) {
+                        var node = $('#SymptomPendingInvestigationTree').tree('find', array[i]);
+
+                        if (node != null) {
+                            $(this).tree('check', node.target);
+                            var parent = $(this).tree('getParent', node.target);
+                        }
+                        if (parent != null) {
+                            $(this).tree('expand', parent.target);
+                        }
+                    }
+                }
+            },
+            onDblClick: function (node) {
+                $(this).tree(node.state === 'closed' ? 'expand' : 'collapse', node.target);//双击展开，再次双击折叠
+                node.state = node.state === 'closed' ? 'open' : 'closed';
+            },
+            onCheck: function (node, checked) {
+                var value = $('#HidSymptomID').val();//本页面的编码串
+                var text = $('#HidSymptomName').val();//本页面的名称串
+                if (checked == true) {
+                    if (node != null) {
+                        if (value.indexOf(node.id + ",") < 0) {
+                            value += node.id + ",";
+                            text += node.text + ",";
+                        }
+                    }
+                }
+                else {
+                    value = value.replace(node.id + ",", "");
+                    text = text.replace(node.text + ",", "");
+                }
+                $('#HidSymptomID').val(value);
+                $('#HidSymptomName').val(text);
+            }
+        });
+    }
+
+    //#region 获取症状待查的选择项
+    function GetSymptomPendingInvestigation() {
+        $('#SymptomPendingInvestigation').val("");//清空--症状待查文本框
+        $('#HidSymptomPendingInvestigationNames').val("");//清空
+        $('#HidSymptomPendingInvestigationIDs').val("");//清空
+        var text = $('#HidSymptomName').val();
+        var value = $('#HidSymptomID').val();
+        $('#SymptomPendingInvestigation').val(text);
+        $('#HidSymptomPendingInvestigationIDs').val(value);//症状待查编码串
+        $('#HidSymptomPendingInvestigationNames').val(text);//症状待查名称串
+        $('#HidSymptomID').val("");//清空
+        $('#HidSymptomName').val("");//清空
+        HidInstrumentalExamination();//重新加载-是否显示
+        $('#SelectSymptomPendingInvestigation').window('close');
+    }
+    //#endregion
+
+    function ClearSymptom() {
+        $('#HidSymptomID').val("");//清空
+        $('#HidSymptomName').val("");//清空
+        $("#SymptomPendingPinYin").val("");
+        $('#SymptomPendingPinYin').textbox('setText', "");//拼音
+    }
+
+    //查询
+    function SymptomPinYinSearch() {
+        var PinYin = $("#SymptomPendingPinYin").val();
+        var ParentID = "";
+        if (PinYin == "") {
+            ParentID = 0;
+        }
+        searchBindByPinYinSymptom("", PinYin, ParentID);
+    }
+
+    function searchBindByPinYinSymptom(urinfo, keyWord, ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            dataType: "json",
+            data: {
+                tableName: 'M_ZSymptomPendingInvestigation',
+                ParentID: ParentID,
+                TypeID: ''
+            },
+            success: function (jsData) {
+                var value = $('#HidSymptomID').val();
+                $('#HidSymptomPendingInvestigationIDs').val(value);//症状待查编码串
+                if (keyWord == "") {
+                    $("#SymptomPendingInvestigationTree").tree("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                            jsData.remove(jsData[i]);
+                            i--;
+                        }
+                    }
+                    $("#SymptomPendingInvestigationTree").tree("loadData", jsData);
+                }
+                //boolSearch = true;
+            }
+        });
+    }
+</script>
+
+
+<div id="SelectSymptomPendingInvestigation" class="easyui-window" title="症状待查" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPatientRecord'" style="width:300px;height:560px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div class="easyui-panel" style="padding:5px;" data-options="region:'center'">
+            <span class="font">【拼音首字母小写】：</span>
+            <input id="SymptomPendingPinYin" class="easyui-textbox" type="text" style="width:60%;" data-options="onChange:function (newValue, oldValue) { SymptomPinYinSearch(); }" />
+            &nbsp;&nbsp;<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" href="javascript:void(0)" onclick="SymptomPinYinSearch()">查询</a>
+            <br />
+            <ul id="SymptomPendingInvestigationTree"></ul>
+
+            <input name="HidSymptomID" type="hidden" id="HidSymptomID" />
+            <input name="HidSymptomName" type="hidden" id="HidSymptomName" />
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" href="javascript:void(0)" onclick="GetSymptomPendingInvestigation()">确认</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#SelectSymptomPendingInvestigation').window('close')">关闭</a>
+        </div>
+    </div>
+</div>

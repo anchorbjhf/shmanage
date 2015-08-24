@@ -1,0 +1,164 @@
+﻿
+<script type="text/javascript">
+
+    function ECGLoad() {
+        $('#ECGTree').tree({
+            //method: 'get',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            animate: true,
+            checkbox: true,
+            onlyLeafCheck: true,
+            queryParams: {
+                tableName: 'M_ZECGImpression',
+                ParentID: '0',
+                TypeID: ''
+            },
+            onLoadError: function () {
+                //alert("获取数据失败！可能是已经超时，请重新登录！");
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;<b>获取数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function () {
+
+                if ($('#HidECGImpressionIDs').val() != "") {
+                    var ECGImpression = $('#HidECGImpressionIDs').val().substring(0, $('#HidECGImpressionIDs').val().length - 1);
+                    var array = ECGImpression.split(',');
+                    for (var i = 0; i < array.length ; i++) {
+                        var node = $('#ECGTree').tree('find', array[i]);//找到节点
+                        if (node != null) {
+                            $(this).tree('check', node.target);//选中节点
+                            var parent = $(this).tree('getParent', node.target);//获取节点的父节点
+                        }
+                        if (parent != null) {
+                            $(this).tree('expand', parent.target);//展开节点
+                            var parent1 = $(this).tree('getParent', parent.target);
+                            if (parent1 != null) {
+                                $(this).tree('expand', parent1.target);
+                                var parent2 = $(this).tree('getParent', parent1.target);
+                                if (parent2 != null) {
+                                    $(this).tree('expand', parent2.target);
+                                    var parent3 = $(this).tree('getParent', parent2.target);
+                                    if (parent3 != null) {
+                                        $(this).tree('expand', parent3.target);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            onDblClick: function (node) {
+                $(this).tree(node.state === 'closed' ? 'expand' : 'collapse', node.target);//双击展开，再次双击折叠
+                node.state = node.state === 'closed' ? 'open' : 'closed';
+            },
+            onCheck: function (node, checked) {
+                var value = $('#HidECGID').val();
+                var text = $('#HidECGName').val();
+                if (checked == true) {
+                    //if (text != '') {
+                    //    text += ',';
+                    //} if (value != '') {
+                    //    value += ',';
+                    //}
+                    if (node != null) {
+                        if (value.indexOf(node.id + ",") < 0) {
+                            value += node.id + ",";
+                            text += node.text + ",";
+                        }
+                    }
+                }
+                else {
+                    value = value.replace(node.id+",", "");
+                    text = text.replace(node.text + ",", "");
+                    //if (text != '') {
+                    //    text -= ',';
+                    //} if (value != '') {
+                    //    value -= ',';
+                    //}
+                }
+                $('#HidECGID').val(value);
+                $('#HidECGName').val(text);
+
+            }
+        });
+    }
+
+
+    //获取隐藏编码串和名称串
+    function GetHidECGDetaile() {
+        $('#ECGImpression').val("");//清空
+        $('#HidECGImpressionIDs').val("");//清空
+        $('#HidECGImpressionNames').val("");//清空
+        var text = $('#HidECGName').val();
+        var value = $('#HidECGID').val();
+        $('#ECGImpression').val(text);
+        $('#HidECGImpressionIDs').val(value);
+        $('#HidECGImpressionNames').val(text);
+        $('#HidECGID').val("");//清空
+        $('#HidECGName').val("");//清空
+        HidInstrumentalExamination();//重新加载-是否显示
+        $('#SelectECGImpression').window('close');
+    }
+
+    function ClearECG() {
+        $('#HidECGID').val("");//清空
+        $('#HidECGName').val("");//清空
+        $("#ECGPinYin").val("");
+        $('#ECGPinYin').textbox('setText', "");//拼音
+    }
+
+    function ECGPinYinSearch() {
+        var PinYin = $("#ECGPinYin").val();
+        var ParentID = "";
+        if (PinYin == "") {
+            ParentID = 0;
+        }
+        searchBindByPinYinECG("", PinYin, ParentID);
+    }
+
+    function searchBindByPinYinECG(urinfo, keyWord, ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            dataType: "json",
+            data: {
+                tableName: 'M_ZECGImpression',
+                ParentID: ParentID,
+                TypeID: ''
+            },
+            success: function (jsData) {
+                var value = $('#HidECGID').val();
+                $('#HidECGImpressionIDs').val(value);//心电图印象编码串
+                if (keyWord == "") {
+                    $("#ECGTree").tree("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                            jsData.remove(jsData[i]);
+                            i--;
+                        }
+                    }
+                    $("#ECGTree").tree("loadData", jsData);
+                }
+                //boolSearch = true;
+            }
+        });
+    }
+</script>
+<div id="SelectECGImpression" class="easyui-window" title="心电图印象" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPatientRecord'" style="width:320px;height:560px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div class="easyui-panel" style="padding:5px;" data-options="region:'center'">
+            <span class="font">【拼音首字母小写】：</span>
+            <input id="ECGPinYin" class="easyui-textbox" type="text" style="width:60%;" data-options="onChange:function (newValue, oldValue) { ECGPinYinSearch(); }" />
+            &nbsp;&nbsp;<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" href="javascript:void(0)" onclick="ECGPinYinSearch()">查询</a>
+            <br />
+            <ul id="ECGTree"></ul>
+
+            <input name="HidECGID" type="hidden" id="HidECGID" />
+            <input name="HidECGName" type="hidden" id="HidECGName" />
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" href="javascript:void(0)" onclick="GetHidECGDetaile()">确认</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#SelectECGImpression').window('close')">关闭</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,425 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{51415EB8-7B82-4EE7-A643-11F5EBA4F65E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Anke.SHManage.Model</RootNamespace>
+    <AssemblyName>Anke.SHManage.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AKSHManage.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AKSHManage.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AKSHManage.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AKSHManage.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AKSHManage.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="BasicEventInfo\AcceptEventInfo.cs" />
+    <Compile Include="BasicEventInfo\AlarmEventInfo.cs" />
+    <Compile Include="EasyUIModel\DataGridModel.cs" />
+    <Compile Include="EasyUIModel\TreeNode.cs" />
+    <Compile Include="EventInfo.cs" />
+    <Compile Include="ExtentionModel\CheckModelExt.cs" />
+    <Compile Include="ExtentionModel\I_ApplyDetailExt.cs" />
+    <Compile Include="ExtentionModel\I_DeliveryOrderExt.cs" />
+    <Compile Include="ExtentionModel\I_EntryDetail.cs" />
+    <Compile Include="ExtentionModel\I_MaterialExt.cs" />
+    <Compile Include="ExtentionModel\I_OverdueExt.cs" />
+    <Compile Include="ExtentionModel\I_OverdueMaterialExt.cs" />
+    <Compile Include="ExtentionModel\I_StorageExt.cs" />
+    <Compile Include="ExtentionModel\I_StoragePersonExt.cs" />
+    <Compile Include="ExtentionModel\I_StorageRoleExt.cs" />
+    <Compile Include="ExtentionModel\I_Surplus.cs" />
+    <Compile Include="ExtentionModel\M_ZCaseTemplateExt.cs" />
+    <Compile Include="ExtentionModel\M_ZECGImpressionExt.cs" />
+    <Compile Include="ExtentionModel\M_ZICDNewExt.cs" />
+    <Compile Include="ExtentionModel\M_ZSymptomPendingInvestigationExt.cs" />
+    <Compile Include="ExtentionModel\TDictionaryExt.cs" />
+    <Compile Include="ExtentionModel\P_DepartmentExt.cs" />
+    <Compile Include="ExtentionModel\P_PermissionExt.cs" />
+    <Compile Include="ExtentionModel\P_RolePermissionExt.cs" />
+    <Compile Include="ExtentionModel\P_User.cs" />
+    <Compile Include="I_Apply.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_ApplyDetail.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Balance.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_BalanceList.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Delivery.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_DeliveryDetail.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Entry.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_EntryDetail.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_InventoryRecord.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Material.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Storage.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_StoragePerson.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_StorageRole.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="I_Surplus.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MobileModel\MobileTaskInfo.cs" />
+    <Compile Include="M_Dictionary.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_DictionaryType.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientCharge.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecord.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordAppend.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordCPR.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordDiag.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordDrug.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordECGImpressions.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordLossDrug.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordLossSanitation.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordMeasure.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordRescue.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordSanitation.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_PatientRecordTrace.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_ZCaseTemplate.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_ZECGImpression.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_ZICDNew.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_ZPatientState.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="M_ZSymptomPendingInvestigation.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PatientModel\M_AddPatientRecord.cs" />
+    <Compile Include="PatientModel\M_AddPatientRecordRescue.cs" />
+    <Compile Include="PatientModel\M_AttemperData.cs" />
+    <Compile Include="PatientModel\M_ChargeItemInfo.cs" />
+    <Compile Include="PatientModel\M_CheckModel.cs" />
+    <Compile Include="PatientModel\M_CommonTree.cs" />
+    <Compile Include="PatientModel\M_TaskPartInfo.cs" />
+    <Compile Include="PatientModel\M_UserLoginInfo.cs" />
+    <Compile Include="PersonalStatisticsModel\CenterStatisticsInfo.cs" />
+    <Compile Include="PersonalStatisticsModel\PersonalStatisticsInfo.cs" />
+    <Compile Include="PersonalStatisticsModel\StationStatisticsInfo.cs" />
+    <Compile Include="PersonalStatisticsModel\TotalStatisticsInfo.cs" />
+    <Compile Include="PocoModel\ExtensionModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Apply.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_ApplyDetail.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Balance.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_BalanceList.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Delivery.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_DeliveryDetail.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Entry.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_EntryDetail.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_InventoryRecord.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Material.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Storage.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_StoragePerson.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_StorageRole.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\I_Surplus.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_Dictionary.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_DictionaryType.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientCharge.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecord.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordAppend.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordCPR.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordDiag.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordDrug.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordECGImpressions.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordLossDrug.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordLossSanitation.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordMeasure.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordRescue.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordSanitation.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_PatientRecordTrace.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_ZCaseTemplate.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_ZECGImpression.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_ZICDNew.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_ZPatientState.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\M_ZSymptomPendingInvestigation.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_Department.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_Permission.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_Role.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_RolePermission.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_SpeicalPermission.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_User.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\P_UserRole.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\TDictionary.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PocoModel\TDictionaryType.cs">
+      <DependentUpon>ExtensionModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_Department.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_Permission.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_Role.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_RolePermission.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_SpeicalPermission.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_User.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="P_UserRole.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ResponseMsgInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StorageRelatedInfo.cs" />
+    <Compile Include="TDictionary.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TDictionaryType.cs">
+      <DependentUpon>AKSHManage.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\Role.cs" />
+    <Compile Include="ViewModel\Department.cs" />
+    <Compile Include="ViewModel\EntryDetailInfo.cs" />
+    <Compile Include="ViewModel\LoginInfo.cs" />
+    <Compile Include="ViewModel\MaterialInfo.cs" />
+    <Compile Include="ViewModel\PatientChargeInfo.cs" />
+    <Compile Include="ViewModel\Permission.cs" />
+    <Compile Include="ViewModel\PersonStorageLinkInfo.cs" />
+    <Compile Include="ViewModel\RoleMaterialLinkInfo.cs" />
+    <Compile Include="ViewModel\RolePemissionTree.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="AKSHManage.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>AKSHManage.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="AKSHManage.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>AKSHManage.edmx</DependentUpon>
+      <LastGenOutput>AKSHManage.Context.cs</LastGenOutput>
+    </None>
+    <None Include="AKSHManage.edmx.diagram">
+      <DependentUpon>AKSHManage.edmx</DependentUpon>
+    </None>
+    <None Include="AKSHManage.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>AKSHManage.edmx</DependentUpon>
+      <LastGenOutput>AKSHManage.cs</LastGenOutput>
+    </None>
+    <None Include="App.Config" />
+    <None Include="packages.config" />
+    <None Include="PocoModel\ExtensionModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExtensionModel.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

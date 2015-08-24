@@ -1,0 +1,76 @@
+﻿@model Anke.SHManage.Model.ViewModel.Permission
+
+<style type="text/css">
+    #modifyTb {
+        width: 400px;
+        border: 1px solid #0094ff;
+        margin: 10px auto;
+        border-collapse: collapse;
+    }
+
+    #modifyTb td, #modifyTb th {
+            border: 1px solid #0094ff;
+            padding: 4px;
+        }
+</style>
+
+@using (Html.BeginForm("SavePermission","Permission"))
+{
+    <input name="ID" type="hidden"  value="@ViewBag.ID" />
+    <input name="ParentID" type="hidden"  value="@ViewBag.ParentID" />
+
+    <table id="modifyTb">
+        <tr>
+            <td>@Html.LabelFor(model => model.ParentName)</td>
+            @*<td colspan="2">@Html.TextBoxFor(model => model.ParentName, new { Readonly = "true" })</td>*@
+            <td colspan="2"> <input name="ParentName" type="text" value="@ViewBag.ParentName" readonly="readonly" /></td>
+        </tr>
+
+        <tr>
+            <td style="width: 30%;">@Html.LabelFor(model => model.Name)</td>
+            <td style="width: 30%;">@Html.TextBoxFor(model => model.Name)</td>
+            <td>@Html.ValidationMessageFor(model => model.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.AreaName)</td>
+            <td>@Html.TextBoxFor(model => model.AreaName)</td>
+            <td>@Html.ValidationMessageFor(model => model.AreaName)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.ControllerName)</td>
+            <td>@Html.TextBoxFor(model => model.ControllerName)</td>
+            <td>@Html.ValidationMessageFor(model => model.ControllerName)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.ActionName)</td>
+            <td>@Html.TextBoxFor(model => model.ActionName)</td>
+            <td>@Html.ValidationMessageFor(model => model.ActionName)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.FormMethod)</td>
+            <td>@Html.DropDownListFor(model => model.FormMethod, ViewBag.httpMethodList as IEnumerable<SelectListItem>)</td>
+            <td>@Html.ValidationMessageFor(model => model.FormMethod)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.SN)</td>
+            <td>@Html.TextBoxFor(model => model.SN)</td>
+            <td>@Html.ValidationMessageFor(model => model.SN)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.IsShow)</td>
+            <td>@Html.EditorFor(model => model.IsShow)</td>
+            <td>@Html.ValidationMessageFor(model => model.IsShow)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.Remark)</td>
+            <td>@Html.TextBoxFor(model => model.Remark)</td>
+            <td>@Html.ValidationMessageFor(model => model.Remark)</td>
+        </tr>
+        <tr>
+            <td colspan="3" align="center">
+                <input type="submit" value="保存" />
+            </td>
+        </tr>
+    </table>
+}
+

@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "安克上海管理系统首页";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ($.cookie('easyuiThemeName')) {
+                changeTheme($.cookie('easyuiThemeName'));
+            }
+            //加载树控件  获取菜单权限
+            $("#menuTree").tree({
+                url: "@Url.Content("~/Home/getMenuData")",
+                onClick: function (node) {
+                    if (node.attributes.url.length > 0)
+                        newTab(node);
+                },
+                animate: true
+            });
+            $.setDivOnly("#divIndex");
+        });
+        $(window).resize(function () {
+            $.setDivOnly("#divIndex");
+        });
+        //追加一个新的 Tab
+        function newTab(treeNode) {
+            var $tbs = $("#tbs");//获取tab容器
+            //新根据 标题 判断 是否以存在 同名tab
+            if ($tbs.tabs("exists", treeNode.text)) {
+                //判断正在看的选项卡,是否和点击的树节点相同
+                //获取 当前选项卡
+                var currTab = $tbs.tabs('getSelected');
+                //获取当前选项卡的标题
+                var currTitle = currTab.panel('options').title
+                //拿当前标题 和 被点击的 树节点标题比较，如果相等，则要刷新
+                if (currTitle == treeNode.text) {
+                    $tbs.tabs('update', {
+                        tab: currTab,//要更新的标签
+                        options: {//设置更新标签要修改的属性
+                            content: newIframe(treeNode.attributes.url)//重新加载iframe
+                        }
+                    });
+                }
+
+                $tbs.tabs("select", treeNode.text);
+            } else {
+                $tbs.tabs("add", {
+                    title: treeNode.text,
+                    iconCls: treeNode.iconCls,
+                    content: newIframe(treeNode.attributes.url),
+                    closable: true,
+                    fit: true
+                });
+            }
+        }
+        //返回一个<iframe></iframe>标签  撑满子页面
+        function newIframe(url) {
+            url = '@Url.Content("~/")' + url;
+            var ifrStr = "<iframe src='" + url + "' style='width:99.5%;height:99%;border:0px solid #000;'></iframe>";
+            return ifrStr;
+        }
+        function goLogin() {
+            window.top.location.href = '@ViewBag.urllogin';
+        }
+        function changeTheme(i) {
+            $("#comboTheme").combobox('select', i);
+            switch (i) {
+                case 'default':
+                    changeThemeFun("default");
+                    $("#divIndexTop").css("background-color", "#E4F2FB");
+                    $("#divIndexMain").css("background-color", "#E4F2FB");
+                    break;
+                case 'gray':
+                    changeThemeFun("gray");
+                    $("#divIndexTop").css("background-color", "#F3F3F3");
+                    $("#divIndexMain").css("background-color", "#F3F3F3");
+                    break;
+                case 'kitty':
+                    changeThemeFun("kitty");
+                    $("#divIndexTop").css("background-color", "#F4CCDA");
+                    $("#divIndexMain").css("background-color", "#F4CCDA");
+                    break;
+                case 'black':
+                    changeThemeFun("black");
+                    $("#divIndexTop").css("background-color", "#666666");
+                    $("#divIndexMain").css("background-color", "#666666");
+                    break;
+                case 'metro':
+                    changeThemeFun("metro");
+                    $("#divIndexTop").css("background-color", "#FFFFFF");
+                    $("#divIndexMain").css("background-color", "#FFFFFF");
+                    break;
+                default:
+
+            }
+        }
+    </script>
+}
+<div id="divIndex" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div id="divIndexTop" data-options="region:'north',split:false" style="height: 55px; background-color: #E4F2FB; overflow: hidden; ">
+        <img src="~/Images/Top/logo.png" />
+        <div style="position: absolute; right: 0px; bottom: 0px; width: 150px; height: 30px; vertical-align:auto">
+            主题：<select id="comboTheme" class="easyui-combobox" name="dept" style="width:100px;" data-options="onSelect: function(rec){
+          changeTheme(rec.value);
+            },editable:false">
+                <option value="default">default</option>
+                <option value="gray">gray</option>
+                <option value="black">black</option>
+                <option value="metro">metro</option>
+                <option value="kitty">kitty</option>
+            </select>
+        </div>
+        <div style="position: absolute; right: 170px; bottom: 0px; width: 150px; height: 25px; vertical-align:auto">
+            当前登录人：<span style="color:darkblue">@ViewBag.LoginName</span>&nbsp;&nbsp;
+        </div>
+        <div style="position: absolute; right: 150px; bottom: 6px; width: 20px; height: 20px; vertical-align:auto">
+            <img src="~/Images/Top/outLogin.png" style="height:16px; width:16px; cursor:pointer" onclick="goLogin()" />
+        </div>
+    </div>
+    <div data-options="region:'west',title:'菜单导航',split:false" style="width:180px;height:30px;">
+        <ul id="menuTree"></ul>
+    </div>
+    <div id="divIndexMain" data-options="region:'center'" style="padding: 5px; background: #E4F2FB;">
+        <div id="tbs" class="easyui-tabs" data-options="fit:true,border:false">
+            <div title="安克OA" data-options="iconCls:'icon-custom-Anke'" style="padding:10px">
+                <iframe src='~/Home/Home' style='width:99.5%;height:99%;border:0px solid #000;'></iframe>
+            </div>
+        </div>
+    </div>
+</div>

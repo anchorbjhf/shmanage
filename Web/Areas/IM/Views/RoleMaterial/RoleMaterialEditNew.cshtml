@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Anke.SHManage.Model.ViewModel.RoleMaterialLinkInfo>
+
+@{
+    ViewBag.Title = "RoleMaterialEditNew";
+}
+
+<style type="text/css">
+    #modifyTb {
+        width: 300px;
+        margin: 10px auto;
+        border-collapse: collapse;
+    }
+
+        #modifyTb td, #modifyTb th {           
+            padding: 4px;
+        }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table id="modifyTb">
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Name)*@
+            </th>
+            <th>
+
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="width: 50%;text-align:right">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td style="width: 50%;text-align:left">
+                    @*@Html.DisplayFor(modelItem => item.IsSelected)*@
+                    @*@Html.CheckBoxFor(modelItem => item.IsSelected)*@
+                    @Html.CheckBox(item.ID, item.IsSelected)
+                </td>
+                <td>
+                    @*@Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id=item.ID })*@
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="3" align="center">
+                @Html.Hidden("RoleID", ViewData["RoleID"])
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" align="center">
+                <input type="submit" value="保存" />
+            </td>
+        </tr>
+
+    </table>
+}

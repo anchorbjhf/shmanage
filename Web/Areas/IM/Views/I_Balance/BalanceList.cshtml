@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "BalanceList";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var urlstr = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeForBalanceList")';
+            $.EUIcomboboxTree("#BalanceType", {
+                url: urlstr,//ajax后台取数据路径，返回的是json格式的数据
+                panelHeight: 350,
+                OneOption: [{
+                    id: "",
+                    text: "--请选择--",
+                }]
+            });
+            bindGrid();
+        });
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#balancegrid");
+        });
+
+
+        function bindGrid() {
+            $('#balancegrid').datagrid({
+
+                rownumbers: true,
+                singleSelect: true,
+                width: 'auto',
+                height: 'auto',
+                //fit:true,
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/IM/I_Balance/DataLoad")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                queryParams: {
+                    MonthTime: $("#MonthTime").numberbox('getValue'),
+                    BalanceType: $('#BalanceType').combobox('getValue')
+                },
+                frozenColumns: [[
+                  { field: "ReportTime", title: "月份", width: '30%', align: "center" },
+                  { field: "Name", title: "类型", width: '45%', align: "center" },
+                   { field: "MaterialTypeID", width: '4%', align: "center", hidden: true },
+
+                {
+                    field: 'opt', title: '查看', width: '30%', align: 'center', frozen: 'true',
+                    formatter: function (value, row, index) {
+                        var ReportTime = row.ReportTime;
+                        var MaterialType = row.MaterialTypeID;
+
+                        //加\变引号，避免JS错认为MaterialType为变量（找不到变量），不为值。
+                        return '<a  class="linkURLcls" onclick="openURL(\'' + ReportTime + '\',\'' + MaterialType + '\');"  href="javascript:void(0)">查看</a>';
+                    }
+                }
+
+                ]],
+                onLoadSuccess: function (data) {
+
+                    $('.linkURLcls').linkbutton({
+                        text: '查看',
+                        plain: true,
+                        iconCls: 'icon-search'
+                    });
+                }
+            });
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#balancegrid");
+        }
+
+
+
+        function openURL(ReportTime, MaterialTypeID) {
+
+            window.open('@Url.Content("~/")' + 'BB/TJ/TJ_BalanceDetial?ReportTime=' + ReportTime + '&MaterialTypeID=' + MaterialTypeID);
+        }
+        function openDialog() {
+            initPage();
+            $('#BalanceDetailList').dialog('open');
+        }
+
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'BalanceList',iconCls:'icon-custom-cPrice'">
+        <div id="tbb" style="padding: 5px; height: auto">
+
+            <table style="width:99%" cellpadding="0" cellspacing="0" border="0">
+
+                <tr>
+
+                    <td align="right" valign="middle" width="10%">查询月份：</td>
+                    <td align="left" valign="middle" width="15%">
+                        <input class="easyui-numberbox" style="width:155px" data-options="prompt:'例：201507'" id="MonthTime">
+                    </td>
+                    <td align="right" valign="middle" width="10%">@Html.Label("BalanceType", "分类：")</td>
+                    <td align="left" valign="middle" width="20%">
+                        <select class="easyui-combobox" style="width: 200px" id="BalanceType"></select>
+                    </td>
+                    <td align="right" valign="middle" width="10%"><a href="#" class="easyui-linkbutton" iconcls="icon-search" onclick="bindGrid()">查询</a>&nbsp; &nbsp;&nbsp;</td>
+                    <td align="right" valign="middle" width="24%">
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-custom-cPrice" onclick="openDialog()">生成新报表数据</a>&nbsp; &nbsp;&nbsp;
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="balancegrid" border="0"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/IM/Views/I_Balance/_BalanceAdd.cshtml")

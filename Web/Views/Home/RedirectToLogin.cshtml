@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "RedirectToLogin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        window.onload = function () {
+            window.top.location.href = '@Url.Content("~/Home/UserLogin")';
+        }
+    </script>
+}

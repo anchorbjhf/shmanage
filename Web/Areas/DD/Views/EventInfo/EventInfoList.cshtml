@@ -1,0 +1,306 @@
+﻿@{
+    ViewBag.Title = "事件信息流水列表";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script type="text/javascript">
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        });
+
+        //页面初始化
+        $(document).ready(function () {
+
+            $('#editWindow').window('close'); // 默认隐藏查看详细信息窗口
+
+            //取事件类型
+            $.EUIcombobox("#eventType", {
+                url: '@Url.Content("~/DD/EventInfo/GetEventType/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取事件来源
+            $.EUIcombobox("#eventSource", {
+                url: '@Url.Content("~/DD/EventInfo/GetEventSource/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取病情判断
+            $.EUIcombobox("#illnessState", {
+                url: '@Url.Content("~/DD/EventInfo/GetIllnessState/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取车辆分站
+            $.EUIcombobox("#station", {
+                url: '@Url.Content("~/DD/EventInfo/GetStation/")',
+                valueField: 'Name',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取车辆号码
+            $.EUIcombobox("#ambulanceCode", {
+                url: '@Url.Content("~/DD/EventInfo/GetAmbulanceCode/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取调度员
+            $.EUIcombobox("#dispatcher", {
+                url: '@Url.Content("~/DD/EventInfo/GetDispatcher/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取司机
+            $.EUIcombobox("#driver", {
+                url: '@Url.Content("~/DD/EventInfo/GetDriver/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取医生
+            $.EUIcombobox("#doctor", {
+                url: '@Url.Content("~/DD/EventInfo/GetDoctor/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取护士
+            $.EUIcombobox("#nurse", {
+                url: '@Url.Content("~/DD/EventInfo/GetNurse/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //取担架员
+            $.EUIcombobox("#stretcher", {
+                url: '@Url.Content("~/DD/EventInfo/GetStretcher/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: true,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            bindGrid();
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        })
+
+        function bindGrid() {
+            $('#grid').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/DD/EventInfo/DataLoad")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页
+                rownumbers: true,//显示页码
+                pageSize: 10,//设置 页容量
+                pageList: [10, 15, 20],//设置 页容量下拉框
+                queryParams: {
+                    start: $('#start').datetimebox('getValue'),
+                    end: $('#end').datetimebox('getValue'),
+                    mainSuit: $('#mainSuit').textbox('getValue'),
+                    telephoneNumber: $('#telephoneNumber').textbox('getValue'),
+                    localAddress: $('#localAddress').textbox('getValue'),
+                    patientName: $('#patientName').textbox('getValue'),
+                    sendAddress: $('#sendAddress').textbox('getValue'),
+                    dispatcher: $('#dispatcher').textbox('getValue'),
+                    driver: $('#driver').textbox('getValue'),
+                    doctor: $('#doctor').textbox('getValue'),
+                    nurse: $('#nurse').textbox('getValue'),
+                    stretcher: $('#stretcher').textbox('getValue'),
+                    eventType: $('#eventType').combobox('getValue'),
+                    illnessState: $('#illnessState').combobox('getValue'),
+                    eventCode: $('#eventCode').textbox('getValue'),
+                    station: $('#station').combobox('getValue'),
+                    ambulanceCode: $('#ambulanceCode').combobox('getValue'),
+                    eventSource: $('#eventSource').combobox('getValue'),
+                },
+                columns: [[
+                   { title: '呼救电话', field: 'callPhone', width: '20%', align: "center", sortable: false },
+                   { title: '受理次数', field: 'acceptTimes', width: '8%', align:"center", sortable: false },
+                   { title: '事件名称', field: 'eventName', width: '26%',align: "center", sortable: false },
+                   { title: '首次受理时刻', field: 'firstAcceptTime', width: '20%', align: "center", sortable: false },
+                   { title: '首次调度员', field: 'firstDispatcher', width: '10%', align: "center", sortable: false },
+                   { title: '派车次数', field: 'sendCarTimes', width: '8%', align: "center", sortable: false },
+                   { title: '正常完成', field: 'finishedTimes', width: '8%', align: "center", sortable: false },
+                ]],
+                toolbar: [
+                    {
+                        id: 'btnView',
+                        text: '查看详细',
+                        iconCls: 'icon-search',
+                        handler: function () {
+                            var row = $('#grid').datagrid('getSelected');
+                            if (row) {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Content("~/DD/EventInfo/EventInfoNewEdit/")' + row.id,
+                                    success: function (jsonObj) {
+                                        if (jsonObj.Result)
+                                            $.handleJsonResult(jsonObj);
+                                        else {
+                                            $('#editWindow').window('open'); // 详细信息窗口
+                                            $("#editWindow").html(jsonObj);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        alert(data.statusText);
+                                    }
+                                });
+                            }
+                            else {
+                                $.messager.alert('提示', '请选择一行数据', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ]
+            })
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#grid");
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'事件信息流水列表',iconCls:'icon-custom-Entry'">
+        <div id="SearchBar" data-options="region:'center'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>起始时刻：</td>
+                    <td>
+                        <input id="start" class="easyui-datetimebox" value=@ViewData["start"] style="width:150px"/>
+                    </td>
+                    <td>终止时刻：</td>
+                    <td>
+                        <input id="end" class="easyui-datetimebox" value=@ViewData["end"] style="width:150px" />
+                    </td>
+                    <td>事件类型：</td>
+                    <td>
+                        <input id="eventType" class="easyui-combobox" />
+                    </td>
+                    <td>事件来源：</td>
+                    <td>
+                        <input id="eventSource" class="easyui-combobox" />
+                    </td>
+                    <td>事件编码：</td>
+                    <td>
+                        <input id="eventCode" class="easyui-textbox" style="width:150px" />
+                    </td>                                 
+                    <td>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="bindGrid()">查询</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>主诉：</td>
+                    <td>
+                        <input id="mainSuit" class="easyui-textbox" style="width:150px" />
+                    </td>
+                    <td>现场地址：</td>
+                    <td>
+                        <input id="localAddress" class="easyui-textbox" style="width:150px" />
+                    </td>
+                    <td>送往地点：</td>
+                    <td>
+                        <input id="sendAddress" class="easyui-textbox" style="width:150px" />
+                    </td> 
+                    <td>患者姓名：</td>
+                    <td>
+                        <input id="patientName" class="easyui-textbox" style="width:150px" />
+                    </td>
+                    <td>电话号码：</td>
+                    <td>
+                        <input id="telephoneNumber" class="easyui-textbox" style="width:150px" />
+                    </td>                                                            
+                </tr>
+                <tr> 
+                    <td>调度员：</td>
+                    <td>
+                        <input id="dispatcher" class="easyui-combobox" style="width:150px" />
+                    </td>                             
+                    <td>司机：</td>
+                    <td>
+                        <input id="driver" class="easyui-combobox" style="width:150px" />
+                    </td>
+                    <td>医生：</td>
+                    <td>
+                        <input id="doctor" class="easyui-combobox" style="width:150px" />
+                    </td>
+                    <td>护士：</td>
+                    <td>
+                        <input id="nurse" class="easyui-combobox" style="width:150px" />
+                    </td>
+                    <td>担架员：</td>
+                    <td>
+                        <input id="stretcher" class="easyui-combobox" style="width:150px" />
+                    </td>
+                </tr>                
+                <tr>
+                    <td>病情判断：</td>
+                    <td>
+                        <input id="illnessState" class="easyui-combobox" />
+                    </td>
+                    <td>车辆分站：</td>
+                    <td>
+                        <input id="station" class="easyui-combobox" />
+                    </td>
+                    <td>车辆号码：</td>
+                    <td>
+                        <input id="ambulanceCode" class="easyui-combobox" />
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="grid"></table>
+        </div>
+    </div>
+</div>
+

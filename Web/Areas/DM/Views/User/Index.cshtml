@@ -1,0 +1,214 @@
+﻿@{
+    Layout = "~/Areas/DM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(function () {
+            Init();
+
+            $("#tbList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/DM/User/Index")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 12,//设置 页容量为 5
+                pageList: [12, 24, 36],//设置 页容量下拉框
+                columns: [[
+                      {
+                          field: 'P_Department', title: '部门', width: 50, formatter: function (value) {
+                              if (value)
+                                  return value.Name;
+                          }
+                      },
+                    {
+                        field: 'WorkCode', title: '工号', width: 20
+                    },
+                    { field: 'LoginName', title: '登录名', width: 70 },
+                    { field: 'Name', title: '姓名', width: 70 },
+                    {
+                        field: 'Gender', title: '性别', formatter: function (val) {
+                            return val ? "男" : "女";
+                        }
+                    },
+                    { field: 'SN', title: '顺序号', width: 20 },
+                    {
+                        field: 'IsActive', title: '是否启用', formatter: function (val) {
+                            return val ? "是" : "否";
+                        }
+                    },
+                    { title: 'ID', field: 'ID', sortable: false, hidden: true }
+                ]],
+
+                toolbar: [
+                {
+                    iconCls: 'icon-edit',
+                    text: "分配部门角色",
+                    handler: setDepRole
+                }],
+                onSelect: function (rowI, rowD) {
+                    selectedRowIndex = rowI;//将选中行的下标 设置给全局变量
+                }
+            });
+
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#tbList");
+        })
+
+
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#tbList");
+        });
+
+
+        function Init() {
+
+            $("#selDep").combotree({
+                prompt: '--请选择--',
+                url: '@Url.Content("~/DM/Department/GetAllDepart")',//ajax后台取数据路径，返回的是json格式的数据
+                required: true,
+                method: 'POST'
+            });
+
+
+            $('#selRole').combobox({
+                prompt: '--请选择--',
+                url: '@Url.Content("~/DM/Role/GetRoleByDepId/")',
+                valueField: 'ID',
+                textField: 'Name',
+                method: 'POST',
+                editable: false,
+                required: true,
+                multiple: true
+            });
+
+
+        }
+
+        //选中行的下标
+        var selectedRowIndex = -1;
+
+        //当前选中的用户数据
+        var usrData = null;
+        //设置部门权限
+        function setDepRole() {
+            //获取选中行里的数据
+            usrData = $("#tbList").datagrid("getSelected");
+            $("#selDep").combotree("clear");
+            $('#selRole').combobox("clear");
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/User/GetUserDepAndRole")',
+                data:
+                    {
+                        UserId: usrData.ID
+
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    if (jsData.Dep != "") {
+                        $("#selDep").combotree("setValue", jsData.Dep);
+                    }
+                    if (jsData.UserRole != "") {
+                        $('#selRole').combobox("setValue",jsData.UserRole);
+
+                    }
+                }
+            });
+            if (usrData) {
+                $('#winDRoles').dialog('open');
+            }
+        }
+
+        //保存用户角色（每个用户只有一个角色）
+        function SaveRoles() {
+            var nowDepId = $("#selDep").combotree("getValue");
+            var arr = $("#selRole").combobox("getValues");
+            var rIds = "";
+            for (var i = 0; i < arr.length; i++) {
+                rIds += arr[i] + ",";
+            }
+            if (!arr || arr.length == 0) return;     //?depid=1&rids=1,2,3
+            $.post("@Url.Content("~/DM/Department/SetUserRole")", { "uID": usrData.ID, "depId": nowDepId, "rIds": rIds }, function (jsonData) {
+                $('#winDRoles').dialog('close');
+
+                $.handleJsonResult(jsonData, function () {
+                    $("#tbList").datagrid("reload");// 刷新页面
+                });
+            });
+        }
+
+        //查询
+        function reSearch() {
+            $("#tbList").datagrid({
+                queryParams: {
+                    WorkCode: $("#WorkCode").val(),
+                    Name: $("#Name").val()
+                }
+            });
+        }
+    </script>
+}
+
+
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'人员信息',iconCls:'icon-custom-cUser'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>工号：</td>
+                    <td>
+                        <input id="WorkCode" class="easyui-textbox" style="width:150px" />
+                    </td>
+                    <td>姓名：</td>
+                    <td>
+                        <input id="Name" class="easyui-textbox" style="width:150px" />
+                    </td>
+                    <td rowspan="2">
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="tbList"></table>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="winDRoles" class="easyui-dialog" title="设置部门角色" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Surplus'" style="width:260px;height:155px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden">
+        <table style="width:99%">
+            <tr style="height:40px">
+                <td>&nbsp;&nbsp;部门：</td>
+                <td>
+                    <input id="selDep" name="selDep" style="width:180px">
+                </td>
+            </tr>
+            <tr style="height:40px">
+                <td>&nbsp;&nbsp;角色：</td>
+                <td>
+                    <input id="selRole" name="selRole" style="width:180px">
+                </td>
+            </tr>
+
+            <tr style="height:30px">
+                <td colspan="2" align="center">
+                    <a href="javascript:void(0)" id="btnSave" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="SaveRoles()">保存</a>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>

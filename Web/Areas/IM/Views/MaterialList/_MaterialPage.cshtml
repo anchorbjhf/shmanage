@@ -1,0 +1,320 @@
+﻿<script type="text/javascript">
+
+    // 取度量单位的字典表 （在AllDictionary/GetMSDictionaryInfo 是调用字典表，传TypeCode即可）
+    function fillCombobox() {
+        var urlstr = '@Url.Content("~/IM/AllDictionary/GetMSDictionaryInfo?TypeCode=MatertalUnit")';
+        $.BindCombox("#Unit", urlstr);
+        var urlstr2 = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeByUserInfo")';
+        $("#MType").combotree({
+            prompt: '--请选择--',
+            url: urlstr2,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            onSelect: function (rec) {
+                $("#MaterialTypeInfo").val(rec.id);
+            }
+        });
+
+        var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetOtherType")';
+        $("#OtherType").combotree({
+            prompt: '--请选择--',
+            url: urlstr3,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            //onBeforeSelect: function (node) {
+            //    var rows = node.children;
+            //    if (rows.length > 0) {
+            //        $("#OtherType").treegrid("unselect");
+            //    }
+            //},
+            onSelect: function (rec) {
+                $("#OtherTypeInfo").val(rec.id);
+            }
+        });       
+
+    }
+
+    //新增物资方法
+    function submitAddForm() {
+        var isValid = $("#NewMaterialList").form("validate");
+        if (isValid) {
+            $('#btnadd').linkbutton('disable');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/IM/MaterialList/MaterialAdd")',
+                data:
+                    {
+                        sMaterialInfo: JSON.stringify(MaterialModel(false))
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        $('#NewMaterialList').dialog("close");
+                        $("#gridMaterialList").datagrid("reload");
+                    }, function () {
+                        $('#btnadd').linkbutton('enable');
+                    });
+                }
+            });
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+    }
+    //post form to edit
+    function submitEditForm() {
+        $.messager.confirm('提示', '确认修改该数据?', function (r) {
+            if (r) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/IM/MaterialList/MaterialEdit")',
+                    data:
+                        {
+                            sMaterialInfo: JSON.stringify(MaterialModel(true))
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#NewMaterialList').dialog("close");
+                            $("#gridMaterialList").datagrid("reload");
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    //获取填写所有值
+    function MaterialModel(isEdit) {
+        var obj = new Object();
+        if (isEdit)
+            obj.ID = $('#ID').val();
+        obj.Name = $("#Name").textbox('getText');
+        obj.MTypeID = $("#MaterialTypeInfo").val();
+        obj.MCode = $("#MCode").textbox('getText');;
+        obj.Unit = $("#Unit").combobox("getValue");
+        obj.Specification = $("#Specification").textbox('getText');;
+        obj.RealPrice = $("#RealPrice").textbox('getValue');;
+        obj.PinYin = $("#PinYin").textbox('getText');;
+        obj.Manufacturer = $("#Manufacturer").textbox('getText');;
+        obj.Vendor = $("#Vendor").textbox('getText');;
+        obj.AlarmCounts = $("#AlarmCounts").numberbox('getText');;
+        obj.FeeScale = $("#FeeScale").textbox('getText');
+        obj.LimitMaxPrice = $("#LimitMaxPrice").textbox('getText');;
+        obj.Remark = $("#Remark").textbox('getText');
+        obj.GiveMedicineWay = $("#GiveMedicineWay").combobox('getValue');;
+        obj.SN = $("#SN").numberbox('getValue');;
+        obj.OtherTypeID = $("#OtherTypeInfo").val();;
+        obj.IsActive = $("#IsActive").combobox("getValue");       
+        return obj;
+    }
+    //新增入口
+    function initAddInfo() {
+        //将修改按钮禁用
+        $('#btnedit').linkbutton('disable');
+        $.GID("btnedit").style.display = "none";
+        $('#btnadd').linkbutton('enable');
+        $.GID("btnadd").style.display = "block";
+        $.initTextBoxMoney("#RealPrice", "物资销售价格", false);
+        $('#ID').val("");
+        $("#Name").textbox("clear");
+        $("#Specification").textbox("clear");
+        $("#MCode").textbox("clear");
+        $("#PinYin").textbox("clear");
+        $("#Manufacturer").textbox("clear");
+        $("#Vendor").textbox("clear");
+        $("#AlarmCounts").numberbox("clear");
+        $("#AlarmCounts").numberbox("setText", 10);
+        $("#Remark").textbox("clear");
+        $("#Unit").combobox("setValue", "");
+        $("#RealPrice").textbox("clear");
+        $("#MType").combotree("clear");
+        $("#MaterialTypeInfo").val("");
+        $("#FeeScale").textbox("clear");
+        $("#LimitMaxPrice").textbox("clear");
+        $("#OtherType").combotree("clear");
+        $("#OtherTypeInfo").val("");
+        $("#SN").numberbox("clear");
+        $("#SN").numberbox("setValue", 255);
+        $("#GiveMedicineWay").combobox("setValue", "");
+        //$("#IsActive").combobox("setValue", true);
+    }
+    function initUpdateInfo() {
+        $('#btnadd').linkbutton('disable');
+        $.GID("btnadd").style.display = "none";
+        $('#btnedit').linkbutton('enable');
+        $.GID("btnedit").style.display = "block";
+        $.initTextBoxMoney("#RealPrice", "物资销售价格", false);
+    }
+</script>
+
+<div id="NewMaterialList" class="easyui-dialog" title="填写物资信息" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cWuZiWeiHu'" style="width:550px;height:410px;padding:10px;">
+    <input id="ID" type="hidden">
+
+    <table>
+        <tr>
+            <td style="width:90px">
+                物资名称：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="Name" data-options="prompt:'请输入物资名称',required:true">
+
+            </td>
+            <td style="width:90px">
+                物资类型：
+            </td>
+            <td>
+                <input id="MType" class="easyui-combotree" style="width:160px" data-options="required:true" />
+                <input id="MaterialTypeInfo" type="hidden">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                其他类型：
+            </td>
+            <td>
+                <input class="easyui-combotree" style="width: 160px" id="OtherType" data-options="required:true">
+                <input id="OtherTypeInfo" type="hidden">
+            </td>
+            <td style="width:90px">
+                给药方式：
+            </td>
+            <td>
+                @*<input class="easyui-combobox" style="width: 140px" id="GiveMedicineWay">*@
+                <select class="easyui-combobox" style="width: 160px" id="GiveMedicineWay" >
+                    <option value="静滴">静滴</option>
+                    <option value="静注">静注</option>
+                    <option value="肌注">肌注</option>
+                    <option value="含服">含服</option>
+                    <option value="喷雾">喷雾</option>
+                    <option value="外用">外用</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                生产厂家：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="Manufacturer">
+            </td>
+            <td style="width:90px">
+                供应商：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="Vendor">
+            </td>
+        </tr>
+        <tr>
+
+            <td style="width:90px">
+                单位：
+            </td>
+            <td>
+                <select class="easyui-combobox" style="width: 160px" id="Unit" data-options="required:true"></select>
+            </td>
+            <td style="width:90px">
+                规格：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width:160px" id="Specification" data-options="prompt:'例：250ml'">
+            </td>
+
+        </tr>
+        <tr>
+            <td style="width:90px">
+                物资代码：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="MCode" data-options="prompt:'请输入物资代码'">
+            </td>
+            <td style="width:90px">
+                拼音头代码：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="PinYin" data-options="prompt:'请输入首字母'">
+
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                销售价格：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="RealPrice">
+
+            </td>
+            <td style="width:90px">
+                剩余预警数量：
+            </td>
+            <td>
+                <input id="AlarmCounts" class="easyui-numberbox" style="width:160px;" data-options="min:0">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                顺序号：
+            </td>
+            <td>
+                <input id="SN" class="easyui-numberbox" style="width:160px;">
+            </td>
+            <td style="width:90px">
+                是否有效：
+            </td>
+            <td>
+                <select class="easyui-combobox" style="width: 160px" id="IsActive" data-options="required:true,panelHeight:70, editable:false">
+                    <option value="true">有效</option>
+                    <option value="false">无效</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                收费刻度：
+            </td>
+            <td>
+                <input id="FeeScale" class="easyui-numberbox" style="width:160px;">
+            </td>
+            <td style="width:90px">
+                最大限制金额：
+            </td>
+            <td>
+                <input id="LimitMaxPrice" class="easyui-numberbox" style="width:160px;">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                收费刻度说明：
+            </td>
+            <td colspan="3">
+                <a>
+                    正常收费:例子：1表示 1支按1收，2支按2收，以此类推（文本框输入1）;
+                    封顶收费:例子：-1表示 多少次都按1收（文本框中输入-1），-3表示 少于3次按正常收费收，多于3次按3次收（文本框输入-3），以此类推;
+                    范围收费：例子：2表示 1-2支都按1支收（文本框输入2）,3表示 1-3支按1收（文本框输入3），以此类推
+                </a>
+            </td>
+        </tr>
+        @*<tr>
+                <td style="width:90px">是否有效：</td>
+                <td>
+                    <span id="IsActive">
+                        <input id="RadioButtonList_IsActive_1" type="radio" name="IsActive" value="True" onclick="javascript: setTimeout('selctRadioButton(\'IsActive\',\'1\')', 0)" />是
+                        <input id="RadioButtonList_IsActive_2" type="radio" name="IsActive" value="False" onclick="javascript: setTimeout('selctRadioButton(\'IsActive\',\'2\')', 0)" />否
+                    </span>
+
+                </td>
+            </tr>*@
+        <tr>
+            <td>备注：</td>
+            <td colspan="3">
+                <input id="Remark" class="easyui-textbox" data-options="multiline:true" style="width:300px;height:40px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:right">
+                <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改物资</a>
+                <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增物资</a>
+            </td>
+        </tr>
+    </table>
+
+</div>

@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "StorageList";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script type="text/javascript">
+        window.ondragstart = function () { window.event.returnValue = false; }
+        window.oncontextmenu = function () { window.event.returnValue = false; }
+        window.onselectstart = function () { event.returnValue = false; }
+        var ParentStroageCode;
+        var ParentLevelCode;
+        var ParentName;
+        var LowerLevelStroageCode;
+        var LowerLevelCode;
+        var LowerName;
+        $(document).ready(function () {
+            initTree();
+            $.setDivOnly("#TableForm");
+        });
+        $(window).resize(function () {
+            $.setDivOnly("#TableForm");
+        });
+        function initTree() {
+            $('#StorageTree').tree({
+                url: '@Url.Content("~/Storage/DataLoad")',
+                method: 'POST',
+                animate: true,
+                lines: true,
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    // 查找节点
+                    $('#StorageTree').tree('select', node.target);
+                    var pnode = $('#StorageTree').tree('getParent', node.target);
+                    if (pnode != null) {
+                        ParentStroageCode = pnode.id;
+                        ParentLevelCode = pnode.attributes.LevelID;
+                        ParentName = pnode.text;
+                        LowerLevelStroageCode = node.id;
+                        LowerLevelCode = node.attributes.LevelID;
+                        LowerName = node.text;
+                        // 显示快捷菜单
+                        $('#menu').menu('show', {
+                            left: e.pageX,
+                            top: e.pageY
+                        });
+                    }
+                }
+            });
+        }
+        function AddStroageLevel() {
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentStroage').textbox('setText', ParentName);
+            $('#ParentStroageID').val(ParentStroageCode)
+            $('#LevelCode').val(ParentLevelCode);
+            $('#Stroage').textbox('clear');
+            $('#StroageEdit').dialog('open');
+            $('#btnadd').linkbutton('enable');
+        }
+        function AddStroageLowerLevel() {
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentStroage').textbox('setText', LowerName);
+            $('#ParentStroageID').val(LowerLevelStroageCode);
+            $('#LevelCode').val(LowerLevelCode);
+            $('#Stroage').textbox('clear');
+            $('#StroageEdit').dialog('open');
+            $('#btnadd').linkbutton('enable');
+        }
+        function EditStroageInfo() {
+            $.GID("btnadd").style.display = "none";
+            $.GID("btnedit").style.display = "block";
+            $('#ParentStroage').textbox('setText', ParentName);
+            $('#StroageID').val(LowerLevelStroageCode);
+            $('#Stroage').textbox('setText', LowerName);
+            $('#StroageEdit').dialog('open');
+            $('#btnedit').linkbutton('enable');
+        }
+        function submitAddForm() {
+            var isValid = $("#StroageEdit").form("validate");
+            if (isValid) {
+                $('#btnadd').linkbutton('disable')
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/IM/Storage/AddStroage")',
+                    data:
+                        {
+                            PID:$('#ParentStroageID').val(),
+                            LevelC:$('#LevelCode').val(),
+                            StroageName:$('#Stroage').textbox('getText')
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            initTree()
+                            $('#StroageEdit').window('close');
+                        }, function () {
+                            $('#btnadd').linkbutton('enable');
+                        });
+                    }
+                });
+            }
+        }
+        function submitEditForm() {
+            $('#btnedit').linkbutton('disable')
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/IM/Storage/EditStroage")',
+                data:
+                    {
+                        SID:$('#StroageID').val(),
+                        StroageName: $('#Stroage').textbox('getText')
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        initTree()
+                        $('#StroageEdit').window('close');
+                    }, function () {
+                        $('#btnedit').linkbutton('enable');
+                    });
+                }
+            });
+        }
+        
+    </script>
+
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'仓库分类管理',iconCls:'icon-custom-Surplus'">
+        <ul id="StorageTree"></ul>
+        <div id="menu" class="easyui-menu" style="width:150px;">
+            <div data-options="iconCls:'icon-custom-Surplus'" onclick="AddStroageLevel()">添加平级仓库</div>
+            <div data-options="iconCls:'icon-add'" onclick="AddStroageLowerLevel()">添加下级仓库</div>
+            <div class="menu-sep"></div>
+            <div data-options="iconCls:'icon-edit'" onclick="EditStroageInfo()">修改仓库信息</div>
+            <div class="menu-sep"></div>
+            <div data-options="iconCls:'icon-custom-Delete'" onclick=" deletestroageinfo()">删除该仓库</div>
+        </div>
+    </div>
+</div>
+
+<div id="StroageEdit" class="easyui-dialog" title="维护仓库" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Surplus'" style="width:300px;height:155px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden">
+        <table style="width:99%">
+            <tr style="height:40px">
+                <td>上级仓库：</td>
+                <td>
+                    <input id="ParentStroage" class="easyui-textbox" style="width:160px" data-options="readonly:true" />
+                    <input id="ParentStroageID" type="hidden" />
+                    <input id="LevelCode" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height:40px">
+                <td>仓库名称：</td>
+                <td>
+                    <input id="Stroage" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                    <input id="StroageID" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height:30px">
+                <td colspan="2">
+                    <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改仓库</a>
+                    <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增仓库</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

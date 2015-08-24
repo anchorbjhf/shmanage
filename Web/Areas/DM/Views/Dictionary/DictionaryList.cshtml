@@ -1,0 +1,500 @@
+﻿@{
+    ViewBag.Title = "DictionaryList";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script type="text/javascript">
+        window.ondragstart = function () { window.event.returnValue = false; }
+        window.oncontextmenu = function () { window.event.returnValue = false; }
+        window.onselectstart = function () { event.returnValue = false; }
+        var ParentDictionaryCode;
+        var ParentLevelCode;
+        var ParentName;
+        var LowerLevelStroageCode;
+        var LowerLevelCode;
+        var LowerName;
+        var DictionaryType;
+        $(document).ready(function () {
+            initGrid();
+        });
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#gridDictionaryTypeList");
+        });
+
+        function initGrid() {
+            $('#gridDictionaryTypeList').datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                singleSelect: true,
+                loadMsg: '数据加载中请稍后……',
+                url: '@Url.Content("~/DM/Dictionary/LoadDictionaryType")',
+                striped: true,
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                frozenColumns: [[
+               { field: "ID", width: '10%', align: "center", hidden: true },
+               { field: "TypeID", title: "类型编码", width: '30%', align: "center" },
+               { field: "Description", title: "描述", width: '40%', align: "center" },
+               {
+                   field: "IsActive", title: "是否有效", width: '10%',
+                   formatter: function (value, rowData, rowIndex) {
+                       if (value == true) {
+                           return "有效";
+                       }
+                       else {
+                           return "无效";
+                       }
+                   }
+               },
+                 {
+                     field: 'opt', title: '维护子目录', width: '15%', align: 'center', frozen: 'true',
+                     formatter: function (value, row, index) {
+                         var TypeID = row.TypeID;
+                         //加\变引号，避免JS错认为MaterialType为变量（找不到变量），不为值。
+                         return '<a  class="linkURLcls" onclick="openURL(\'' + TypeID + '\');"  href="javascript:void(0)">维护</a>';
+                     }
+                 }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.IsActive == false) {
+                        return 'color:red';
+                    }
+                },
+                onLoadSuccess: function (data) {
+
+                    $('.linkURLcls').linkbutton({
+                        text: '维护',
+                        plain: true,
+                        iconCls: 'icon-custom-cWuZiWeiHu'
+                    });
+                },
+                //toolbar: [
+                //   {
+                //       id: 'btnTypeAdd',
+                //       text: '新增',
+                //       iconCls: 'icon-add',
+                //       handler: function () {
+                //           $('#DictionaryTypeEdit').dialog('open');
+
+                //           //将编辑里的赋值内容清除
+                //           clearTypeEditSet();
+                //       }
+                //   }, '-',
+                //   {
+                //       id: 'btnTypeEdit',
+                //       text: '修改',
+                //       iconCls: 'icon-edit',
+                //       handler: function () {
+                //           $.GID("btnTypeadd").style.display = "none";
+                //           $.GID("btnTypeedit").style.display = "block";
+
+                //           var row = $('#gridDictionaryTypeList').datagrid('getSelected');
+                //           if (row) {
+                //               $("#DictionaryTypeID").val(row.ID);
+                //               $("#TypeID").textbox("setText", row.TypeID);
+                //               $("#Description").textbox("setText", row.Description);
+                //               $('#DictionaryTypeEdit').dialog('open');
+
+                //           } else {
+                //               $.messager.alert('提示', '请选择数据行', 'info', function () {
+                //               });
+                //           }
+                //       }
+                //   }, '-',
+                //   {
+                //       id: 'btnTypeJinYong',
+                //       text: '<span style="color:red">禁用</span>',
+                //       iconCls: 'icon-custom-cJinYong',
+                //       handler: function () {
+                //           submitActiveTypeForm(false);
+                //       }
+                //   }, '-',
+                //   {
+                //       id: 'btnTypeQiYong',
+                //       text: '<span style="color:darkgreen">启用</span>',
+                //       iconCls: 'icon-custom-cQiYong',
+                //       handler: function () {
+                //           submitActiveTypeForm(true);
+                //       }
+                //   }
+                //],
+                onSelect: function (index, row) {
+                    if (row.IsActive) {
+                        $('#btnTypeQiYong').linkbutton('disable');
+                        $('#btnTypeJinYong').linkbutton('enable');
+                    } else {
+                        $('#btnTypeQiYong').linkbutton('enable');
+                        $('#btnTypeJinYong').linkbutton('disable');
+                    }
+                }
+            });
+
+            $.setGridWithSearchBar("#TableForm", "#tbb", "#gridDictionaryTypeList");
+        }
+        //打开维护连接，加载字典树 根据TypeID
+        function openURL(TypeID) {
+            $('#treeDictionarydialog').dialog('open');
+            $('#treedictionarylist').tree({
+                url: '@Url.Content("~/DM/Dictionary/DataLoad")',
+                method: 'POST',
+                animate: true,
+                lines: true,
+                queryParams: {
+                    TTypeID: TypeID
+                },
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    // 查找节点
+                    $('#treedictionarylist').tree('select', node.target);
+                    var pnode = $('#treedictionarylist').tree('getParent', node.target);
+                    if (pnode != null) {
+                        ParentDictionaryCode = pnode.id;
+                        ParentLevelCode = pnode.attributes.LevelID;
+                        ParentName = pnode.text;
+                    }
+                    else {
+                        ParentDictionaryCode = "-1";
+                        ParentName = "无";
+                    }
+                    LowerLevelStroageCode = node.id;
+                    LowerLevelCode = node.attributes.LevelID;
+                    LowerName = node.text;
+                    DictionaryType = TypeID;
+
+                    // 显示快捷菜单
+                    $('#menu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+        }
+
+        //清除编辑
+        function clearTypeEditSet() {
+            $.GID("btnTypeadd").style.display = "block";
+            $.GID("btnTypeedit").style.display = "none";
+
+            $('#DictionaryTypeID').val("");
+            $("#TypeID").textbox("clear");
+            $("#Description").textbox("clear");
+        }
+
+        //提交字典Type禁用，启用Form
+        function submitActiveTypeForm(i) {
+            var row = $('#gridDictionaryTypeList').datagrid('getSelected');
+            if (row) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/Dictionary/updataTypeActive")',
+                    data:
+                        {
+                            DTID: row.ID,
+                            isActive: i
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $("#gridDictionaryTypeList").datagrid("reload");
+                        });
+                    }
+                });
+            }
+            else {
+                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                });
+            }
+        }
+
+        //提交新增字典Type Form
+        function submitTypeAddForm() {
+            var isValid = $("#DictionaryTypeEdit").form("validate");
+            if (isValid) {
+                $('#btnTypeadd').linkbutton('disable');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/Dictionary/AddDictonaryType")',
+                    data:
+                        {
+                            TypeID: $('#TypeID').textbox('getText'),
+                            Description: $('#Description').textbox('getText')
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#DictionaryTypeEdit').dialog("close");
+                            $("#gridDictionaryTypeList").datagrid("reload");
+                        }, function () {
+                            $('#btnTypeadd').linkbutton('enable');
+                        });
+                    }
+                });
+            } else {
+                $.showMsg("请填写必填项！", "提示");
+            }
+        }
+
+        //提交编辑字典Type Form
+        function submitTypeEditForm() {
+            var isValid = $("#DictionaryTypeEdit").form("validate");
+            if (isValid) {
+                $('#btnTypeedit').linkbutton('disable');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/Dictionary/EditDictonaryType")',
+                    data:
+                        {
+                            DID: $("#DictionaryTypeID").val(),
+                            TypeID: $('#TypeID').textbox('getText'),
+                            Description: $('#Description').textbox('getText')
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#DictionaryTypeEdit').dialog("close");
+                            $("#gridDictionaryTypeList").datagrid("reload");
+                        }, function () {
+                            $('#btnTypeedit').linkbutton('enable');
+                        });
+                    }
+                });
+            }
+        }
+
+        //新增平级字典
+        function AddDictionaryLevel() {
+
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentDictionaryName').textbox('setText', ParentName);
+            $('#ParentDictionaryID').val(ParentDictionaryCode);
+            $('#LevelCode').val(ParentLevelCode);
+            $('#DictionarySN').numberbox('clear');
+            $('#DictionaryName').textbox('clear');
+            $('#DictionaryEdit').dialog('open');
+            $('#btnadd').linkbutton('enable');
+        }
+        //新增下级字典
+        function AddDictionaryLowerLevel() {
+            
+       
+            $.GID("btnadd").style.display = "block";
+            $.GID("btnedit").style.display = "none";
+            $('#ParentDictionaryName').textbox('setText', LowerName);
+            $('#ParentDictionaryID').val(LowerLevelStroageCode);
+            $('#LevelCode').val(LowerLevelCode);
+            $('#DictionarySN').numberbox('clear');
+            $('#DictionaryName').textbox('clear');
+            $('#DictionaryEdit').dialog('open');
+
+            $('#btnadd').linkbutton('enable');
+        }
+        //修改字典
+        function EditDictionaryInfo() {
+
+            $.GID("btnadd").style.display = "none";
+            $.GID("btnedit").style.display = "block";
+            //$.GID("DictionarySN").style.display = "block";
+           
+            $('#ParentDictionaryName').textbox('setText', ParentName);
+            $('#DictionaryID').val(LowerLevelStroageCode);
+            $('#DictionaryName').textbox('setText', LowerName);
+            $('#DictionaryEdit').dialog('open');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/Dictionary/GetSNByID")',
+                data:
+                    {
+                        DID: $('#DictionaryID').val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                   
+                    $('#DictionarySN').numberbox('setText', jsData.SNInfo);
+                }
+            });
+            $('#btnedit').linkbutton('enable');
+        }
+        //字典禁用
+        function banInfo() {
+            var Active = false;
+
+            $('#DictionaryNameForIsActive').val(LowerName);
+            submitActiveForm(Active);
+        }
+        //字典启用
+        function startInfo() {
+            var Active = true;
+            $('#DictionaryNameForIsActive').val(LowerName);
+            submitActiveForm(Active);
+        }
+
+        //字典禁用，启用提交方法
+        function submitActiveForm(Active) {
+        
+            $('#DictionaryID').val(LowerLevelStroageCode);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/Dictionary/updataActive")',
+                data:
+                    {
+                        DID: $('#DictionaryID').val(),
+                        DinctionaryNameActive: $('#DictionaryNameForIsActive').val(),
+                        isActive: Active
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        $('#treedictionarylist').tree("reload");
+                        $('#DictionaryEdit').dialog('close');
+                    },
+                    function () {
+                        $('#btnadd').linkbutton('enable');
+                    });
+                }
+            });
+        }
+
+        //新增字典提交方法
+        function submitAddForm() {
+            var isValid = $("#DictionaryEdit").form("validate");
+            if (isValid) {
+                $('#btnadd').linkbutton('disable');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/Dictionary/AddDictionary")',
+                    data:
+                        {
+                            TDictionaryType: DictionaryType,
+                            PID: $('#ParentDictionaryID').val(),
+                            SN: $('#DictionarySN').numberbox('getText'),
+                            DinctionaryName: $('#DictionaryName').textbox('getText')
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#treedictionarylist').tree("reload");
+                            $('#DictionaryEdit').dialog('close');
+                        },
+                        function () {
+                            $('#btnadd').linkbutton('enable');
+                        });
+                    }
+                });
+            }
+        }
+        //修改字典提交方法
+        function submitEditForm() {
+            $('#btnedit').linkbutton('disable');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/Dictionary/EditDictionary")',
+                data:
+                    {
+                        DID: $('#DictionaryID').val(),
+                        DictionaryName: $('#DictionaryName').textbox('getText'),
+                        SN: $('#DictionarySN').numberbox('getText')
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+
+                        $('#treedictionarylist').tree("reload");
+                        $('#DictionaryEdit').dialog('close');
+                    }, function () {
+                        $('#btnedit').linkbutton('enable');
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+
+    <div data-options="region:'center',title:'字典信息维护',iconCls:'icon-custom-cDic'">
+        <div id="tbb"></div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridDictionaryTypeList" border="0"></table>
+        </div>
+    </div>
+</div>
+<div>
+    <div id="treeDictionarydialog" class="easyui-dialog" title="字典子目录维护" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cWuZiWeiHu'" style="width:350px;height:550px;padding:10px;">
+        <ul id="treedictionarylist"></ul>
+    </div>
+    <div id="menu" class="easyui-menu" style="width:150px;">
+        <div data-options="iconCls:'icon-custom-Surplus'" onclick="AddDictionaryLevel();">添加平级字典</div>
+        <div data-options="iconCls:'icon-add'" onclick="AddDictionaryLowerLevel();">添加下级字典</div>
+        <div class="menu-sep"></div>
+        <div data-options="iconCls:'icon-edit'" onclick="EditDictionaryInfo();">修改信息</div>
+        <div class="menu-sep"></div>
+        <div data-options="iconCls:'icon-custom-cJinYong'" onclick=" banInfo();"><span style="color:red">禁用</span>该字典信息</div>
+        <div class="menu-sep"></div>
+        <div data-options="iconCls:'icon-custom-cQiYong'" onclick=" startInfo();"><span style="color:darkgreen">启用</span>该字典信息</div>
+    </div>
+</div>
+
+<div id="DictionaryEdit" class="easyui-dialog" title="维护" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cWuZiWeiHu'" style="width:300px;height:205px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden">
+        <table style="width:99%">
+            <tr style="height:40px">
+                <td>上级：</td>
+                <td>
+                    <input id="ParentDictionaryName" class="easyui-textbox" style="width:160px" data-options="readonly:true" />
+                    <input id="ParentDictionaryID" type="hidden" />
+                    <input id="LevelCode" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height:40px">
+                <td>名称：</td>
+                <td>
+                    <input id="DictionaryName" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                    <input id="DictionaryNameForIsActive" type="hidden" />
+                    <input id="DictionaryID" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height:40px">
+                <td>顺序号：</td>
+                <td><input id="DictionarySN" class="easyui-numberbox" style="width:160px" /></td>
+            </tr>
+            <tr style="height:30px">
+                <td colspan="2">
+                    <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改</a>
+                    <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="DictionaryTypeEdit" class="easyui-dialog" title="类型维护" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Surplus'" style="width:320px;height:155px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden">
+        <table style="width:99%">
+            <tr style="height:40px">
+                <td>类型编码：</td>
+                <td>
+                    <input id="TypeID" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                    <input id="DictionaryTypeID" type="hidden" />
+                </td>
+            </tr>
+            <tr style="height:40px">
+                <td>描述：</td>
+                <td>
+                    <input id="Description" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                </td>
+            </tr>
+            <tr style="height:30px">
+                <td colspan="2">
+                    <a href="javascript:void(0)" id="btnTypeedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitTypeEditForm();">确认修改</a>
+                    <a href="javascript:void(0)" id="btnTypeadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitTypeAddForm();">确认新增</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

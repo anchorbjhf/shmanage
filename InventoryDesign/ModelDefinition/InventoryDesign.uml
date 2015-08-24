@@ -1,0 +1,3081 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modelStoreModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner"
+  dslVersion="1.0.0.0"
+  Id="fbf94e58-00ee-4d1e-816c-ea2bda59f8fd"
+  name="InventoryDesign" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <profileInstances>
+    <packageHasProfileInstances
+      Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b">
+      <profileInstance
+        Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791"
+        name="StandardProfileL2" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances
+      Id="29349502-908c-4fda-9054-c48619c59ed0">
+      <profileInstance
+        Id="532ea607-fb19-44b8-8502-3351b05452be"
+        name="StandardProfileL3" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction
+        Id="39115a63-423e-4641-8b56-4e61b01dcc84"
+        name="入库流程"
+        collapseFragmentsFlag="false"
+        isActiveClass="false"
+        isAbstract="false"
+        isLeaf="false"
+        isReentrant="false">
+        <ownedCommentsInternal>
+          <comment
+            Id="589bc02d-5f3e-45f6-ad56-8f0d0ae8dfc6">
+            <body>红充入库
+EntryType</body>
+          </comment>
+          <comment
+            Id="8a1372fd-3431-41ee-8bb2-3d1c13ecc966">
+            <body>红充入库 + 负数</body>
+          </comment>
+        </ownedCommentsInternal>
+        <fragments>
+          <behaviorExecutionSpecification
+            Id="5a109d80-170f-4e60-b773-82918e8524c9"
+            name="BehaviorExecutionSpecification2">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="244e02ca-a6b2-4edc-865d-d61d29c6e998"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="5441a98f-e470-48fb-8513-6f605c3ce30c"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="d10c2228-5ba5-4ef7-ae60-348d8216ceca"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="0039ecf0-e29f-4a26-933d-773afcac5d7b"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="5441a98f-e470-48fb-8513-6f605c3ce30c"
+            name="ExecutionOccurrenceSpecification3">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="35cf7734-5105-4eae-9934-64af840937ed"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a4410a49-7aed-4fdc-81fb-44587dc1b01a"
+            name="MessageOccurrenceSpecification5">
+            <covered>
+              <lifelineMoniker
+                Id="44c734e8-74a3-4ddc-8544-f33d06ab1a28"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d10c2228-5ba5-4ef7-ae60-348d8216ceca"
+            name="MessageOccurrenceSpecification6">
+            <covered>
+              <lifelineMoniker
+                Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="131526d9-02fe-4b4e-bf1f-5c2464f8df14"
+            name="BehaviorExecutionSpecification3">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="46bdedea-7969-4c29-8b11-a1046a03b308"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="192d3de3-ab9e-4318-aadb-ae2b3053f68b"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="d60d43fd-2ff9-4db7-95fc-b0c0b2e07df6"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="7a2c3fd0-f99d-4f37-8eb0-d906463461cf"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="6213e57c-dfab-49e4-8fd6-ec4f63137e05"
+                LastKnownName="MessageOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="a7ae6b3b-7c10-40c8-ad47-5278beffdd9d"
+                LastKnownName="MessageOccurrenceSpecification25"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="55a04688-f805-4098-aa2c-87df55ca8a2d"
+                LastKnownName="MessageOccurrenceSpecification27"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="192d3de3-ab9e-4318-aadb-ae2b3053f68b"
+            name="ExecutionOccurrenceSpecification5">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="c856fcd3-3e59-4317-84e3-f2f619420b0e"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0039ecf0-e29f-4a26-933d-773afcac5d7b"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d60d43fd-2ff9-4db7-95fc-b0c0b2e07df6"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="244e02ca-a6b2-4edc-865d-d61d29c6e998"
+            name="ExecutionOccurrenceSpecification4">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="f98016d5-7b06-47bc-8337-f1ccd7d94756"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="e2ee4312-d3ba-4e82-8cde-80d45814c098"
+            name="BehaviorExecutionSpecification7">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="dc136a0e-96da-49a4-8ef1-acf9ee5f1b38"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="b6b0dabf-0121-4c0f-bff6-470217607619"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="ff29c398-6114-472f-bb04-3e1f7dd901a4"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="ddfa5616-5e3f-4dd4-a634-71ca810e34fe"
+                LastKnownName="MessageOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="b6b0dabf-0121-4c0f-bff6-470217607619"
+            name="ExecutionOccurrenceSpecification13">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="56ed3ead-b182-40c5-a33e-7d2a714ec3ac"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7a2c3fd0-f99d-4f37-8eb0-d906463461cf"
+            name="MessageOccurrenceSpecification17">
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ff29c398-6114-472f-bb04-3e1f7dd901a4"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ddfa5616-5e3f-4dd4-a634-71ca810e34fe"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6213e57c-dfab-49e4-8fd6-ec4f63137e05"
+            name="MessageOccurrenceSpecification20">
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="dc136a0e-96da-49a4-8ef1-acf9ee5f1b38"
+            name="ExecutionOccurrenceSpecification14">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="81f95c47-ac5c-48e4-84ec-1b2969d3f01f"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="f147bfdd-c230-4021-88a8-4529060e2d3e"
+            name="BehaviorExecutionSpecification10">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="f9aa2fa7-80c8-4d85-82f2-3de5d82482a7"
+                LastKnownName="ExecutionOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="28aa3534-e7e2-418f-91d7-7f3a70dc3cf8"
+                LastKnownName="ExecutionOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="6f96187e-13ee-4020-9a76-e90f614113e4"
+                LastKnownName="MessageOccurrenceSpecification26"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="28aa3534-e7e2-418f-91d7-7f3a70dc3cf8"
+            name="ExecutionOccurrenceSpecification19">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="3d1fa5fd-64ba-464e-8443-a2082676f08d"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a7ae6b3b-7c10-40c8-ad47-5278beffdd9d"
+            name="MessageOccurrenceSpecification25">
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6f96187e-13ee-4020-9a76-e90f614113e4"
+            name="MessageOccurrenceSpecification26">
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="f9aa2fa7-80c8-4d85-82f2-3de5d82482a7"
+            name="ExecutionOccurrenceSpecification20">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="5468f1f5-2928-4353-8512-5631f779dc83"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="ea2802ea-6551-4601-a833-452207bb1407"
+            name="BehaviorExecutionSpecification11">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="f937d37c-38fc-47f2-8905-36e8b91334fb"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="2d7de22a-0706-4434-9efd-2c747f147a7a"
+                LastKnownName="ExecutionOccurrenceSpecification22"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="2c82fb2f-5acd-4ab5-83d0-f2a6064a43b3"
+                LastKnownName="ExecutionOccurrenceSpecification21"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="928719a6-34c7-4b06-a40a-dda2099496ed"
+                LastKnownName="MessageOccurrenceSpecification28"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="2c82fb2f-5acd-4ab5-83d0-f2a6064a43b3"
+            name="ExecutionOccurrenceSpecification21">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="94ee87d5-273c-47c5-b798-901e5ecd7832"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f937d37c-38fc-47f2-8905-36e8b91334fb"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="55a04688-f805-4098-aa2c-87df55ca8a2d"
+            name="MessageOccurrenceSpecification27">
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="928719a6-34c7-4b06-a40a-dda2099496ed"
+            name="MessageOccurrenceSpecification28">
+            <covered>
+              <lifelineMoniker
+                Id="f937d37c-38fc-47f2-8905-36e8b91334fb"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="46bdedea-7969-4c29-8b11-a1046a03b308"
+            name="ExecutionOccurrenceSpecification6">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="07e3cb98-3e35-4504-959f-3092b7690e6e"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="54149287-5068-4366-83c5-1e4048e34c3f"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="2d7de22a-0706-4434-9efd-2c747f147a7a"
+            name="ExecutionOccurrenceSpecification22">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="34455d64-7854-479b-acab-0ca4176bbca6"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f937d37c-38fc-47f2-8905-36e8b91334fb"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline
+            Id="44c734e8-74a3-4ddc-8544-f33d06ab1a28"
+            name="UI"
+            isActor="false"
+            lifelineDisplayName="UI">
+            <topLevelOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="a4410a49-7aed-4fdc-81fb-44587dc1b01a"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="f006c104-2d47-4afd-89bd-cfc25db1cd28"
+            name="I_Entry"
+            isActor="false"
+            lifelineDisplayName="I_Entry">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="5441a98f-e470-48fb-8513-6f605c3ce30c"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="244e02ca-a6b2-4edc-865d-d61d29c6e998"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="54149287-5068-4366-83c5-1e4048e34c3f"
+            name="I_EntryDetail"
+            isActor="false"
+            lifelineDisplayName="I_EntryDetail">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="192d3de3-ab9e-4318-aadb-ae2b3053f68b"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="46bdedea-7969-4c29-8b11-a1046a03b308"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="66d1f3b9-a5e5-454d-9268-9cf639fb5baf"
+            name="I_Surplus"
+            isActor="false"
+            lifelineDisplayName="I_Surplus">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="b6b0dabf-0121-4c0f-bff6-470217607619"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="dc136a0e-96da-49a4-8ef1-acf9ee5f1b38"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="28aa3534-e7e2-418f-91d7-7f3a70dc3cf8"
+                LastKnownName="ExecutionOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="f9aa2fa7-80c8-4d85-82f2-3de5d82482a7"
+                LastKnownName="ExecutionOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="f937d37c-38fc-47f2-8905-36e8b91334fb"
+            name="I_InventoryRecord"
+            isActor="false"
+            lifelineDisplayName="I_InventoryRecord">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="2c82fb2f-5acd-4ab5-83d0-f2a6064a43b3"
+                LastKnownName="ExecutionOccurrenceSpecification21"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="2d7de22a-0706-4434-9efd-2c747f147a7a"
+                LastKnownName="ExecutionOccurrenceSpecification22"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message
+            Id="6efeb15f-d258-4f95-b7bb-5e52c8aa9150"
+            name="插入主表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="a4410a49-7aed-4fdc-81fb-44587dc1b01a"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="d10c2228-5ba5-4ef7-ae60-348d8216ceca"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="c21e4896-8a2a-437f-a073-a0a0c9947ea5"
+            name="插入从表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="0039ecf0-e29f-4a26-933d-773afcac5d7b"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="d60d43fd-2ff9-4db7-95fc-b0c0b2e07df6"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="54ab3e70-b5ad-4690-b02e-b5f43da1b0e1"
+            name="查询当前批次库存"
+            messageKind="Complete"
+            messageSort="SynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="7a2c3fd0-f99d-4f37-8eb0-d906463461cf"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="ff29c398-6114-472f-bb04-3e1f7dd901a4"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="5eac5ec6-1a84-4fdb-80d1-de17ffcb2add"
+            name="当前库存结余"
+            messageKind="Complete"
+            messageSort="Reply"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="ddfa5616-5e3f-4dd4-a634-71ca810e34fe"
+                LastKnownName="MessageOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="6213e57c-dfab-49e4-8fd6-ec4f63137e05"
+                LastKnownName="MessageOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="03942120-3c59-4a35-8f7f-c8283f0f8fe7"
+            name="更新 新增+原结余"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="a7ae6b3b-7c10-40c8-ad47-5278beffdd9d"
+                LastKnownName="MessageOccurrenceSpecification25"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="6f96187e-13ee-4020-9a76-e90f614113e4"
+                LastKnownName="MessageOccurrenceSpecification26"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="5ac5c10d-21d4-4e04-8ccb-0ffd0c73bf93"
+            name="新增 流水（当前库存余量） "
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="55a04688-f805-4098-aa2c-87df55ca8a2d"
+                LastKnownName="MessageOccurrenceSpecification27"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="928719a6-34c7-4b06-a40a-dda2099496ed"
+                LastKnownName="MessageOccurrenceSpecification28"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="35cf7734-5105-4eae-9934-64af840937ed"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="f98016d5-7b06-47bc-8337-f1ccd7d94756"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="c856fcd3-3e59-4317-84e3-f2f619420b0e"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="07e3cb98-3e35-4504-959f-3092b7690e6e"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="56ed3ead-b182-40c5-a33e-7d2a714ec3ac"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="81f95c47-ac5c-48e4-84ec-1b2969d3f01f"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="3d1fa5fd-64ba-464e-8443-a2082676f08d"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="5468f1f5-2928-4353-8512-5631f779dc83"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="94ee87d5-273c-47c5-b798-901e5ecd7832"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="34455d64-7854-479b-acab-0ca4176bbca6"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <interaction
+        Id="e78ff06e-b5ff-4c7a-8339-69ad4921f559"
+        name="出库流程"
+        collapseFragmentsFlag="false"
+        isActiveClass="false"
+        isAbstract="false"
+        isLeaf="false"
+        isReentrant="false">
+        <ownedCommentsInternal>
+          <comment
+            Id="a17e244e-f1a8-4bca-a541-964e9c646233">
+            <body>
+1. 生成 出库红充单信息
+
+2 生成子库入库单红充信息
+
+注意：
+RedEntryDetailCode = 出库单的 TargetEntryDetailCode</body>
+          </comment>
+        </ownedCommentsInternal>
+        <fragments>
+          <behaviorExecutionSpecification
+            Id="d0382aa0-0e02-4f3f-a2cd-139167e19821"
+            name="BehaviorExecutionSpecification1">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="d3f72d0b-c932-4241-88c5-f933276e275b"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="694497ca-e21b-4358-86af-ae04c18f0ba2"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="7134f9cf-4cab-496d-b4f2-0db8c556feb1"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="0627cf79-2ea0-4524-a979-36eb88508dcb"
+                LastKnownName="MessageOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="694497ca-e21b-4358-86af-ae04c18f0ba2"
+            name="ExecutionOccurrenceSpecification1">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="da50baaf-c720-4274-8120-f10cb57306ea"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7134f9cf-4cab-496d-b4f2-0db8c556feb1"
+            name="MessageOccurrenceSpecification2">
+            <covered>
+              <lifelineMoniker
+                Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a9444aaf-a863-4784-9832-85c001e2b83d"
+            name="MessageOccurrenceSpecification1">
+            <covered>
+              <lifelineMoniker
+                Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="70cf0f75-76db-4cd6-b1e1-40b53bde8700"
+            name="BehaviorExecutionSpecification2">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="8d5e7caa-2e8b-4a71-b5a3-e92b4a37de9b"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="6c2a1c43-5c4b-4f9a-9980-b89814adcbfc"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="2227aee5-e41d-45da-92a8-0917059542c7"
+                LastKnownName="MessageOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="852e3221-b67f-4a72-98c1-6973c0abafe9"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="52fe4f39-fc67-404e-b8d1-cc8fc690354c"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="f7f43092-d0af-479d-bb9b-d708eca36d0e"
+                LastKnownName="MessageOccurrenceSpecification9"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="19b93ea7-c8fc-4b77-a88d-bf535be90267"
+                LastKnownName="MessageOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="6c2a1c43-5c4b-4f9a-9980-b89814adcbfc"
+            name="ExecutionOccurrenceSpecification3">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="a2c666ab-ccca-4b64-9e4b-2848003a4b4c"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2227aee5-e41d-45da-92a8-0917059542c7"
+            name="MessageOccurrenceSpecification4">
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0627cf79-2ea0-4524-a979-36eb88508dcb"
+            name="MessageOccurrenceSpecification3">
+            <covered>
+              <lifelineMoniker
+                Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="c4e8d414-3d4d-4735-b97a-b2afd9e836a0"
+            name="BehaviorExecutionSpecification3">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="63728e14-aa2d-43dc-8e74-56af5a23cf4e"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="5f2925f1-039e-4274-ad4d-7196895e456f"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="a39ed696-acac-4c9d-b813-28d735ff4c26"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="b86b1390-908b-402e-a7a4-5e2c79528b64"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="d3f72d0b-c932-4241-88c5-f933276e275b"
+            name="ExecutionOccurrenceSpecification2">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="8cc6bde0-310c-4695-bbe5-479c265cd340"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="5f2925f1-039e-4274-ad4d-7196895e456f"
+            name="ExecutionOccurrenceSpecification5">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="fced5682-4a41-4e4b-91cc-188539e8d3d9"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="852e3221-b67f-4a72-98c1-6973c0abafe9"
+            name="MessageOccurrenceSpecification5">
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a39ed696-acac-4c9d-b813-28d735ff4c26"
+            name="MessageOccurrenceSpecification6">
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b86b1390-908b-402e-a7a4-5e2c79528b64"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="52fe4f39-fc67-404e-b8d1-cc8fc690354c"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="63728e14-aa2d-43dc-8e74-56af5a23cf4e"
+            name="ExecutionOccurrenceSpecification6">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="d20089ae-8598-4aa7-a9f7-28d0663b0571"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="e54c021a-2c04-4415-8710-cfead0ccb7be"
+            name="BehaviorExecutionSpecification4">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="ff6bce70-0c69-4e24-ad69-90555f38ac1e"
+                LastKnownName="ExecutionOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="74e31fa9-1208-4f31-9fa9-93c0c436e06c"
+                LastKnownName="ExecutionOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="e29f1ef6-a9f5-4c15-ae65-44925c7eb21b"
+                LastKnownName="MessageOccurrenceSpecification10"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="74e31fa9-1208-4f31-9fa9-93c0c436e06c"
+            name="ExecutionOccurrenceSpecification7">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="cecc1b54-7c4e-4585-8304-7e5cabf0182e"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e29f1ef6-a9f5-4c15-ae65-44925c7eb21b"
+            name="MessageOccurrenceSpecification10">
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="f7f43092-d0af-479d-bb9b-d708eca36d0e"
+            name="MessageOccurrenceSpecification9">
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="ff6bce70-0c69-4e24-ad69-90555f38ac1e"
+            name="ExecutionOccurrenceSpecification8">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="6a6eb580-9531-486b-bd97-03eba09eb8ac"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="76892713-38f5-4181-9d52-2476c50200e0"
+            name="BehaviorExecutionSpecification6">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="5237d2dd-8d50-4643-99d5-15b44eb7ab37"
+                LastKnownName="ExecutionOccurrenceSpecification12"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="8fc71e4e-2682-44b5-be77-8d3cb9441119"
+                LastKnownName="ExecutionOccurrenceSpecification11"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="b8390675-aca2-4d9f-8244-3dce5b07f4e6"
+                LastKnownName="MessageOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="c4b08647-99a0-450b-aa0c-75a3ad11dcc5"
+                LastKnownName="MessageOccurrenceSpecification15"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="8fc71e4e-2682-44b5-be77-8d3cb9441119"
+            name="ExecutionOccurrenceSpecification11">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="e3dd9049-148d-4e78-ae12-790529e430ca"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b8390675-aca2-4d9f-8244-3dce5b07f4e6"
+            name="MessageOccurrenceSpecification14">
+            <covered>
+              <lifelineMoniker
+                Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="19b93ea7-c8fc-4b77-a88d-bf535be90267"
+            name="MessageOccurrenceSpecification13">
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="41f2a822-dda5-4e3d-bba7-816e4109fd44"
+            name="BehaviorExecutionSpecification7">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="324da9ee-a716-4db0-9161-5f5796c19857"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="3254d7cd-5f14-4315-95ce-5bc7b2be014a"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="0a4a956f-ab4c-40e4-9053-498a01b653ed"
+                LastKnownName="MessageOccurrenceSpecification16"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="b360ffd3-7383-4228-b704-34107b7a701e"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="3254d7cd-5f14-4315-95ce-5bc7b2be014a"
+            name="ExecutionOccurrenceSpecification13">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="d7778db5-7e01-4047-b3d1-e12bfe0b0da0"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c4b08647-99a0-450b-aa0c-75a3ad11dcc5"
+            name="MessageOccurrenceSpecification15">
+            <covered>
+              <lifelineMoniker
+                Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0a4a956f-ab4c-40e4-9053-498a01b653ed"
+            name="MessageOccurrenceSpecification16">
+            <covered>
+              <lifelineMoniker
+                Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="8d5e7caa-2e8b-4a71-b5a3-e92b4a37de9b"
+            name="ExecutionOccurrenceSpecification4">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="479a62df-c84b-4ef4-9a4c-929f998a9e48"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="5237d2dd-8d50-4643-99d5-15b44eb7ab37"
+            name="ExecutionOccurrenceSpecification12">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="d6761084-c200-4f27-83a5-1a1f91a93086"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="8c0b8ce3-4002-4faf-a34d-1b777a200288"
+            name="BehaviorExecutionSpecification3">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="69b47e5d-7511-4178-a66b-55919f9e7c65"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="1bf5d81b-3e15-4a37-ae56-b78207b56d0e"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="4320f13d-62fd-4fcc-9dfd-5233895c478f"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="52f3e385-984f-48fe-85dd-c64ae98b065f"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="275c5764-28a9-40ae-b37f-7cfacd30c429"
+                LastKnownName="MessageOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="9a790ee9-dedf-4fa8-b1a3-fcf958f972c3"
+                LastKnownName="MessageOccurrenceSpecification25"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="bac0b1be-912f-474c-a63b-420dbb3f86a7"
+                LastKnownName="MessageOccurrenceSpecification27"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="1bf5d81b-3e15-4a37-ae56-b78207b56d0e"
+            name="ExecutionOccurrenceSpecification5">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="93162012-ea6d-4833-9143-ee7feda44f61"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b360ffd3-7383-4228-b704-34107b7a701e"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="4320f13d-62fd-4fcc-9dfd-5233895c478f"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="8e0cd702-91b0-489b-a595-c2b75f12e8a3"
+            name="BehaviorExecutionSpecification7">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="11b94039-bfc6-432d-a176-17ba08d073f9"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="4c40ae07-04f5-4ffe-badb-80032a391932"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="71837082-35f2-46cf-a054-624a343bc7e5"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="c146332b-4753-467e-af7d-aa83c396b8e4"
+                LastKnownName="MessageOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="324da9ee-a716-4db0-9161-5f5796c19857"
+            name="ExecutionOccurrenceSpecification14">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="64b40a24-a539-4f3e-a09d-a40bcb39718a"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+                LastKnownName="I_Entry"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="4c40ae07-04f5-4ffe-badb-80032a391932"
+            name="ExecutionOccurrenceSpecification13">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="83107d89-709c-4777-9484-443ef4ecf585"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="52f3e385-984f-48fe-85dd-c64ae98b065f"
+            name="MessageOccurrenceSpecification17">
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="71837082-35f2-46cf-a054-624a343bc7e5"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c146332b-4753-467e-af7d-aa83c396b8e4"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="275c5764-28a9-40ae-b37f-7cfacd30c429"
+            name="MessageOccurrenceSpecification20">
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="11b94039-bfc6-432d-a176-17ba08d073f9"
+            name="ExecutionOccurrenceSpecification14">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="e3ab7b54-d3aa-41c0-ab62-2969c023e91c"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="8ebe72ed-e14e-434a-85cb-908697a25e7c"
+            name="BehaviorExecutionSpecification10">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="2b74e612-9e6b-4cde-994c-48bd49942214"
+                LastKnownName="ExecutionOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="55c0cedf-9b86-4f11-8655-fe834db7ba30"
+                LastKnownName="ExecutionOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="83d3bea5-3d7d-45e3-a1f4-486566f00ff1"
+                LastKnownName="MessageOccurrenceSpecification26"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="55c0cedf-9b86-4f11-8655-fe834db7ba30"
+            name="ExecutionOccurrenceSpecification19">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="96f62607-bade-499a-ad63-8ffdb3944098"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9a790ee9-dedf-4fa8-b1a3-fcf958f972c3"
+            name="MessageOccurrenceSpecification25">
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="83d3bea5-3d7d-45e3-a1f4-486566f00ff1"
+            name="MessageOccurrenceSpecification26">
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="2b74e612-9e6b-4cde-994c-48bd49942214"
+            name="ExecutionOccurrenceSpecification20">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="2e689ebb-b491-4715-8bf1-651ddca8c575"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="6dbc8d8c-0fe3-49d5-9bb7-cdb34807b1c5"
+            name="BehaviorExecutionSpecification11">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="0d6223f6-1763-45e5-8ba3-956de94bb3b3"
+                LastKnownName="ExecutionOccurrenceSpecification22"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="cf52f2c7-39ce-4a3b-9d89-82a42a2faaec"
+                LastKnownName="ExecutionOccurrenceSpecification21"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="2f939298-351b-445d-851b-6c061db92e4c"
+                LastKnownName="MessageOccurrenceSpecification28"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="75957aff-3d89-420c-a732-5096d265e255"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="cf52f2c7-39ce-4a3b-9d89-82a42a2faaec"
+            name="ExecutionOccurrenceSpecification21">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="a5980ae7-2264-477b-bb73-111eec8bbcd5"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="bac0b1be-912f-474c-a63b-420dbb3f86a7"
+            name="MessageOccurrenceSpecification27">
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2f939298-351b-445d-851b-6c061db92e4c"
+            name="MessageOccurrenceSpecification28">
+            <covered>
+              <lifelineMoniker
+                Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="69b47e5d-7511-4178-a66b-55919f9e7c65"
+            name="ExecutionOccurrenceSpecification6">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="8b6d2577-e08e-42d4-9ff0-db57faabcf16"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+                LastKnownName="I_EntryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="7c4368c6-5c97-4ea9-b2b3-8d6f46e6ee3a"
+            name="BehaviorExecutionSpecification8">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="c44a6d79-acce-438b-85f9-0b3296e672e0"
+                LastKnownName="ExecutionOccurrenceSpecification16"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="e958395a-f892-432f-a507-7f6b7f329de7"
+                LastKnownName="ExecutionOccurrenceSpecification15"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="deacc3bf-6343-4067-9f42-68695bacad77"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="e958395a-f892-432f-a507-7f6b7f329de7"
+            name="ExecutionOccurrenceSpecification15">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="ac074a61-44ee-4c88-b092-c9cf77de26e2"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="75957aff-3d89-420c-a732-5096d265e255"
+            name="MessageOccurrenceSpecification17">
+            <covered>
+              <lifelineMoniker
+                Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="deacc3bf-6343-4067-9f42-68695bacad77"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="0d6223f6-1763-45e5-8ba3-956de94bb3b3"
+            name="ExecutionOccurrenceSpecification22">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="3b389ec9-11e4-42d8-9358-2cd11c75d062"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="c44a6d79-acce-438b-85f9-0b3296e672e0"
+            name="ExecutionOccurrenceSpecification16">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="83c47e61-3cdf-481a-8ab4-567894b149d6"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline
+            Id="bd7ca367-ec48-47bd-ab0c-58ef4c9b2299"
+            name="UI"
+            isActor="false"
+            lifelineDisplayName="UI">
+            <topLevelOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="a9444aaf-a863-4784-9832-85c001e2b83d"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="e958395a-f892-432f-a507-7f6b7f329de7"
+                LastKnownName="ExecutionOccurrenceSpecification15"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="c44a6d79-acce-438b-85f9-0b3296e672e0"
+                LastKnownName="ExecutionOccurrenceSpecification16"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="9eef1973-b73e-467d-a055-530a3144f2b2"
+            name="I_Delivery"
+            isActor="false"
+            lifelineDisplayName="I_Delivery">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="694497ca-e21b-4358-86af-ae04c18f0ba2"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="d3f72d0b-c932-4241-88c5-f933276e275b"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="63f0d9d5-9f73-4837-9345-3f904b9c3f12"
+            name="I_DeliveryDetail"
+            isActor="false"
+            lifelineDisplayName="I_DeliveryDetail">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="6c2a1c43-5c4b-4f9a-9980-b89814adcbfc"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="8d5e7caa-2e8b-4a71-b5a3-e92b4a37de9b"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="beee73d8-703f-42c6-ab20-afebfc3282ad"
+            name="I_Surplus"
+            isActor="false"
+            lifelineDisplayName="I_Surplus">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="5f2925f1-039e-4274-ad4d-7196895e456f"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="63728e14-aa2d-43dc-8e74-56af5a23cf4e"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="74e31fa9-1208-4f31-9fa9-93c0c436e06c"
+                LastKnownName="ExecutionOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="ff6bce70-0c69-4e24-ad69-90555f38ac1e"
+                LastKnownName="ExecutionOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="55696ce5-2cf7-4fe8-8996-f3c6fbeb698a"
+            name="I_InventoryRecord"
+            isActor="false"
+            lifelineDisplayName="I_InventoryRecord">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="8fc71e4e-2682-44b5-be77-8d3cb9441119"
+                LastKnownName="ExecutionOccurrenceSpecification11"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="5237d2dd-8d50-4643-99d5-15b44eb7ab37"
+                LastKnownName="ExecutionOccurrenceSpecification12"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="f42935bf-a3e0-4c9b-a3f6-3780b155663a"
+            name="I_Entry"
+            isActor="false"
+            lifelineDisplayName="I_Entry">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="3254d7cd-5f14-4315-95ce-5bc7b2be014a"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="324da9ee-a716-4db0-9161-5f5796c19857"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="d9ac45f0-8cee-444e-bd5b-8c70660773b4"
+            name="I_EntryDetail"
+            isActor="false"
+            lifelineDisplayName="I_EntryDetail">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="1bf5d81b-3e15-4a37-ae56-b78207b56d0e"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="69b47e5d-7511-4178-a66b-55919f9e7c65"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="bfdc77a3-510e-4a96-8b2f-1771c4276019"
+            name="I_Surplus"
+            isActor="false"
+            lifelineDisplayName="I_Surplus">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="4c40ae07-04f5-4ffe-badb-80032a391932"
+                LastKnownName="ExecutionOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="11b94039-bfc6-432d-a176-17ba08d073f9"
+                LastKnownName="ExecutionOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="55c0cedf-9b86-4f11-8655-fe834db7ba30"
+                LastKnownName="ExecutionOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="2b74e612-9e6b-4cde-994c-48bd49942214"
+                LastKnownName="ExecutionOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="4b69afb6-c943-49bc-9431-4f4576a5b28f"
+            name="I_InventoryRecord"
+            isActor="false"
+            lifelineDisplayName="I_InventoryRecord">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="cf52f2c7-39ce-4a3b-9d89-82a42a2faaec"
+                LastKnownName="ExecutionOccurrenceSpecification21"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="0d6223f6-1763-45e5-8ba3-956de94bb3b3"
+                LastKnownName="ExecutionOccurrenceSpecification22"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message
+            Id="99259b1a-18f2-454c-bee9-bb5388c91b74"
+            name="插入出库主表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="a9444aaf-a863-4784-9832-85c001e2b83d"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="7134f9cf-4cab-496d-b4f2-0db8c556feb1"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="ad86d67c-4d5c-47c4-8987-186a7393e9d1"
+            name="插入出库从表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="0627cf79-2ea0-4524-a979-36eb88508dcb"
+                LastKnownName="MessageOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="2227aee5-e41d-45da-92a8-0917059542c7"
+                LastKnownName="MessageOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="0f5502d6-9303-4d74-8690-d8bc64007bdc"
+            name="查询当前批次库存剩余"
+            messageKind="Complete"
+            messageSort="SynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="852e3221-b67f-4a72-98c1-6973c0abafe9"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="a39ed696-acac-4c9d-b813-28d735ff4c26"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="2ef15251-2f88-4145-9959-d5b63a316cfd"
+            name="剩余信息"
+            messageKind="Complete"
+            messageSort="Reply"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="b86b1390-908b-402e-a7a4-5e2c79528b64"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="52fe4f39-fc67-404e-b8d1-cc8fc690354c"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="c1fb4067-e30d-40fe-bda7-94023c6d81bd"
+            name="update 剩余-出库数量"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="f7f43092-d0af-479d-bb9b-d708eca36d0e"
+                LastKnownName="MessageOccurrenceSpecification9"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="e29f1ef6-a9f5-4c15-ae65-44925c7eb21b"
+                LastKnownName="MessageOccurrenceSpecification10"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="86069af5-a820-4cfc-a7ba-e00c4355e683"
+            name="insert 出库信息（结余）"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="19b93ea7-c8fc-4b77-a88d-bf535be90267"
+                LastKnownName="MessageOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="b8390675-aca2-4d9f-8244-3dce5b07f4e6"
+                LastKnownName="MessageOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="2db3a76d-8a9d-43b8-9455-22045171f6f1"
+            name="插入入库主表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="c4b08647-99a0-450b-aa0c-75a3ad11dcc5"
+                LastKnownName="MessageOccurrenceSpecification15"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="0a4a956f-ab4c-40e4-9053-498a01b653ed"
+                LastKnownName="MessageOccurrenceSpecification16"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="2ee58cfe-76ea-40e2-8686-c70d1eb40843"
+            name="插入从表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="b360ffd3-7383-4228-b704-34107b7a701e"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="4320f13d-62fd-4fcc-9dfd-5233895c478f"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="658079c0-95e6-4425-b985-9ce565f2fce9"
+            name="查询当前批次库存"
+            messageKind="Complete"
+            messageSort="SynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="52f3e385-984f-48fe-85dd-c64ae98b065f"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="71837082-35f2-46cf-a054-624a343bc7e5"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="0cf5dfb4-adb7-4231-a1bb-8107bc7a3957"
+            name="当前库存结余"
+            messageKind="Complete"
+            messageSort="Reply"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="c146332b-4753-467e-af7d-aa83c396b8e4"
+                LastKnownName="MessageOccurrenceSpecification19"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="275c5764-28a9-40ae-b37f-7cfacd30c429"
+                LastKnownName="MessageOccurrenceSpecification20"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="543ba84c-f8c4-463a-8cfe-8dcd9e38c650"
+            name="更新 新增+原结余"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="9a790ee9-dedf-4fa8-b1a3-fcf958f972c3"
+                LastKnownName="MessageOccurrenceSpecification25"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="83d3bea5-3d7d-45e3-a1f4-486566f00ff1"
+                LastKnownName="MessageOccurrenceSpecification26"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="22f7951a-6df0-43b4-9ba1-4331f14c0dd4"
+            name="新增 流水（当前库存余量） "
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="bac0b1be-912f-474c-a63b-420dbb3f86a7"
+                LastKnownName="MessageOccurrenceSpecification27"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="2f939298-351b-445d-851b-6c061db92e4c"
+                LastKnownName="MessageOccurrenceSpecification28"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="945c8fb5-5677-439b-88b9-2a8544e1688e"
+            name="成功！"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="75957aff-3d89-420c-a732-5096d265e255"
+                LastKnownName="MessageOccurrenceSpecification17"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="deacc3bf-6343-4067-9f42-68695bacad77"
+                LastKnownName="MessageOccurrenceSpecification18"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="da50baaf-c720-4274-8120-f10cb57306ea"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="8cc6bde0-310c-4695-bbe5-479c265cd340"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="a2c666ab-ccca-4b64-9e4b-2848003a4b4c"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="479a62df-c84b-4ef4-9a4c-929f998a9e48"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="fced5682-4a41-4e4b-91cc-188539e8d3d9"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="d20089ae-8598-4aa7-a9f7-28d0663b0571"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="cecc1b54-7c4e-4585-8304-7e5cabf0182e"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="6a6eb580-9531-486b-bd97-03eba09eb8ac"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="e3dd9049-148d-4e78-ae12-790529e430ca"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="d6761084-c200-4f27-83a5-1a1f91a93086"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="d7778db5-7e01-4047-b3d1-e12bfe0b0da0"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="64b40a24-a539-4f3e-a09d-a40bcb39718a"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="93162012-ea6d-4833-9143-ee7feda44f61"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="8b6d2577-e08e-42d4-9ff0-db57faabcf16"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="83107d89-709c-4777-9484-443ef4ecf585"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="e3ab7b54-d3aa-41c0-ab62-2969c023e91c"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="96f62607-bade-499a-ad63-8ffdb3944098"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="2e689ebb-b491-4715-8bf1-651ddca8c575"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="a5980ae7-2264-477b-bb73-111eec8bbcd5"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="3b389ec9-11e4-42d8-9358-2cd11c75d062"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="ac074a61-44ee-4c88-b092-c9cf77de26e2"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="83c47e61-3cdf-481a-8ab4-567894b149d6"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <interaction
+        Id="01c24b4f-699e-48ea-a538-ed9736a841ef"
+        name="盘点流程"
+        collapseFragmentsFlag="false"
+        isActiveClass="false"
+        isAbstract="false"
+        isLeaf="false"
+        isReentrant="false">
+        <fragments>
+          <behaviorExecutionSpecification
+            Id="33c4f74a-50be-4aa8-a246-9a203580338c"
+            name="BehaviorExecutionSpecification1">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="febdc309-37f3-4141-bd24-94503eb71983"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="0ee926bf-1322-4fb8-90cd-4fdbfa02a7b3"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="7ce95907-4854-408d-adbe-7195fa0db65a"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="290b67cf-fa57-4295-966a-1ddf046af544"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="c88c6ab2-f92a-4848-a02b-82818a27e438"
+                LastKnownName="MessageOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="7ce95907-4854-408d-adbe-7195fa0db65a"
+            name="ExecutionOccurrenceSpecification1">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="2a8e4729-46ba-416f-a50d-b9fb76f3a8ec"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="febdc309-37f3-4141-bd24-94503eb71983"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="290b67cf-fa57-4295-966a-1ddf046af544"
+            name="MessageOccurrenceSpecification2">
+            <covered>
+              <lifelineMoniker
+                Id="febdc309-37f3-4141-bd24-94503eb71983"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="47bd686e-9b4b-4d57-9302-c2e6485288f2"
+            name="MessageOccurrenceSpecification1">
+            <covered>
+              <lifelineMoniker
+                Id="ab9ba6e6-33ef-48f0-86d1-511ef8b6678a"
+                LastKnownName="UI"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="db0afffa-77e4-4ec0-9172-469537ab35c1"
+            name="BehaviorExecutionSpecification2">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="14d06654-dcf3-4410-8ecd-76bbee881511"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="ca66271b-959a-494d-806e-521081467e22"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="276d2693-e177-4bdc-9232-b6386b636df4"
+                LastKnownName="MessageOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="2ebe6ce2-dafa-4e05-b954-bad31452f870"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="6d03c768-0785-4417-9370-dad5760e09ab"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="7e103888-f24b-43e6-9719-63a968a7c97f"
+                LastKnownName="MessageOccurrenceSpecification9"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="26e02fa9-1206-4c5f-a6bb-2c06d1513fd2"
+                LastKnownName="MessageOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="ca66271b-959a-494d-806e-521081467e22"
+            name="ExecutionOccurrenceSpecification3">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="b0f098ba-bc31-40af-925c-4fe5e579f7ec"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c88c6ab2-f92a-4848-a02b-82818a27e438"
+            name="MessageOccurrenceSpecification3">
+            <covered>
+              <lifelineMoniker
+                Id="febdc309-37f3-4141-bd24-94503eb71983"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="276d2693-e177-4bdc-9232-b6386b636df4"
+            name="MessageOccurrenceSpecification4">
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="e3ef380e-c05e-4d8a-a7e1-6de6dccea534"
+            name="BehaviorExecutionSpecification3">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="3577a4bd-4ff0-4dea-bb13-82c02d10e1d2"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="2c4e25ab-091d-49d9-80da-ad1835b4e33f"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="1fb806d3-016c-492f-80a1-df31e70547ee"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+              <messageOccurrenceSpecificationMoniker
+                Id="ae048fc7-2834-4d19-b093-c6334d5a7a22"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="0ee926bf-1322-4fb8-90cd-4fdbfa02a7b3"
+            name="ExecutionOccurrenceSpecification2">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="c4bc2586-df5c-4c03-890a-883173354755"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="febdc309-37f3-4141-bd24-94503eb71983"
+                LastKnownName="I_Delivery"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="2c4e25ab-091d-49d9-80da-ad1835b4e33f"
+            name="ExecutionOccurrenceSpecification5">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="2c79e731-937c-4f1b-bb04-4a72148b16f1"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="1fb806d3-016c-492f-80a1-df31e70547ee"
+            name="MessageOccurrenceSpecification6">
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2ebe6ce2-dafa-4e05-b954-bad31452f870"
+            name="MessageOccurrenceSpecification5">
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ae048fc7-2834-4d19-b093-c6334d5a7a22"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6d03c768-0785-4417-9370-dad5760e09ab"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="3577a4bd-4ff0-4dea-bb13-82c02d10e1d2"
+            name="ExecutionOccurrenceSpecification6">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="baf6506a-1761-4e98-b8b0-777e24306f2f"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="e4ec8a05-153d-483c-bf2d-f3364a07e496"
+            name="BehaviorExecutionSpecification4">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="5346f05a-b88d-4356-a0f4-9966e57496e3"
+                LastKnownName="ExecutionOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="f1bbd476-b4b7-4a72-8b56-dc49ad89d923"
+                LastKnownName="ExecutionOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="f2b5ebe3-5fbc-4f65-bc97-a97aa007cbfa"
+                LastKnownName="MessageOccurrenceSpecification10"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="f1bbd476-b4b7-4a72-8b56-dc49ad89d923"
+            name="ExecutionOccurrenceSpecification7">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="ad50a8f4-3496-492f-9ff1-e179000d79a7"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7e103888-f24b-43e6-9719-63a968a7c97f"
+            name="MessageOccurrenceSpecification9">
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="f2b5ebe3-5fbc-4f65-bc97-a97aa007cbfa"
+            name="MessageOccurrenceSpecification10">
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="5346f05a-b88d-4356-a0f4-9966e57496e3"
+            name="ExecutionOccurrenceSpecification8">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="a4ebcc5c-0597-443b-98a9-e102f61ed4a1"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+                LastKnownName="I_Surplus"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="58a4e9d6-45d3-4d68-bf00-24acf5dc99e4"
+            name="BehaviorExecutionSpecification6">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="38cebbb5-47c7-451c-a7fe-e000db37454c"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="35152d01-cfe7-42a5-8dae-5a42f99f9a9f"
+                LastKnownName="ExecutionOccurrenceSpecification12"
+                LastKnownLocation="InventoryDesign.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="8283edaf-3c50-48c1-bc31-2e2527474a81"
+                LastKnownName="ExecutionOccurrenceSpecification11"
+                LastKnownLocation="InventoryDesign.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="47b1597d-73a5-4682-ac32-c528578f0c08"
+                LastKnownName="MessageOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="8283edaf-3c50-48c1-bc31-2e2527474a81"
+            name="ExecutionOccurrenceSpecification11">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="9dffb2e3-8c50-4001-87a3-b4c930544e26"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="38cebbb5-47c7-451c-a7fe-e000db37454c"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="26e02fa9-1206-4c5f-a6bb-2c06d1513fd2"
+            name="MessageOccurrenceSpecification13">
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="47b1597d-73a5-4682-ac32-c528578f0c08"
+            name="MessageOccurrenceSpecification14">
+            <covered>
+              <lifelineMoniker
+                Id="38cebbb5-47c7-451c-a7fe-e000db37454c"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="14d06654-dcf3-4410-8ecd-76bbee881511"
+            name="ExecutionOccurrenceSpecification4">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="2d64889c-9463-4a0c-a0c7-1bf6f5a0a791"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+                LastKnownName="I_DeliveryDetail"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="35152d01-cfe7-42a5-8dae-5a42f99f9a9f"
+            name="ExecutionOccurrenceSpecification12">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="4456b19d-9659-471f-ace6-89a835aa2c6c"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="InventoryDesign.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="38cebbb5-47c7-451c-a7fe-e000db37454c"
+                LastKnownName="I_InventoryRecord"
+                LastKnownLocation="InventoryDesign.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline
+            Id="ab9ba6e6-33ef-48f0-86d1-511ef8b6678a"
+            name="UI"
+            isActor="false"
+            lifelineDisplayName="UI">
+            <topLevelOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="47bd686e-9b4b-4d57-9302-c2e6485288f2"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="febdc309-37f3-4141-bd24-94503eb71983"
+            name="I_Delivery"
+            isActor="false"
+            lifelineDisplayName="I_Delivery">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="7ce95907-4854-408d-adbe-7195fa0db65a"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="0ee926bf-1322-4fb8-90cd-4fdbfa02a7b3"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="ec1b8587-3a3c-459c-abad-7cfa581bd260"
+            name="I_DeliveryDetail"
+            isActor="false"
+            lifelineDisplayName="I_DeliveryDetail">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="ca66271b-959a-494d-806e-521081467e22"
+                LastKnownName="ExecutionOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="14d06654-dcf3-4410-8ecd-76bbee881511"
+                LastKnownName="ExecutionOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="22db05e2-da2a-41cf-91a3-2ea2398503b2"
+            name="I_Surplus"
+            isActor="false"
+            lifelineDisplayName="I_Surplus">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="2c4e25ab-091d-49d9-80da-ad1835b4e33f"
+                LastKnownName="ExecutionOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="3577a4bd-4ff0-4dea-bb13-82c02d10e1d2"
+                LastKnownName="ExecutionOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="f1bbd476-b4b7-4a72-8b56-dc49ad89d923"
+                LastKnownName="ExecutionOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="5346f05a-b88d-4356-a0f4-9966e57496e3"
+                LastKnownName="ExecutionOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline
+            Id="38cebbb5-47c7-451c-a7fe-e000db37454c"
+            name="I_InventoryRecord"
+            isActor="false"
+            lifelineDisplayName="I_InventoryRecord">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker
+                Id="8283edaf-3c50-48c1-bc31-2e2527474a81"
+                LastKnownName="ExecutionOccurrenceSpecification11"
+                LastKnownLocation="InventoryDesign.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="35152d01-cfe7-42a5-8dae-5a42f99f9a9f"
+                LastKnownName="ExecutionOccurrenceSpecification12"
+                LastKnownLocation="InventoryDesign.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message
+            Id="5f546969-6c76-4994-adeb-9508531fa6f2"
+            name="插入出库主表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="47bd686e-9b4b-4d57-9302-c2e6485288f2"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="290b67cf-fa57-4295-966a-1ddf046af544"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="1c345c47-707e-4678-9ac8-838d10d2be46"
+            name="插入出库从表"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="c88c6ab2-f92a-4848-a02b-82818a27e438"
+                LastKnownName="MessageOccurrenceSpecification3"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="276d2693-e177-4bdc-9232-b6386b636df4"
+                LastKnownName="MessageOccurrenceSpecification4"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="233eeb2b-f1de-4372-8d11-47b19058cd0c"
+            name="查询当前批次库存剩余"
+            messageKind="Complete"
+            messageSort="SynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="2ebe6ce2-dafa-4e05-b954-bad31452f870"
+                LastKnownName="MessageOccurrenceSpecification5"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="1fb806d3-016c-492f-80a1-df31e70547ee"
+                LastKnownName="MessageOccurrenceSpecification6"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="01395a3f-8e3f-4b9b-a012-533201a618f8"
+            name="剩余信息"
+            messageKind="Complete"
+            messageSort="Reply"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="ae048fc7-2834-4d19-b093-c6334d5a7a22"
+                LastKnownName="MessageOccurrenceSpecification7"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="6d03c768-0785-4417-9370-dad5760e09ab"
+                LastKnownName="MessageOccurrenceSpecification8"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="9ddbceb7-4faa-4542-a3c9-adf0083fd17e"
+            name="update 剩余-出库数量"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="7e103888-f24b-43e6-9719-63a968a7c97f"
+                LastKnownName="MessageOccurrenceSpecification9"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="f2b5ebe3-5fbc-4f65-bc97-a97aa007cbfa"
+                LastKnownName="MessageOccurrenceSpecification10"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+          <message
+            Id="d7899323-d11a-4658-afa7-6acf4cfccbee"
+            name="insert 出库信息（结余）"
+            messageKind="Complete"
+            messageSort="AsynchCall"
+            createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="26e02fa9-1206-4c5f-a6bb-2c06d1513fd2"
+                LastKnownName="MessageOccurrenceSpecification13"
+                LastKnownLocation="InventoryDesign.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="47b1597d-73a5-4682-ac32-c528578f0c08"
+                LastKnownName="MessageOccurrenceSpecification14"
+                LastKnownLocation="InventoryDesign.uml" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="2c79e731-937c-4f1b-bb04-4a72148b16f1"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="baf6506a-1761-4e98-b8b0-777e24306f2f"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="b0f098ba-bc31-40af-925c-4fe5e579f7ec"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="2d64889c-9463-4a0c-a0c7-1bf6f5a0a791"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="2a8e4729-46ba-416f-a50d-b9fb76f3a8ec"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="c4bc2586-df5c-4c03-890a-883173354755"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="ad50a8f4-3496-492f-9ff1-e179000d79a7"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="a4ebcc5c-0597-443b-98a9-e102f61ed4a1"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="9dffb2e3-8c50-4001-87a3-b4c930544e26"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="4456b19d-9659-471f-ace6-89a835aa2c6c"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+  </packagedElements>
+  <primitiveType
+    Id="220a3521-e091-4221-bae9-3ef9018e845c"
+    name="Integer"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="8943dc84-709e-4f62-b15a-a3273aa6f165"
+    name="Boolean"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+    name="String"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="3ab42e7d-4969-445a-b209-471f5cb8209c"
+    name="UnlimitedNatural"
+    isAbstract="false"
+    isLeaf="false" />
+</modelStoreModel>

@@ -1,0 +1,265 @@
+.icon-blank {
+    background: url('icons/blank.gif') no-repeat center center;
+}
+
+.icon-add {
+    background: url('icons/edit_add.png') no-repeat center center;
+}
+
+.icon-edit {
+    background: url('icons/pencil.png') no-repeat center center;
+}
+
+.icon-clear {
+    background: url('icons/clear.png') no-repeat center center;
+}
+
+.icon-remove {
+    background: url('icons/edit_remove.png') no-repeat center center;
+}
+
+.icon-save {
+    background: url('icons/filesave.png') no-repeat center center;
+}
+
+.icon-cut {
+    background: url('icons/cut.png') no-repeat center center;
+}
+
+.icon-ok {
+    background: url('icons/ok.png') no-repeat center center;
+}
+
+.icon-no {
+    background: url('icons/no.png') no-repeat center center;
+}
+
+.icon-cancel {
+    background: url('icons/cancel.png') no-repeat center center;
+}
+
+.icon-reload {
+    background: url('icons/reload.png') no-repeat center center;
+}
+
+.icon-search {
+    background: url('icons/search.png') no-repeat center center;
+}
+
+.icon-print {
+    background: url('icons/print.png') no-repeat center center;
+}
+
+.icon-help {
+    background: url('icons/help.png') no-repeat center center;
+}
+
+.icon-undo {
+    background: url('icons/undo.png') no-repeat center center;
+}
+
+.icon-redo {
+    background: url('icons/redo.png') no-repeat center center;
+}
+
+.icon-back {
+    background: url('icons/back.png') no-repeat center center;
+}
+
+.icon-sum {
+    background: url('icons/sum.png') no-repeat center center;
+}
+
+.icon-tip {
+    background: url('icons/tip.png') no-repeat center center;
+}
+
+.icon-filter {
+    background: url('icons/filter.png') no-repeat center center;
+}
+
+.icon-man {
+    background: url('icons/man.png') no-repeat center center;
+}
+
+.icon-lock {
+    background: url('icons/lock.png') no-repeat center center;
+}
+
+
+.icon-mini-add {
+    background: url('icons/mini_add.png') no-repeat center center;
+}
+
+.icon-mini-edit {
+    background: url('icons/mini_edit.png') no-repeat center center;
+}
+
+.icon-mini-refresh {
+    background: url('icons/mini_refresh.png') no-repeat center center;
+}
+
+.icon-large-picture {
+    background: url('icons/large_picture.png') no-repeat center center;
+}
+
+.icon-large-clipart {
+    background: url('icons/large_clipart.png') no-repeat center center;
+}
+
+.icon-large-shapes {
+    background: url('icons/large_shapes.png') no-repeat center center;
+}
+
+.icon-large-smartart {
+    background: url('icons/large_smartart.png') no-repeat center center;
+}
+
+.icon-large-chart {
+    background: url('icons/large_chart.png') no-repeat center center;
+}
+
+
+
+/*以下为自定义UI样式*/
+.icon-custom-Anke{
+    background: url('../../../Images/Custom/anke.png') no-repeat center center;
+}
+.icon-custom-homeuser{
+    background: url('../../../Images/Custom/homeuser.png') no-repeat center center;
+}
+.icon-custom-homeNote{
+    background: url('../../../Images/Custom/Notepad.png') no-repeat center center;
+}
+.icon-custom-Storage{
+    background: url('../../../Images/Custom/cCangCu.png') no-repeat center center;
+}
+.icon-custom-Surplus{
+    background: url('../../../Images/Custom/cStorage.png') no-repeat center center;
+}
+.icon-custom-Red{
+    background: url('../../../Images/Custom/cRed.png') no-repeat center center;
+}
+.icon-custom-cWuZiWeiHu{
+    background: url('../../../Images/Custom/cWuZiWeiHu.png') no-repeat center center;
+}
+.icon-custom-cChuKuDan{
+    background: url('../../../Images/Custom/cChuKuDan.png') no-repeat center center;
+}
+.icon-custom-cPanKu{
+    background: url('../../../Images/Custom/cPanKu.png') no-repeat center center;
+}
+.icon-custom-cGuoqi{
+    background: url('../../../Images/Custom/cGuoqi.png') no-repeat center center;
+}
+.icon-custom-cWuZiGX{
+    background: url('../../../Images/Custom/cWuZiGX.png') no-repeat center center;
+}
+.icon-custom-cCKreleate{
+    background: url('../../../Images/Custom/cCKreleate.png') no-repeat center center;
+}
+
+.icon-custom-Entry {
+    background: url('../../../Images/Custom/cEntry.png') no-repeat center center;
+}
+.icon-custom-View {
+    background: url('../../../Images/Custom/search.png') no-repeat center center;
+}
+.icon-custom-Add {
+    background: url('../../../Images/Custom/plus.png') no-repeat center center;
+}
+.icon-custom-cDelivery {
+    background: url('../../../Images/Custom/cDelivery.png') no-repeat center center;
+}
+
+
+
+.icon-custom-Delete {
+    background: url('../../../Images/Custom/cdelete.png') no-repeat center center;
+}
+.icon-custom-cSurplus {
+    background: url('../../../Images/Custom/cSurplus.png') no-repeat center center;
+}
+.icon-custom-cGoods {
+    background: url('../../../Images/Custom/cGoods.png') no-repeat center center;
+}
+.icon-custom-cGoodsFull {
+    background: url('../../../Images/Custom/cGoodsFull.png') no-repeat center center;
+}
+.icon-custom-cAES{
+    background: url('../../../Images/Custom/cAES.png') no-repeat center center;
+}
+.icon-custom-cAlarmEvent{
+    background: url('../../../Images/Custom/cAlarmEvent.png') no-repeat center center;
+}
+.icon-custom-cSettings{
+    background: url('../../../Images/Custom/cSettings.png') no-repeat center center;
+}
+.icon-custom-cUser{
+    background: url('../../../Images/Custom/cUser.png') no-repeat center center;
+}
+.icon-custom-cPermission{
+    background: url('../../../Images/Custom/cPermission.png') no-repeat center center;
+}
+.icon-custom-cRole{
+    background: url('../../../Images/Custom/cRole.png') no-repeat center center;
+}
+.icon-custom-cDepartment{
+    background: url('../../../Images/Custom/cDepartment.png') no-repeat center center;
+}
+.icon-custom-cDic{
+    background: url('../../../Images/Custom/cDic.png') no-repeat center center;
+}
+.icon-custom-cPatientRecord{
+    background: url('../../../Images/Custom/cPatientRecord.png') no-repeat center center;
+}
+.icon-custom-cPREdit{
+    background: url('../../../Images/Custom/cPREdit.png') no-repeat center center;
+}
+.icon-custom-cTongJiRoot{
+    background: url('../../../Images/Custom/cTongJiRoot.png') no-repeat center center;
+}
+.icon-custom-cTongJiNode{
+    background: url('../../../Images/Custom/cTongJiNode.png') no-repeat center center;
+}
+.icon-custom-large-cSaveCharge{
+    background: url('../../../Images/Custom/cSaveCharge.png') no-repeat center center;
+}
+.icon-custom-cSaveCharge{
+    background: url('../../../Images/Custom/cSaveChargeSmall.png') no-repeat center center;
+}
+.icon-custom-cJinYong{
+    background: url('../../../Images/Custom/cJinYong.png') no-repeat center center;
+}
+.icon-custom-cQiYong{
+    background: url('../../../Images/Custom/cQiYong.png') no-repeat center center;
+}
+.icon-custom-cGoodClass{
+    background: url('../../../Images/Custom/cGoodClass.png') no-repeat center center;
+}
+.icon-custom-cApply{
+   background: url('../../../Images/Custom/cApply.png') no-repeat center center; 
+}
+.icon-custom-cClassType{
+   background: url('../../../Images/Custom/cClassType.png') no-repeat center center; 
+}
+.icon-custom-cApproval{
+   background: url('../../../Images/Custom/cApproval.png') no-repeat center center; 
+}
+
+.icon-custom-cChange{
+   background: url('../../../Images/Custom/cChange.png') no-repeat center center; 
+}
+
+
+.icon-custom-cPersonTJ{
+   background: url('../../../Images/Custom/PersonTJ.png') no-repeat center center;
+}
+.icon-custom-cPrice{
+   background: url('../../../Images/Custom/cPrice.png') no-repeat center center;
+}
+.icon-custom-cSetting{
+   background: url('../../../Images/Custom/cSetting.png') no-repeat center center;
+}
+
+

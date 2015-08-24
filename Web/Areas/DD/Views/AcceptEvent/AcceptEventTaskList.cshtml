@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "受理事件任务列表母页";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            alert("start!");
+            getEventNode();
+
+            //获取从父页面传参的值,EventCode和AcceptOrder
+            var EventCode = $("#ECID").val();
+            var AcceptOrder = $("#txtAOID").val();
+            //判断如果受理序号>=1，做循环执行newTabs,一次受理一个tabs，展开无法关闭
+            if (AcceptOrder >= 1)
+            {
+                for (var i = 0; i < AcceptOrder; i++)
+                {
+                    newTab(i+1);
+                }
+            }
+            $.setDivOnly("#divIndex");
+        });
+
+        $(window).resize(function () {
+            $.setDivOnly("#divIndex");
+        });
+
+
+        //加一个新的 Tab
+        function newTab(i) {
+            var $tbs = $("#tbs");//获取tab容器
+            //tabs的URL，title
+            var url = '@Url.Content("~/DD/AcceptEvent/AcceptEventTaskInfo?EventCode=" )' + encodeURIComponent(EventCode) + "&AcceptOrder=" + i;
+            var timetitle = '第' + i + '次受理';
+                $tbs.tabs("add", {
+                    title: timetitle,
+                    iconCls: 'icon-custom-cUser',
+                    content: newIframe(url),
+                    closable: false,
+                    fit: true
+                });
+            
+        }
+
+        //获取事件节点方法（受理序号为多少，分配tabs)
+        function getEventNode() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DD/AcceptEvent/GetEventNode")',
+                data:
+                    {
+                        code: $("#ECID").val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    alert(jsData.PRInfo);
+                   
+                    var a = jsData.PRInfo.EventCode;
+                    alert(a);
+                    $('#txtECID').val(jsData.PRInfo.EventCode);
+                    alert($('#txtECID').val());
+                    $('#txtAOID').val(jsData.PRInfo.AcceptOrder);
+                    //$('#txtAOID').textbox('setValue', jsData.PRInfo.AcceptOrder);
+                }
+            });
+        }
+        //返回一个<iframe></iframe>标签  撑满子页面
+        function newIframe(url) {
+            @*url = '@Url.Content("~/")' + url;*@
+            var ifrStr = "<iframe src='" + url + "' style='width:99.5%;height:99%;border:0px solid #000;'></iframe>";
+            return ifrStr;
+        }
+    </script>
+}
+<div id="divIndex" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <input name="EventCode" type="hidden" id="ECID" value="@ViewBag.EventCode" />
+    <input name="txtEC" type="hidden" id="txtECID" />
+    <input name="txtAO" type="hidden" id="txtAOID" />
+
+    <div id="divIndexMain" data-options="region:'center'" style="padding: 5px; background: #E4F2FB;">
+        <div id="tbs" class="easyui-tabs" data-options="fit:true,border:false">
+         </div>
+    </div>
+</div>

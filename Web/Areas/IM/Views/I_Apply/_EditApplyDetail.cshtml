@@ -1,0 +1,137 @@
+﻿<script type="text/javascript">
+    boolSearch = true;
+    function initDetailGrid() {
+        $('#btnApply').linkbutton('enable');
+
+        $.InitControlDateTime("#ApplyDateTime");
+        $("#AppleyRemark").textbox("clear");
+        $('#ApplyName').textbox('setValue', $('#userName').val());
+        var urlstr1 = '@Url.Content("~/IM/AllDictionary/GetStogageByUser?userId=")' + $('#userID').val();
+        $.BindCombox("#ApplyStorage", urlstr1);
+
+        $("#gridApplyDetailList").datagrid({
+            scrollbarSize: 18,
+            rownumbers: true,
+            singleSelect: true,
+            width: 'auto',
+            height: 245,
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            loadMsg: '数据加载中请稍后……',
+            pagination: false,//启用分页，默认每页10行
+            columns: [
+                [
+                   { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+                   { title: '批次号', field: 'RealBatchNo', width: '10%', sortable: false },
+                   { title: '有效期', field: 'ValidityDate', width: '10%', sortable: false, formatter: $.formatValidityDate },
+                   { title: '仓库', field: 'StorageName', width: '10%', sortable: false },
+                   { title: '申领时间', field: 'DeliveryDetailDateTime', width: '15%', sortable: false },
+                   {
+                       field: 'DeliveryDetailCounts', title: '申领数量', width: '10%',
+                       formatter: function (value, rec, rowIndex) {
+                           return "<input id=\"ApplyCounts" + rowIndex + "\" name = \"ApplyCounts\"  style=\"width:80px\" value='1'/>";
+                       }
+                   },
+                   {
+                       field: 'DeliveryDetailRemark', title: '备注', width: '30%',
+                       formatter: function (value, rec, rowIndex) {
+                           return "  <input id=\"ApplyDetailRemark" + rowIndex + "\" name = \"ApplyDetailRemarks\"/>";
+                       }
+                   },
+                   { title: 'StorageCode', field: 'StorageCode', sortable: false, hidden: true },
+                   { title: 'ID', field: 'ID', sortable: false, hidden: true },
+                   { title: 'MaterialID', field: 'MaterialID', sortable: false, hidden: true }
+                ]
+            ]
+        });
+        $("#gridApplyDetailList").datagrid("loadData", Materials);
+        setControl();
+    }
+    function submitDeliveryDetailForm() {
+        $('#btnApply').linkbutton('disable');
+        var jsData = new Array();
+        var i = 0;
+        var rows = $('#gridApplyDetailList').datagrid('getRows');
+        $("input[name='ApplyCounts']").each(function () {
+            var obj = new Object();
+            obj.ID = rows[i].ID;
+            obj.EntryStorageCode = rows[i].StorageCode;
+            obj.MaterialID = rows[i].MaterialID;
+            obj.BatchNo = rows[i].BatchNo;
+            obj.RealBatchNo = rows[i].RealBatchNo;
+            obj.TargetStorageCode = $("#ApplyStorage").combotree("getValue");
+            obj.Remark = "";
+            obj.DeliveryCounts = $(this).val();
+            jsData.push(obj);
+            i++;
+        });
+        var j = 0;
+        $("input[name='ApplyDetailRemarks']").each(function () {
+            jsData[j].Remark = $(this).val();
+            j++;
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/I_Apply/SaveApply")',
+            data:
+                {
+                    ApplyUserID: $('#userID').val(),
+                    ApplyDateTime: $("#ApplyDateTime").datebox('getValue'),
+                    ApplyStorage: $("#ApplyStorage").combotree("getValue"),
+                    Remark: $("#AppleyRemark").val(),
+                    sApplyDetailInfo: JSON.stringify(jsData)
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    Materials.length = 0;
+                    $("#gridSurplusList").datagrid("reload");
+                    $('#ApplyDetailList').dialog("close");
+                }, function () {
+                    $('#btnApply').linkbutton('enable');
+                });
+            }
+        });
+    }
+    function setControl() {
+        for (var i = 0; i < Materials.length; i++) {
+            $.initDataGridTextBoxNum("#ApplyCounts" + i, 999999999, true);
+            $('#ApplyDetailRemark' + i).textbox({
+                multiline: true,
+                width: 200,
+                height: 30
+            });
+        }
+    }
+</script>
+<div id="ApplyDetailList" class="easyui-dialog" title="申领单详细清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cGoodsFull'" style="width:1000px;height:400px;padding:0px;">
+    <div data-options="region:'north'" style="overflow: hidden; padding: 10px;width:900px;">
+        <table>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">申领时间：</td>
+                <td width="200px" style="vertical-align:text-top">
+                    <input id="ApplyDateTime" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                </td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">申领人：</td>
+                <td width="200px"><input id="ApplyName" class="easyui-textbox" data-options="readonly:true" /></td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">申领去向：</td>
+                <td width="200px"><input id="ApplyStorage" class="easyui-combotree" data-options="required:true" /></td>
+            </tr>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">备注：</td>
+                <td colspan="4">
+                    <input id="AppleyRemark" class="easyui-textbox" data-options="multiline:true" style="width:500px;height:50px">
+                </td>
+                <td style="text-align:right; vertical-align:bottom">
+                    <a href="javascript:void(0)" id="btnApply" class="easyui-linkbutton" data-options="iconCls:'icon-custom-cDelivery'" onclick="submitDeliveryDetailForm()">&nbsp;&nbsp;修改申领&nbsp;&nbsp;</a>
+                    &nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+        <table id="gridApplyDetailList"></table>
+    </div>
+</div>

@@ -1,0 +1,111 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>仓库分类</title>
+    @Styles.Render("~/EasyUICSS")
+    @Scripts.Render("~/EasyUIJS")
+</head>
+<body>
+    @*<div id="tb" style="padding: 5px; height: auto">*@
+
+    <div align="center" style="min-width: 700px; height:auto">
+        <table style="width: 100%;height:98%" border="0" cellspacing="6" cellpadding="0" class="MainTable">
+            <tr>
+                <td>
+                    <table style="width:100%" cellspacing="0" cellpadding="6" class="blockTable">
+                        <tr>
+                            <td>
+                                仓库分类
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0 8px 4px" align="center">
+                                <table style="width:98%" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <table style="width:100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td align="right" valign="middle"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table style="width:100%" border="0" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td style="width:2%" height="22px"></td>
+                                                                <td style="width:35%"></td>
+                                                                <td style="width:5%"></td>
+                                                                <td style="width:48%"></td>
+                                                                <td style="width:10%"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td height="380px">
+                                                                    &nbsp;
+                                                                </td>
+                                                                <td align="center" valign="middle" style="border:solid #f10f0f">
+                                                                    <div>
+                                                                        <div class="easyui-panel" style="padding:5px">
+                                                                            <ul class="easyui-tree" data-options="url:'tree_data1.json',method:'get',animate:true,lines:true">
+                                                                                <li>仓库分类</li>
+
+                                                                            </ul>
+                                                                            <div>now time: @DateTime.Now</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    &nbsp;
+                                                                </td>
+                                                                <td rowspan="3" align="center" valign="middle" style="border:solid #000000">
+                                                                    仓库管理
+                                                                </td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td height="25px">&nbsp;</td>
+                                                                <td>更改节点</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td height="80px">&nbsp;</td>
+                                                                <td>
+                                                                    <div style="margin-top: 5px">
+                                                                        <a href="#" id="btnAdd" class="easyui-linkbutton" iconcls="icon-add" plain="true">添加仓库子节点</a>
+                                                                        <a href="#" id="btnAdd" class="easyui-linkbutton" iconcls="icon-add" plain="true">添加仓库邻节点</a>
+                                                                        <a href="#" id="btnUpdate" class="easyui-linkbutton" iconcls="icon-edit" plain="true">修改</a>
+                                                                        <a href="#" id="btnDelete" class="easyui-linkbutton" iconcls="icon-remove" plain="true">删除</a>
+                                                                    </div>
+                                                                </td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 2px; padding-left: 6px; padding-right: 6px; padding-bottom: 2px;">
+                                &nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    @*</div>*@
+</body>
+</html>

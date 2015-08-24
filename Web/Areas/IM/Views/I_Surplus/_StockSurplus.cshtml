@@ -1,0 +1,163 @@
+﻿<script type="text/javascript">
+    var maxi = 100;
+    function initpage(maxNum) {
+        maxi = maxNum;
+        $.GID("PanDianName").style.color = "darkgreen";
+        $.initDataGridTextBoxNum("#PanDianCounts", maxi, true);
+        $('#PanDianCounts').numberbox('clear');
+        $('#SurplusRemark').textbox('clear');
+        $('#btnPostPanDian').linkbutton('enable');
+
+    }
+    function radiaChange(bitInfo) {
+        if (bitInfo) {
+            $.GID("PanDianName").style.color = "darkgreen";
+            $('#PanDianName').text("盘亏数量：");
+            $.initDataGridTextBoxNum("#PanDianCounts", maxi, true);
+        } else {
+            $.GID("PanDianName").style.color = "red";
+            $('#PanDianName').text("盘盈数量：");
+            $.initDataGridTextBoxNum("#PanDianCounts", 999999999, true);
+        }
+    }
+    function submitForm() {
+        var isValid = $("#StockSurplusInfo").form("validate");
+        if (isValid) {
+            $('#btnPostPanDian').linkbutton('disable');
+            var stockingType;
+            var sname = $('#SurplusMaterialName').textbox('getText');
+            var vdate = $('#SurplusRealBatchNo').textbox('getText');
+            var pdinfo = $("input[name='pandian']:checked").val();
+            var counts = $('#PanDianCounts').numberbox('getValue');
+            if (pdinfo == "盘盈")  //盘盈为负的出库，原因为盘库是只操作出库流程，所以当多出的物资按负出库来计算
+                stockingType = "true"; //true为盘盈  false为盘亏
+             else 
+                stockingType = "false";
+            
+
+            $.messager.confirm('提示确认', '确认将[物资：【' + sname + '】</br>批次号：【' + vdate + '】</br>' + pdinfo + '数量：【' + counts + '】]', function (r) {
+                if (r) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/IM/I_Surplus/SaveStocking")',
+                        data:
+                            {
+                                RealBatchNo: $("#RealBatchNo").val(),
+                                BatchNo: $("#BatchNo").val(),
+                                MaterialID: $("#MaterialID").val(),
+                                DeliveryCounts: counts,
+                                StorageCode: $("#StorageCode").val(),
+                                StockingType: stockingType,
+                                Remark: $("#SurplusRemark").val()
+                            },
+                        dataType: "json",
+                        success: function (jsData) {
+                            $.handleJsonResult(jsData, function () {
+                                $("#gridSurplusList").datagrid("reload")
+                                $('#StockSurplusInfo').window('close');
+                            }, function () {
+                                $('#btnPostPanDian').linkbutton('enable');
+                            });
+                        }
+                    });
+                } else {
+                    $('#btnPostPanDian').linkbutton('enable');
+                }
+            });
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+    }
+</script>
+<div id="StockSurplusInfo" class="easyui-dialog" title="盘点物资" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPanKu'" style="width:305px;height:380px;padding:5px;">
+    <input type="hidden" id="RealBatchNo">
+    <input type="hidden" id="BatchNo">
+    <input type="hidden" id="MaterialID">
+    <input type="hidden" id="DeliveryCounts">
+    <input type="hidden" id="StorageCode">
+    <table>
+        <tr>
+            <td>批次号：</td>
+            <td>
+                <input id="SurplusRealBatchNo" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                物资名称：
+            </td>
+            <td>
+                <input id="SurplusMaterialName" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                生产厂家：
+            </td>
+            <td>
+                <input id="SurplusMaterialManufacturer" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                供应商：
+            </td>
+            <td>
+                <input id="SurplusMaterialVendor" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                有效期：
+            </td>
+            <td>
+                <input id="SurplusValidityDate" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                仓库：
+            </td>
+            <td>
+                <input id="SurplusStorage" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                数量：
+            </td>
+            <td>
+                <input id="editEntryCounts" class="easyui-textbox" data-options="readonly:true" style="width:160px" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                盘点：
+            </td>
+            <td style="vertical-align:text-top">
+                <input type="radio" id="radioPK" name="pandian" value="盘亏" checked="checked" onchange="radiaChange(true);" />
+                <span style="color: darkgreen; cursor: pointer" onclick="$('#radioPK').click();">盘亏</span>
+                <span> &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <input type="radio" id="radioPY" name="pandian" value="盘盈" onchange="radiaChange(false);" />
+                <span style="color: red; cursor: pointer" onclick="$('#radioPY').click();">盘盈</span>
+            </td>
+        </tr>
+        <tr>
+            <td><span id="PanDianName">盘亏数量：</span></td>
+            <td><input id="PanDianCounts" style="width:160px" /></td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                <input id="SurplusRemark" class="easyui-textbox" data-options="multiline:true" style="width:200px;height:50px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right">
+                <a href="javascript:void(0)" id="btnPostPanDian" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitForm()">盘点库存</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>

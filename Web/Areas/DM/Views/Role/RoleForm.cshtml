@@ -1,0 +1,58 @@
+﻿@model Anke.SHManage.Model.ViewModel.Role
+
+<style type="text/css">
+    #modifyTb {
+        width: 400px;
+        border: 1px solid #0094ff;
+        margin: 10px auto;
+        border-collapse: collapse;
+    }
+
+        #modifyTb td, #modifyTb th {
+            border: 1px solid #0094ff;
+            padding: 4px;
+        }
+</style>
+
+@*@using (Html.BeginForm())
+{//BeginForm方法 如果没有通过参数 设置 提交的路径，那么就会直接拿当前访问的路径 当 action
+    @Html.HiddenFor(model => model.ID)*@
+   
+    <table id="modifyTb">
+        @Html.HiddenFor(model => model.ID)
+        @Html.HiddenFor(model => model.DepID)
+        @*<tr>
+            <td>@Html.LabelFor(model => model.DepID)</td>
+            <td colspan="2">@Html.TextBoxFor(model => model.DepID, new { Readonly = "true" })</td>
+        </tr>*@
+
+        <tr>
+            <td style="width: 30%;">@Html.LabelFor(model => model.Name)</td>
+            <td style="width: 30%;">@Html.TextBoxFor(model => model.Name)</td>
+            <td>@Html.ValidationMessageFor(model => model.Name)</td>
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(model => model.Remark)</td>
+            <td>@Html.TextAreaFor(model => model.Remark)</td>
+            <td>@Html.ValidationMessageFor(model => model.Remark)</td>
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(model => model.SN)</td>
+            <td>@Html.TextBoxFor(model => model.SN)</td>
+            <td>@Html.ValidationMessageFor(model => model.SN)</td>
+        </tr>
+
+        <tr>
+            <td>@Html.LabelFor(model => model.IsActive)</td>
+            <td>@Html.EditorFor(model => model.IsActive)</td>
+            <td>@Html.ValidationMessageFor(model => model.IsActive)</td>
+        </tr>
+        @*<tr>
+            <td colspan="3" align="center">
+                <input type="submit" value="保存" />
+            </td>
+        </tr>*@
+    </table>
+

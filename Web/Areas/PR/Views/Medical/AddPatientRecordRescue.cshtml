@@ -1,0 +1,1869 @@
+﻿
+<script type="text/javascript">
+    var RescueState;//救治记录填写状态
+    var RescueRecordCode;//救治记录编码
+    var RescueAlert = "";//病历--救治记录必填项
+    var XFFSMould = "";//心肺复苏模板选择
+    var onLoadSuccessSanitation = 0;
+    function bindPRRescueGrid(XFFSMould) {
+
+        //药品
+        var urlDrug = '@Url.Content("~/PR/Dictionary/GetChargeItemDictionaryTrees")';
+        $("#gridDrugList").treegrid({
+            title: '药品(点击文件夹前面的小三角来折叠或展开/备注里请不要输入",")',
+            //width: '98%',
+            height: 400,
+            onlyLeafCheck: true,
+            collapsible: true,
+            singleSelect: false,
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            //toolbar: '#tb',
+            idField: 'id',
+            treeField: 'Name',
+            url: urlDrug,
+            loadMsg: '数据加载中请稍后……',
+            queryParams: {
+                ParentID: '-1',
+                TypeID: 'PRDrugType',
+                treeState: '1'
+            },
+            onClickRow: function (row) {
+                var rowIndex = row.id;
+                if (row.state === 'closed') {
+                    $(this).treegrid('expand', rowIndex);//展开
+                }
+                else
+                    $(this).treegrid('collapse', rowIndex);//折叠
+
+
+                var endEdit = true;
+                if (rowIndex != '') {
+                    $(this).treegrid('endEdit', editIndex);//结束编辑一个节点
+                    endEdit = false;
+                }
+                if (editIndex == rowIndex && endEdit == false) {
+                    $(this).treegrid('select', rowIndex);//如果在最后编辑的节点上点击,选择这个节点
+                }
+                if (rowIndex.indexOf("PRDrugType-") >= 0) {
+                    $(this).treegrid('unselect', rowIndex);//反选一个节点(大目录不让选中)
+                }
+                editIndex = rowIndex;
+            },
+            onDblClickRow: onDrugDblClickRow,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { title: '药品', field: 'Name', width: '23%', align: 'left', sortable: false, resizable: false },
+                { title: '单位', field: 'Unit', width: '6%', align: 'center', sortable: false, resizable: false },
+                { title: '规格', field: 'Specification', width: '8%', align: 'center', sortable: false, resizable: false },
+                {
+                    title: '用量', field: 'Number', width: '5%', align: 'center', sortable: false, resizable: false,
+                    //formatter: function (value, row) {
+                    //    return '<lable value="1" style="width:45px;" >1</lable>';
+                    //},
+                    editor: {
+                        type: 'numberspinner',
+                        options: {
+                            min: 1,
+                            //max: 8,
+                            editable: false
+                        }
+                    }
+                },
+                //{
+                //    title: '合计剂量', field: 'TotalDose', width: '10%', align: 'center', sortable: false, resizable: false,
+                //    editor: {
+                //        type: 'textbox',
+                //        editable: false
+                //        //readonly: 'readonly'
+                //        }
+                //},
+                {
+                    title: '给药方式', field: 'GiveMedicineWay', width: '8%', align: 'center', sortable: false, resizable: false,
+                    editor: {
+                        type: 'combobox',
+                        options: {
+                            valueField: 'GiveMedicineWay',
+                            textField: 'GiveMedicineWay',
+                            method: 'get',
+                            editable: false,
+                            panelHeight: 'auto',
+                            //required: true,
+                            data: [{
+                                ID: '静滴',
+                                GiveMedicineWay: '静滴',
+                                //selected: true //默认选中项
+                            }, {
+                                ID: '静注',
+                                GiveMedicineWay: '静注',
+                            }, {
+                                ID: '肌注',
+                                GiveMedicineWay: '肌注',
+                            }, {
+                                ID: '皮下',
+                                GiveMedicineWay: '皮下',
+                            }],
+                        }
+                    }
+                },
+                {
+                    title: '备注', field: 'Remark', width: '70%', align: 'left', sortable: false,
+                    editor: {
+                        type: 'textbox',
+                        prompt: '请不要输入逗号'
+                    }
+                },
+               { title: 'ID', field: 'id', width: '1%', sortable: false, hidden: true },
+               { title: 'ParentID', field: 'ParentID', width: '0%', sortable: false, hidden: true }
+            ]],
+            fitColumns: false,
+            onLoadError: function () {
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;<b>获取【药品】数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function () {
+                $(this).treegrid('uncheckAll');//清空全部勾选
+                //$(this).treegrid('collapseAll');//折叠所有节点
+
+                //var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+                if (RescueState == "new" && XFFSMould != "") {
+                    GetRescueXFFSMould(XFFSMould);
+                }
+                if (RescueState == "edit" || RescueState == "look" || (RescueState == "new" && XFFSMould != "")) {
+                    if ($('#HidDrugCodes').val() != "") {
+                        var array = $('#HidDrugCodes').val().split(',');//分割逗号
+                        for (var i = 0; i < array.length ; i++) {
+                            var array1 = array[i].split('*');//分割*
+                            //for (var i = 0; i < 1 ; i++) {
+                            if (array1[0] != '') {
+                                if (array1[1] != '') {
+                                    var array2 = array1[1].split(' ');//分割
+
+                                    var node = $(this).treegrid('find', array1[0]);//找到节点
+                                    if (node != null) {
+                                        $(this).treegrid('select', array1[0]);//选择一个节点
+                                        $(this).treegrid('beginEdit', array1[0]);//开始编辑一个节点
+                                        if ($(this).treegrid('validateRow', array1[0])) {
+                                            var ed = $(this).treegrid('getEditor', { index: array1[0], field: 'Number' });
+                                            $(ed.target).numberspinner('setValue', array2[0]);//赋值数量
+                                            if (array2[1] != undefined) {
+                                                var array3 = array2[1].split('(');//分割
+                                                if (array3[0] != undefined) {
+                                                    if (array3[0] == "静滴" || array3[0] == "静注" || array3[0] == "肌注" || array3[0] == "皮下" || array3[0] == "含服" || array3[0] == "喷雾") {
+                                                        var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'GiveMedicineWay' });
+                                                        $(edt.target).combobox('setText', array3[0]);//赋值给药方式
+                                                    }
+                                                    else {
+                                                        var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                                        $(edt.target).textbox('setValue', array3[0]);//赋值备注
+                                                    }
+                                                    if (array3[1] != undefined) {
+                                                        var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                                        $(edt.target).textbox('setValue', array3[1]);//赋值备注
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    $(this).treegrid('endEdit', array1[0]);//结束编辑一个节点
+                                    var parent = $(this).treegrid('getParent', array1[0]);//获取父节点
+                                    $(this).treegrid('expand', parent.id);//展开一个节点
+                                }
+                            }
+                            //}
+                        }
+                    }
+                }
+            }
+        });
+        var editIndex = undefined;
+        function endDrugEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#gridDrugList').treegrid('validateRow', editIndex)) {
+                $('#gridDrugList').treegrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //药品--双击选择行
+        function onDrugDblClickRow(row) {
+            if (editIndex != row) {
+                if (endDrugEditing()) {
+                    var rowIndex = row.id;
+                    if (rowIndex) {
+                        if (rowIndex.indexOf("PRDrugType-") < 0) {
+                            $(this).treegrid('select', rowIndex)
+                                    .treegrid('beginEdit', rowIndex);
+                            editIndex = rowIndex;
+                        }
+                    }
+                } else {
+                    $('#gridDrugList').treegrid('select', editIndex);
+                }
+            }
+        }
+        function setEditing(rowIndex) {
+            var editors = $('#gridDrugList').treegrid('getEditors', rowIndex);//getEditors
+            var priceEditor = editors[0];//Math.floor()
+            var amountEditor = editors[1];
+            var costEditor = editors[2];
+            priceEditor.target.bind('change', function () {
+                calculate();
+            });
+            amountEditor.target.bind('change', function () {
+                calculate();
+            });
+            function calculate() {
+                var cost = priceEditor.target.val() * amountEditor.target.val();
+                $(costEditor.target).textbox('setValue', cost);
+            }
+        }
+        //药品--end
+
+        //耗材
+        var urlSanitation = '@Url.Content("~/PR/Dictionary/GetChargeItemDictionaryTrees")';
+        $("#gridSanitationList").treegrid({
+            title: '耗材(点击文件夹前面的小三角来折叠或展开/备注里请不要输入",")',
+            //width: '97%',
+            height: 400,
+            collapsible: true,
+            singleSelect: false,
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            idField: 'id',
+            treeField: 'Name',
+            //toolbar: '#tb',
+            url: urlSanitation,
+            loadMsg: '数据加载中请稍后……',
+            queryParams: {
+                ParentID: '-1',
+                TypeID: 'PRConsumableType',
+                treeState: '1'
+            },
+            onClickRow: function (row) {
+                var rowIndex = row.id;
+                if (row.state === 'closed') {
+                    $(this).treegrid('expand', rowIndex);
+                }
+                else
+                    $(this).treegrid('collapse', rowIndex);
+
+                var endEdit = true;
+                if (rowIndex != '') {
+                    $(this).treegrid('endEdit', editIndex);//结束编辑一个节点
+                    endEdit = false;
+                }
+                if (editIndex == rowIndex && endEdit == false) {
+                    $(this).treegrid('select', rowIndex);//如果在最好编辑的节点上点击,选择这个节点
+                }
+                if (rowIndex.indexOf("PRConsumableType-") >= 0) {
+                    $(this).treegrid('unselect', rowIndex);//反选一个节点(大目录不让选中)
+                }
+                editIndex = rowIndex;
+            },
+            onDblClickRow: onSanitationDblClickRow,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { title: '耗材', field: 'Name', width: '45%', align: 'left', sortable: false, resizable: false },
+                {
+                    title: '数量', field: 'Number', width: '10%', align: 'center', sortable: false, resizable: false,
+                    editor: {
+                        type: 'numberspinner',
+                        options: {
+                            min: 1,
+                            max: 20,
+                            editable: false
+                        }
+                    }
+                },
+                {
+                    title: '备注', field: 'Remark', width: '90%', align: 'left', sortable: false, editor: 'textbox'
+                },
+               { title: 'ID', field: 'ID', width: '1%', sortable: false, hidden: true },
+               { title: 'ParentID', field: 'ParentID', width: '0%', sortable: false, hidden: true },
+               { title: 'Unit', field: 'Unit', width: '0%', sortable: false, hidden: true }
+            ]],
+            fitColumns: false,
+            onLoadError: function () {
+                //alert("获取数据失败！可能是已经超时，请重新登录！");
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;<b>获取【耗材】数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function () {
+                $('#gridSanitationList').treegrid('uncheckAll');//清空全部勾选
+                //$(this).treegrid('collapseAll');//折叠所有节点
+
+                onLoadSuccessSanitation = 1;
+                //var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+                if (RescueState == "new" && XFFSMould != "") {
+                    GetRescueXFFSMould(XFFSMould);
+                }
+                if (RescueState == "edit" || RescueState == "look" || (RescueState == "new" && XFFSMould != "")) {
+                    //alert($('#HidSanitationCodes').val());
+                    if ($('#HidSanitationCodes').val() != "") {
+                        var array = $('#HidSanitationCodes').val().split(',');//分割逗号
+                        for (var i = 0; i < array.length ; i++) {
+                            var array1 = array[i].split('*');//分割*
+                            //for (var i = 0; i < 1 ; i++) {
+                            if (array1[0] != '') {
+                                var array2 = array1[1].split(' ');//分割
+                                
+                                var node = $(this).treegrid('find', array1[0]);//找到节点
+                                if (node != null) {
+                                    $(this).treegrid('select', array1[0]);//选择一个节点
+                                    $(this).treegrid('beginEdit', array1[0]);//开始编辑一个节点
+                                    if ($(this).treegrid('validateRow', array1[0])) {
+                                        var ed = $(this).treegrid('getEditor', { index: array1[0], field: 'Number' });
+                                        $(ed.target).numberspinner('setValue', array2[0]);//
+                                        if (array2[1] != undefined) {
+                                            var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                            $(edt.target).textbox('setValue', array2[1]);//
+                                        }
+
+                                    }
+                                    $(this).treegrid('endEdit', array1[0]);//结束编辑一个节点
+                                    var parent = $(this).treegrid('getParent', array1[0]);//获取父节点
+                                    $(this).treegrid('expand', parent.id);//展开一个节点
+                                    var parent1 = $(this).treegrid('getParent', parent.id);//获取父节点
+                                    if (parent1 != null) {
+                                        $(this).treegrid('expand', parent1.id);//展开一个节点
+                                    }
+                                }
+                            }
+                            //}
+                        }
+                    }
+                }
+                else if (RescueState == "new" && XFFSMould == "") {
+                    var sendAddress = $('#SendAddress').combobox('getValue');
+                    //如果送往地点是“不送院”，新增的时候不默认勾选“搬运”、“护送”；
+                    if (sendAddress == null) {
+                        sendAddress = '888';
+                    }
+                    if (sendAddress.indexOf("不送院") < 0) {
+                        var node = $('#gridSanitationList').treegrid('find', 382);//找到节点--一次性隔离包(绿色)
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', node.id);//耗材选择--一次性隔离包(绿色)
+                            var parent20 = $('#gridSanitationList').treegrid('getParent', node.id);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent20.id);//展开一个节点
+                        }
+                        var node1 = $('#gridSanitationList').treegrid('find', 381);//找到节点--一次性中单(蓝色)
+                        if (node1 != null) {
+                            $('#gridSanitationList').treegrid('select', node1.id);//耗材选择--一次性中单(蓝色)
+                            //var parent21 = $('#gridSanitationList').treegrid('getParent', node1.id);//获取父节点
+                            //$('#gridSanitationList').treegrid('expand', parent21.id);//展开一个节点
+                        }
+                    }
+
+                }
+            }
+        });
+        function endSanitationEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#gridSanitationList').treegrid('validateRow', editIndex)) {
+                $('#gridSanitationList').treegrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //耗材--选择行
+        function onSanitationDblClickRow(row) {
+            if (editIndex != row) {
+                if (endSanitationEditing()) {
+                    var rowIndex = row.id;
+                    if (rowIndex) {
+                        if (rowIndex.indexOf("PRConsumableType-") < 0) {
+                            $(this).treegrid('select', rowIndex)
+                                    .treegrid('beginEdit', rowIndex);
+                            editIndex = rowIndex;
+                        }
+                    }
+                } else {
+                    $('#gridSanitationList').treegrid('select', editIndex);
+                }
+            }
+        }
+        //耗材--end
+
+        //$("#gridMeasureList").treegrid('loadData', '');
+        //$("#gridMeasureList").treegrid('clear');
+        //救治措施
+        var urlMeasure = '@Url.Content("~/PR/Dictionary/GetChargeItemDictionaryTrees")';
+        $("#gridMeasureList").treegrid({
+            title: '救治措施(点击文件夹前面的小三角来折叠或展开/备注里请不要输入",")',
+            //width: '100%',
+            height: 400,
+            //striped: true,
+            //method: 'get',
+            //animate: true,
+            //checkOnSelect: true,
+            //ctrlSelect: true,
+            collapsible: true,
+            singleSelect: false,
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            idField: 'id',
+            treeField: 'Name',
+            //toolbar: '#tb',
+            url: urlMeasure,
+            loadMsg: '数据加载中请稍后……',
+            //pagination: false,//启用分页，默认每页10行
+            //rownumbers: false,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            //pageSize: 10,//设置 页容量5为
+            //pageList: [5, 10, 20],//设置 页容量下拉框
+            queryParams: {
+                ParentID: '-1',
+                TypeID: 'PRMeasureType',
+                treeState: '1'
+            },
+            onBeforeLoad: function (row, param) {
+                //$("#gridMeasureList").treegrid('clear');
+            },
+            onDblClickRow: onDblClickRow,
+            //onClickCell: onClickCell,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { title: '措施', field: 'Name', width: '48%', align: 'left', sortable: false },
+                {
+                    title: '次数', field: 'Number', width: '10%', align: 'center', sortable: false, resizable: false,
+                    //formatter: function (value, row) {
+                    //    return '<lable value="1" style="width:45px;" >1</lable>';
+                    //},
+                    editor: {
+                        type: 'numberspinner',
+                        options: {
+                            min: 1,
+                            max: 100,
+                            editable: false
+                        }
+                    }
+                },
+                {
+                    title: '备注', field: 'Remark', width: '90%', align: 'left', sortable: false, editor: 'textbox'
+                },
+               { title: 'ID', field: 'id', width: '0%', sortable: false, hidden: true },
+               { title: 'ParentID', field: 'ParentID', width: '0%', sortable: false, hidden: true },
+               { title: 'Unit', field: 'Unit', width: '0%', sortable: false, hidden: true }
+            ]],
+            onCheck: function (row) {
+                var rowIndex = row.id;
+                if (onLoadSuccessSanitation == 1) {
+                    ///如果选择“心电监测”
+                    if (rowIndex == 282) {
+                        var node = $('#gridSanitationList').treegrid('find', 392);//找到节点--耗材选择--心电电极贴片
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 392);//耗材选择--心电电极贴片
+                            var parent = $('#gridSanitationList').treegrid('getParent', 392);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent.id);//展开一个节点
+                            $('#gridSanitationList').treegrid('select', 445);//耗材选择--心电图纸(ZOLL)
+                            var parent1 = $('#gridSanitationList').treegrid('getParent', 445);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent1.id);//展开一个节点
+                        }
+                    }
+                    ///如果选择“葡萄糖测定”
+                    if (rowIndex == 317) {
+                        var node = $('#gridSanitationList').treegrid('find', 444);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 444);//耗材选择--血糖试纸(泰尔茂)
+                            var parent1 = $('#gridSanitationList').treegrid('getParent', 444);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent1.id);//展开一个节点
+                        }
+                    }
+                    ///如果选择“体外心脏复律除颤术”
+                    if (rowIndex == 341) {
+                        var node = $('#gridSanitationList').treegrid('find', 355);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 355);//耗材选择--导电膏
+                            var parent2 = $('#gridSanitationList').treegrid('getParent', 355);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent2.id);//展开一个节点
+                        }
+                    }
+                    ////如果选择“体外经胸型心脏临时起搏术”
+                    //if (rowIndex == 397) {
+                    //    $('#gridSanitationList').treegrid('select', 356);//耗材选择--起搏电极片
+                    //    var parent3 = $('#gridSanitationList').treegrid('getParent', 356);//获取父节点
+                    //    $('#gridSanitationList').treegrid('expand', parent3.id);//展开一个节点
+                    //}
+                    //如果选择“吸氧”
+                    if (rowIndex == 404) {
+                        var node = $('#gridSanitationList').treegrid('find', 360);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 360);//耗材选择--鼻导管
+                            var parent4 = $('#gridSanitationList').treegrid('getParent', 360);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent4.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“无创辅助通气”
+                    if (rowIndex == 408) {
+                        var node = $('#gridSanitationList').treegrid('find', 453);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 453);//耗材选择--人工急救苏醒球
+                            var parent5 = $('#gridSanitationList').treegrid('getParent', 453);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent5.id);//展开一个节点
+
+                            $('#gridSanitationList').treegrid('select', 426);//耗材选择--口咽管
+                            var parent5 = $('#gridSanitationList').treegrid('getParent', 426);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent5.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“气管插管”
+                    if (rowIndex == 342) {
+                        var node = $('#gridSanitationList').treegrid('find', 432);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 432);//耗材选择--气管导管
+                            var parent6 = $('#gridSanitationList').treegrid('getParent', 432);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent6.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“吸痰护理”
+                    if (rowIndex == 418) {
+                        var node = $('#gridSanitationList').treegrid('find', 435);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 435);//耗材选择--一次性吸痰管
+                            var parent7 = $('#gridSanitationList').treegrid('getParent', 435);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent7.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“静脉输液”
+                    if (rowIndex == 329) {
+                        var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+                        if (XFFSMould != 3) {
+                            var node = $('#gridSanitationList').treegrid('find', 294);//找到节点
+                            if (node != null) {
+                                $('#gridSanitationList').treegrid('select', 294);//耗材选择--留置针
+                                $('#gridSanitationList').treegrid('select', 371);//耗材选择--一次性输液器
+                                var parent8 = $('#gridSanitationList').treegrid('getParent', 294);//获取父节点
+                                $('#gridSanitationList').treegrid('expand', parent8.id);//展开一个节点
+
+                                $('#gridSanitationList').treegrid('select', 372);//耗材选择--酒精棉球
+                                $('#gridSanitationList').treegrid('select', 373);//耗材选择--3M胶布(1英寸)
+                                var parent80 = $('#gridSanitationList').treegrid('getParent', 373);//获取父节点
+                                $('#gridSanitationList').treegrid('expand', parent80.id);//展开一个节点
+                            }
+                        }
+                        var node1 = $('#gridDrugList').treegrid('find', 275);//找到节点
+                        if (node1 != null) {
+                            $('#gridDrugList').treegrid('select', 275);//药品选择--0.9%氯化钠
+                            var parent9 = $('#gridDrugList').treegrid('getParent', 275);//获取父节点
+                            $('#gridDrugList').treegrid('expand', parent9.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“静脉注射”
+                    if (rowIndex == 422) {
+                        var node = $('#gridSanitationList').treegrid('find', 369);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 369);//耗材选择--注射器5ml
+                            $('#gridSanitationList').treegrid('select', 368);//耗材选择--注射器20ml
+                            var parent10 = $('#gridSanitationList').treegrid('getParent', 369);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent10.id);//展开一个节点
+                            var parent101 = $('#gridSanitationList').treegrid('getParent', 'PRConsumableType-8');//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent101.id);//展开一个节点
+                        }
+
+                    }
+                    //如果选择“肌肉注射”
+                    if (rowIndex == 231) {
+                        var node = $('#gridSanitationList').treegrid('find', 369);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 369);//耗材选择--注射器5ml
+                            var parent11 = $('#gridSanitationList').treegrid('getParent', 369);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent11.id);//展开一个节点
+                            var parent101 = $('#gridSanitationList').treegrid('getParent', 'PRConsumableType-8');//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent101.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“皮下”
+                    if (rowIndex == 400) {
+                        var node = $('#gridSanitationList').treegrid('find', 369);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 369);//耗材选择--注射器5ml
+                            var parent12 = $('#gridSanitationList').treegrid('getParent', 369);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent12.id);//展开一个节点
+                            var parent101 = $('#gridSanitationList').treegrid('getParent', 'PRConsumableType-8');//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent101.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“口服”
+                    if (rowIndex == 398) {
+                        var node = $('#gridDrugList').treegrid('find', 272);//找到节点
+                        if (node != null) {
+                            $('#gridDrugList').treegrid('select', 272);//药品选择--麝香保心丸
+                            var parent13 = $('#gridDrugList').treegrid('getParent', 272);//获取父节点
+                            $('#gridDrugList').treegrid('expand', parent13.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“中换药”
+                    if (rowIndex == 333) {
+                        var node = $('#gridSanitationList').treegrid('find', 375);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 375);//耗材选择--三角巾
+                            $('#gridSanitationList').treegrid('select', 377);//耗材选择--小敷料
+                            $('#gridSanitationList').treegrid('select', 376);//耗材选择--绷带
+                            var parent14 = $('#gridSanitationList').treegrid('getParent', 375);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent14.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“小换药”
+                    if (rowIndex == 334) {
+                        var node = $('#gridSanitationList').treegrid('find', 377);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 377);//耗材选择--小敷料
+                            var parent15 = $('#gridSanitationList').treegrid('getParent', 377);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent15.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“气压治疗(真空夹板)”
+                    if (rowIndex == 351) {
+                        var node = $('#gridSanitationList').treegrid('find', 279);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 279);//耗材选择--真空夹板
+                            var parent16 = $('#gridSanitationList').treegrid('getParent', 279);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent16.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“颈部固定”
+                    if (rowIndex == 407) {
+                        var node = $('#gridSanitationList').treegrid('find', 374);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 374);//耗材选择--一次性颈托
+                            var parent17 = $('#gridSanitationList').treegrid('getParent', 374);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent17.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“单胎顺产接生”
+                    if (rowIndex == 344) {
+                        var node = $('#gridSanitationList').treegrid('find', 380);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', 380);//耗材选择--一次性产包
+                            var parent18 = $('#gridSanitationList').treegrid('getParent', 380);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent18.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“一般物理降温(冰袋冷敷)”
+                    if (rowIndex == 335) {
+                        var node = $('#gridDrugList').treegrid('find', 379);//找到节点
+                        if (node != null) {
+                            $('#gridDrugList').treegrid('select', 379);//药品选择--一次性舒冷冰袋
+                            var parent19 = $('#gridDrugList').treegrid('getParent', 379);//获取父节点
+                            $('#gridDrugList').treegrid('expand', parent19.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“搬运”
+                    if (rowIndex == 423) {
+                        var node = $('#gridSanitationList').treegrid('find', 382);//找到节点
+                        if (node != null) {
+                            $('#gridSanitationList').treegrid('select', node.id);//耗材选择--一次性隔离包(绿色)
+                            var parent20 = $('#gridSanitationList').treegrid('getParent', node.id);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent20.id);//展开一个节点
+                        }
+                        var node1 = $('#gridSanitationList').treegrid('find', 456);//找到节点
+                        if (node1 != null) {
+                            $('#gridSanitationList').treegrid('select', node1.id);//耗材选择--软担架
+                            var parent200 = $('#gridSanitationList').treegrid('getParent', node1.id);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent200.id);//展开一个节点
+                        }
+                    }
+                    //如果选择“护送”
+                    if (rowIndex == 424) {
+                        var node1 = $('#gridSanitationList').treegrid('find', 381);//找到节点
+                        if (node1 != null) {
+                            $('#gridSanitationList').treegrid('select', node1.id);//耗材选择--一次性中单(蓝色)
+                            var parent21 = $('#gridSanitationList').treegrid('getParent', node1.id);//获取父节点
+                            $('#gridSanitationList').treegrid('expand', parent21.id);//展开一个节点
+                        }
+                    }
+                }
+            },
+            onUncheck: function (row) {
+                var rowIndex = row.id;
+                //如果去掉选择“心电监测”
+                if (rowIndex == 282) {
+                    $('#gridSanitationList').treegrid('unselect', 392);//耗材选择--心电电极贴片
+                    $('#gridSanitationList').treegrid('unselect', 445);//耗材选择--心电图纸(ZOLL)
+                    //var parent = $('#gridSanitationList').treegrid('getParent', 392);//获取父节点
+                    //$('#gridSanitationList').treegrid('collapse', parent.id);//折叠一个节点
+                }
+                //如果去掉选择“葡萄糖测定”
+                if (rowIndex == 317) {
+                    $('#gridSanitationList').treegrid('unselect', 444);//耗材选择--血糖试纸(泰尔茂)
+                }
+                //如果去掉选择“体外心脏复律除颤术”
+                if (rowIndex == 341) {
+                    $('#gridSanitationList').treegrid('unselect', 355);//耗材选择--导电膏
+                }
+                ////如果去掉选择“体外经胸型心脏临时起搏术”
+                //if (rowIndex == 397) {
+                //    $('#gridSanitationList').treegrid('unselect', 397);//耗材选择--起搏电极片
+                //}
+                //如果去掉选择“吸氧”
+                if (rowIndex == 404) {
+                    $('#gridSanitationList').treegrid('unselect', 360);//耗材选择--鼻导管
+                }
+                //如果去掉选择“无创辅助通气”
+                if (rowIndex == 408) {
+                    $('#gridSanitationList').treegrid('unselect', 453);//耗材选择--人工急救苏醒球
+                    $('#gridSanitationList').treegrid('unselect', 426);//耗材选择--口咽管
+                }
+                //如果去掉选择“气管插管”
+                if (rowIndex == 342) {
+                    $('#gridSanitationList').treegrid('unselect', 432);//耗材选择--气管导管
+                }
+                //如果去掉选择“吸痰护理”
+                if (rowIndex == 418) {
+                    $('#gridSanitationList').treegrid('unselect', 435);//耗材选择--一次性吸痰管
+                }
+                //如果去掉选择“静脉输液”
+                if (rowIndex == 329) {
+                    $('#gridSanitationList').treegrid('unselect', 294);//耗材选择--留置针
+                    $('#gridSanitationList').treegrid('unselect', 371);//耗材选择--一次性输液器
+
+                    $('#gridSanitationList').treegrid('unselect', 372);//耗材选择--酒精棉球
+                    $('#gridSanitationList').treegrid('unselect', 373);//耗材选择--3M胶布(1英寸)
+
+                    $('#gridDrugList').treegrid('unselect', 275);//药品选择--0.9%氯化钠
+                }
+                //如果去掉选择“静脉注射”
+                if (rowIndex == 422) {
+                    GetMeasureSelecteds();
+                    var tMeasureNames = $('#HidMeasureNames').val();//救治措施名称串
+                    var tMeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+                    if (tMeasureCodes.indexOf("231*") < 0 && tMeasureCodes.indexOf("400*") < 0) {
+                        $('#gridSanitationList').treegrid('unselect', 369);//耗材选择--注射器5ml
+                    }
+                    $('#gridSanitationList').treegrid('unselect', 368);//耗材选择--注射器20ml
+                }
+                //如果去掉选择“肌肉注射”
+                if (rowIndex == 231) {
+                    GetMeasureSelecteds();
+                    var tMeasureNames = $('#HidMeasureNames').val();//救治措施名称串
+                    var tMeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+                    if (tMeasureCodes.indexOf("422*") < 0 && tMeasureCodes.indexOf("400*") < 0) {
+                        $('#gridSanitationList').treegrid('unselect', 369);//耗材选择--注射器5ml
+                    }
+                }
+                //如果去掉选择“皮下”
+                if (rowIndex == 400) {
+                    GetMeasureSelecteds();
+                    var tMeasureNames = $('#HidMeasureNames').val();//救治措施名称串
+                    var tMeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+                    if (tMeasureCodes.indexOf("231*") < 0 && tMeasureCodes.indexOf("422*") < 0) {
+                        $('#gridSanitationList').treegrid('unselect', 369);//耗材选择--注射器5ml
+                    }
+                }
+                //如果去掉选择“口服”
+                if (rowIndex == 398) {
+                    $('#gridDrugList').treegrid('unselect', 272);//药品选择--麝香保心丸
+                }
+                //如果去掉选择“中换药”
+                if (rowIndex == 333) {
+                    $('#gridSanitationList').treegrid('unselect', 375);//耗材选择--三角巾
+
+                    GetMeasureSelecteds();
+                    var tMeasureNames = $('#HidMeasureNames').val();//救治措施名称串
+                    var tMeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+                    if (tMeasureCodes.indexOf("334*") < 0) {
+                        $('#gridSanitationList').treegrid('unselect', 377);//耗材选择--小敷料
+                    }
+                    $('#gridSanitationList').treegrid('unselect', 376);//耗材选择--绷带
+                }
+                //如果去掉选择“小换药”
+                if (rowIndex == 334) {
+                    GetMeasureSelecteds();
+                    var tMeasureNames = $('#HidMeasureNames').val();//救治措施名称串
+                    var tMeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+                    if (tMeasureCodes.indexOf("333*") < 0) {
+                        $('#gridSanitationList').treegrid('unselect', 377);//耗材选择--小敷料
+                    }
+                }
+                //如果去掉选择“气压治疗(真空夹板)”
+                if (rowIndex == 351) {
+                    $('#gridSanitationList').treegrid('unselect', 279);//耗材选择--真空夹板
+                }
+                //如果去掉选择“颈部固定”
+                if (rowIndex == 407) {
+                    $('#gridSanitationList').treegrid('unselect', 374);//耗材选择--一次性颈托
+                }
+                //如果去掉选择“单胎顺产接生”
+                if (rowIndex == 344) {
+                    $('#gridSanitationList').treegrid('unselect', 380);//耗材选择--一次性产包
+                }
+                //如果去掉选择“一般物理降温(冰袋冷敷)”
+                if (rowIndex == 335) {
+                    $('#gridDrugList').treegrid('unselect', 379);//药品选择--一次性舒冷冰袋
+                }
+                //如果去掉选择“搬运”
+                if (rowIndex == 423) {
+                    $('#gridSanitationList').treegrid('unselect', 382);//耗材选择--一次性隔离包(绿色)
+                    $('#gridSanitationList').treegrid('unselect', 456);//耗材选择--软担架
+                }
+                //如果去掉选择“护送”
+                if (rowIndex == 424) {
+                    $('#gridSanitationList').treegrid('unselect', 381);//耗材选择--一次性中单(蓝色)
+                }
+            },
+            onClickRow: function (row) {
+                var rowIndex = row.id;
+                if (row.state === 'closed') {
+                    $(this).treegrid('expand', rowIndex);
+                }
+                else
+                    $(this).treegrid('collapse', rowIndex);
+
+                //if (editIndex != rowIndex) {
+                var endEdit = true;
+                if (rowIndex != '') {
+                    $(this).treegrid('endEdit', editIndex);//结束编辑一个节点
+                    endEdit = false;
+                }
+                if (editIndex == rowIndex && endEdit == false) {
+                    $(this).treegrid('select', rowIndex);//如果在最好编辑的节点上点击,选择这个节点
+                }
+                if (rowIndex.indexOf("PRMeasureType-") >= 0) {
+                    $(this).treegrid('unselect', rowIndex);//反选一个节点(大目录不让选中)
+                }
+                editIndex = rowIndex;
+            },
+            fitColumns: false,
+            onLoadError: function () {
+                //alert("获取数据失败！可能是已经超时，请重新登录！");
+                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;<b>获取【措施】数据失败！可能是已经超时，请重新登录！</b></span>', 'error');
+            },
+            onLoadSuccess: function () {
+                
+                $('#gridMeasureList').treegrid('uncheckAll');//清空全部勾选
+                //$('#gridMeasureList').treegrid('collapseAll');//折叠所有节点
+                //$('#gridMeasureList').treegrid('loadData', urlMeasure);//加载本地数据，旧的行将被移除
+
+                //var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+                var mould = false;
+                if (RescueState == "new" && XFFSMould != "") {
+                    GetRescueXFFSMould(XFFSMould);
+                    mould = true;
+                }
+                if (RescueState == "edit" || RescueState == "look" || (mould == true)) {
+
+                    //alert($('#HidMeasureCodes').val());
+                    if ($('#HidMeasureCodes').val() != "") {
+                        var array = $('#HidMeasureCodes').val().split(',');//分割逗号
+                        for (var i = 0; i < array.length ; i++) {
+                            var array1 = array[i].split('*');//分割*
+                            //for (var i = 0; i < 1 ; i++) {
+                            if (array1[0] != '') {
+                                var array2 = array1[1].split(' ');//分割
+
+                                var node = $('#gridMeasureList').treegrid('find', array1[0]);//找到节点
+                                if (node != null) {
+                                    $('#gridMeasureList').treegrid('select', array1[0]);//选中一个节点
+                                    $('#gridMeasureList').treegrid('beginEdit', array1[0]);//开始编辑一个节点
+                                    if ($('#gridMeasureList').treegrid('validateRow', array1[0])) {
+                                        var ed = $('#gridMeasureList').treegrid('getEditor', { index: array1[0], field: 'Number' });
+                                        $(ed.target).numberspinner('setValue', array2[0]);//
+                                        if (array2[1] != undefined) {
+                                            var edt = $('#gridMeasureList').treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                            $(edt.target).textbox('setValue', array2[1]);//
+                                        }
+                                    }
+                                    $('#gridMeasureList').treegrid('endEdit', array1[0]);//结束编辑一个节点
+                                    var parent = $('#gridMeasureList').treegrid('getParent', array1[0]);//获取父节点
+                                    $('#gridMeasureList').treegrid('expand', parent.id);//展开一个节点
+                                    var parent1 = $('#gridMeasureList').treegrid('getParent', parent.id);//获取父节点
+                                    if (parent1 != null) {
+                                        $('#gridMeasureList').treegrid('expand', parent1.id);//展开一个节点
+                                    }
+                                }
+                            }
+                            //}
+                        }
+                    }
+                }
+                else {
+                    var sendAddress = $('#SendAddress').combobox('getValue');
+                    //如果送往地点是“不送院”，新增的时候不默认勾选“搬运”、“护送”；
+                    if (sendAddress == null) {
+                        sendAddress = '888';
+                    }
+                    if (sendAddress.indexOf("不送院") < 0) {
+                        $('#gridMeasureList').treegrid('select', 423);//选择--搬运
+                        $('#gridMeasureList').treegrid('select', 424);//选择--护送
+                        var parent200 = $('#gridMeasureList').treegrid('getParent', 423);//获取父节点
+                        $('#gridMeasureList').treegrid('expand', parent200.id);//展开一个节点
+
+                    }
+                }
+            }
+        });
+        function endEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#gridMeasureList').treegrid('validateRow', editIndex)) {
+                $('#gridMeasureList').treegrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //救治措施--选择行
+        function onDblClickRow(row) {
+            if (editIndex != row) {
+                if (endEditing()) {
+                    var rowIndex = row.id;
+                    if (rowIndex) {
+                        if (rowIndex.indexOf("PRMeasureType-") < 0) {
+                            $(this).treegrid('select', rowIndex)
+                                    .treegrid('beginEdit', rowIndex);
+                            //var ed = $('#gridMeasureList').treegrid('getEditor', { index: rowIndex, field: field });
+                            //($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                            editIndex = rowIndex;
+                        }
+                    }
+                } else {
+                    $('#gridMeasureList').treegrid('select', editIndex);
+                }
+            }
+        }
+        //救治措施--end
+
+        //快速增加心肺复苏模板
+        function GetRescueXFFSMould(XFFSMould) {
+            //var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+            if (XFFSMould == 1) {
+                $('#HidMeasureCodes').val("296*1,282*1,318*1,317*1,449*1 立即高质量CPR（按压/通气=30：2）,404*1,408*1,341*8 除颤能量选择依次为120J1次-150J1次-200J6次、每2分钟1次,329*1,422*20,342*1,338*1 保持人工呼吸8～10次/分");
+                $('#HidSanitationCodes').val("392*4,445*1,444*1,360*1,453*1,426*1,355*1,294*1,371*1,372*1,373*1,369*1,368*1,432*1");
+                $('#HidDrugCodes').val("275*1 静滴,239*8 静注(每3-5分钟给予肾上腺素1mg静注、20ml生理盐水冲管。,260*3 静注(第一次肾上腺素静注2分钟后、胺碘酮300mg静注、20ml生理盐水冲管。第二次肾上腺素静注2分钟后、胺碘酮150mg静注、20ml生理盐水冲管。");
+            }
+            else if (XFFSMould == 2) {
+                $('#HidMeasureCodes').val("296*3,282*1,318*1,317*1,449*1 立即高质量CPR（按压/通气=30：2）,404*1,408*1,329*1,422*16,342*1,338*1 保持人工呼吸8～10次/分");
+                $('#HidSanitationCodes').val("392*4,445*1,444*1,360*1,453*1,426*1,294*1,371*1,372*1,373*1,369*1,368*1,432*1");
+                $('#HidDrugCodes').val("275*1 静滴,239*8 静注(每3-5分钟给予肾上腺素1mg静注、20ml生理盐水冲管。");
+            }
+            else if (XFFSMould == 3) {
+                $('#HidMeasureCodes').val("296*1,282*1,318*1,317*1,342*1,338*1 保持人工呼吸8～10次/分,329*1,422*1,335*1");
+                $('#HidSanitationCodes').val("392*4,445*1,444*1,432*1,367*1,369*1,368*1");
+                $('#HidDrugCodes').val("275*4 静注,243*5 静滴(加入补液,241*1,242*1,246*1,328*1,379*1");
+            }
+            else if (XFFSMould == 4) {
+                $('#HidMeasureCodes').val("296*1,282*1,318*1,317*1,404*1,408*1,329*1,422*1,341*1 同步电复律能量选择依次为100J-120J-150J-200J1");
+                $('#HidSanitationCodes').val("392*4,445*1,444*1,360*1,453*1,426*1,294*1,371*1,372*1,373*1,369*1,368*1,355*1");
+                $('#HidDrugCodes').val("275*1 静滴,247*1 静注");
+            }
+        }
+
+
+        //损耗药品
+        $("#gridLossDrugList").treegrid({
+            title: "<span style='color:#9400D3'>损耗药品【如果有损耗药品，再勾选】</span>",
+            //width: '100%',
+            height: 200,
+            //striped: true,
+            collapsible: true,
+            singleSelect: false,
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            idField: 'id',
+            treeField: 'Name',
+            //toolbar: '#tb',
+            url: urlDrug,
+            loadMsg: '数据加载中请稍后……',
+            queryParams: {
+                ParentID: '-1',
+                TypeID: 'PRDrugType',
+                treeState: '1'
+            },
+            onClickRow: function (row) {
+                var rowIndex = row.id;
+                if (row.state === 'closed') {
+                    $(this).treegrid('expand', rowIndex);//展开
+                }
+                else
+                    $(this).treegrid('collapse', rowIndex);//折叠
+
+                var endEdit = true;
+                if (rowIndex != '') {
+                    $(this).treegrid('endEdit', editIndex);//结束编辑一个节点
+                    endEdit = false;
+                }
+                if (editIndex == rowIndex && endEdit == false) {
+                    $(this).treegrid('select', rowIndex);//如果在最好编辑的节点上点击,选择这个节点
+                }
+                if (rowIndex.indexOf("PRDrugType-") >= 0) {
+                    $(this).treegrid('unselect', rowIndex);//反选一个节点(大目录不让选中)
+                }
+                editIndex = rowIndex;
+            },
+            onDblClickRow: onLossDrugDblClickRow,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { title: '损耗药品', field: 'Name', width: '50%', align: 'left', sortable: false, resizable: false },
+                {
+                    title: '用量', field: 'Number', width: '10%', align: 'center', sortable: false, resizable: false,
+                    editor: {
+                        type: 'numberspinner',
+                        options: {
+                            min: 1,
+                            max: 100,
+                            editable: false
+                        }
+                    }
+                },
+                {
+                    title: '备注', field: 'Remark', width: '60%', align: 'left', sortable: false, editor: 'textbox'
+                },
+               { title: 'ID', field: 'ID', width: '1%', sortable: false, hidden: true },
+               { title: 'ParentID', field: 'ParentID', width: '0%', sortable: false, hidden: true },
+               { title: 'Unit', field: 'Unit', width: '0%', sortable: false, hidden: true }
+            ]],
+            fitColumns: false,
+            onLoadSuccess: function () {
+                $(this).treegrid('uncheckAll');//清空全部勾选
+
+                if (RescueState != "new") {
+                    if ($('#HidLossDrugCodes').val() != "") {
+                        var array = $('#HidLossDrugCodes').val().split(',');//分割逗号
+                        for (var i = 0; i < array.length ; i++) {
+                            var array1 = array[i].split('*');//分割*
+                            //for (var i = 0; i < 1 ; i++) {
+                            if (array1[0] != '') {
+                                var array2 = array1[1].split(' ');//分割
+                                
+                                var node = $(this).treegrid('find', array1[0]);//找到节点
+                                if (node != null) {
+                                    $(this).treegrid('select', array1[0]);//选择一个节点
+                                    $(this).treegrid('beginEdit', array1[0]);//开始编辑一个节点
+                                    if ($(this).treegrid('validateRow', array1[0])) {
+                                        var ed = $(this).treegrid('getEditor', { index: array1[0], field: 'Number' });
+                                        $(ed.target).numberspinner('setValue', array2[0]);//
+                                        if (array2[1] != undefined) {
+                                            var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                            $(edt.target).textbox('setValue', array2[1]);//
+                                        }
+
+                                    }
+                                    $(this).treegrid('endEdit', array1[0]);//结束编辑一个节点
+                                    var parent = $(this).treegrid('getParent', array1[0]);//获取父节点
+                                    $(this).treegrid('expand', parent.id);//展开一个节点
+                                    var parent1 = $(this).treegrid('getParent', parent.id);//获取父节点
+                                    if (parent1 != null) {
+                                        $(this).treegrid('expand', parent1.id);//展开一个节点
+                                    }
+                                }
+                            }
+                            //}
+                        }
+                    }
+                }
+            }
+        });
+        function endLossDrugEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#gridLossDrugList').treegrid('validateRow', editIndex)) {
+                $('#gridLossDrugList').treegrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //损耗药品--选择行
+        function onLossDrugDblClickRow(row) {
+            if (editIndex != row) {
+                if (endLossDrugEditing()) {
+                    var rowIndex = row.id;
+                    if (rowIndex) {
+                        if (rowIndex.indexOf("PRDrugType-") < 0) {
+                            $(this).treegrid('select', rowIndex)
+                                    .treegrid('beginEdit', rowIndex);
+                            editIndex = rowIndex;
+                        }
+                    }
+                } else {
+                    $('#gridLossDrugList').treegrid('select', editIndex);
+                }
+            }
+        }
+
+        //损耗耗材
+        $("#gridLossSanitationList").treegrid({
+            title: "<span style='color:#9400D3'>损耗耗材【如果有损耗耗材，再勾选】</span>",
+            //width: '98%',
+            height: 200,
+            collapsible: true,
+            singleSelect: false,
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            idField: 'id',
+            treeField: 'Name',
+            //toolbar: '#tb',
+            url: urlSanitation,
+            loadMsg: '数据加载中请稍后……',
+            queryParams: {
+                ParentID: '-1',
+                TypeID: 'PRConsumableType',
+                treeState: '1'
+            },
+            onClickRow: function (row) {
+                var rowIndex = row.id;
+                if (row.state === 'closed') {
+                    $(this).treegrid('expand', rowIndex);//展开
+                }
+                else
+                    $(this).treegrid('collapse', rowIndex);//折叠
+
+                var endEdit = true;
+                if (rowIndex != '') {
+                    $(this).treegrid('endEdit', editIndex);//结束编辑一个节点
+                    endEdit = false;
+                }
+                if (editIndex == rowIndex && endEdit == false) {
+                    $(this).treegrid('select', rowIndex);//如果在最好编辑的节点上点击,选择这个节点
+                }
+                if (rowIndex.indexOf("PRConsumableType-") >= 0) {
+                    $(this).treegrid('unselect', rowIndex);//反选一个节点(大目录不让选中)
+                }
+                editIndex = rowIndex;
+            },
+            onDblClickRow: onLossSanitationDblClickRow,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { title: '损耗耗材', field: 'Name', width: '50%', align: 'left', sortable: false, resizable: false },
+                {
+                    title: '数量', field: 'Number', width: '10%', align: 'center', sortable: false, resizable: false,
+                    editor: {
+                        type: 'numberspinner',
+                        options: {
+                            min: 1,
+                            max: 100,
+                            editable: false
+                        }
+                    }
+                },
+                {
+                    title: '备注', field: 'Remark', width: '60%', align: 'left', sortable: false, editor: 'textbox'
+                },
+               { title: 'ID', field: 'ID', width: '1%', sortable: false, hidden: true },
+               { title: 'ParentID', field: 'ParentID', width: '0%', sortable: false, hidden: true },
+               { title: 'Unit', field: 'Unit', width: '0%', sortable: false, hidden: true }
+            ]],
+            fitColumns: false,
+            onLoadSuccess: function () {
+                $(this).treegrid('uncheckAll');//清空全部勾选
+
+                if (RescueState != "new") {
+                    if ($('#HidLossSanitationCodes').val() != "") {
+                        var array = $('#HidLossSanitationCodes').val().split(',');//分割逗号
+                        for (var i = 0; i < array.length ; i++) {
+                            var array1 = array[i].split('*');//分割*
+                            //for (var i = 0; i < 1 ; i++) {
+                            if (array1[0] != '') {
+                                var array2 = array1[1].split(' ');//分割
+                                
+                                var node = $(this).treegrid('find', array1[0]);//找到节点
+                                if (node != null) {
+                                    $(this).treegrid('select', array1[0]);//选择一个节点
+                                    $(this).treegrid('beginEdit', array1[0]);//开始编辑一个节点
+                                    if ($(this).treegrid('validateRow', array1[0])) {
+                                        var ed = $(this).treegrid('getEditor', { index: array1[0], field: 'Number' });
+                                        $(ed.target).numberspinner('setValue', array2[0]);//
+                                        if (array2[1] != undefined) {
+                                            var edt = $(this).treegrid('getEditor', { index: array1[0], field: 'Remark' });
+                                            $(edt.target).textbox('setValue', array2[1]);//
+                                        }
+
+                                    }
+                                    $(this).treegrid('endEdit', array1[0]);//结束编辑一个节点
+                                    var parent = $(this).treegrid('getParent', array1[0]);//获取父节点
+                                    $(this).treegrid('expand', parent.id);//展开一个节点
+                                    //var parent1 = $(this).treegrid('getParent', parent.id);//获取父节点
+                                    //if (parent1 != null) {
+                                    //    $(this).treegrid('expand', parent1.id);//展开一个节点
+                                    //}
+                                }
+                            }
+                            //}
+                        }
+                    }
+                }
+            }
+        });
+        function endLossSanitationEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#gridLossSanitationList').treegrid('validateRow', editIndex)) {
+                $('#gridLossSanitationList').treegrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //损耗耗材--选择行
+        function onLossSanitationDblClickRow(row) {
+            if (editIndex != row) {
+                if (endLossSanitationEditing()) {
+                    var rowIndex = row.id;
+                    if (rowIndex) {
+                        if (rowIndex.indexOf("PRConsumableType-") < 0) {
+                            $(this).treegrid('select', rowIndex)
+                                    .treegrid('beginEdit', rowIndex);
+                            editIndex = rowIndex;
+                        }
+                    }
+                } else {
+                    $('#gridLossSanitationList').treegrid('select', editIndex);
+                }
+            }
+        }
+
+        //$('#trLoss').css("display", "none");//损耗药品和损耗耗材隐藏
+    }
+
+    //测试
+    function GetSelecteds() {
+        var get = $('#gridMeasureList').treegrid('getSelections');
+        var tt = new Array();
+        for (var i = 0; i < get.length; i++) {
+            var obj = new Object();
+            obj.ID = get[i].id;
+            obj.Name = get[i].Name;
+            var t = get[i].text + "*" + get[i].Number + " " + (get[i].Remark == null ? "" : get[i].Remark);
+            tt.push(t);
+        }
+        $('#HidMeasureNames').val(tt);
+        alert($('#HidMeasureNames').val());
+    }
+
+
+    //#region 保存病历--救治记录信息
+    function SavePRRescue() {
+
+        var isValid = $("#AddPatientRecordRescue").form("validate");
+        if (isValid) {
+
+            var PRRescue = new Object();
+            PRRescue.TaskCode = TaskCode;
+            PRRescue.PatientOrder = PatientOrder;
+            PRRescue.state = RescueState;//救治记录状态
+            PRRescue.prMeasure = GetMeasureSelecteds();//救治记录-救治措施
+            PRRescue.prDrug = GetDrugSelecteds();//救治记录--药品
+            PRRescue.prSanitation = GetSanitationSelecteds();//救治记录--药品
+            PRRescue.prLossDrug = GetLossDrugSelecteds();//救治记录--损耗药品
+            PRRescue.prLossSanitation = GetLossSanitationSelecteds();//救治记录--损耗耗材
+            PRRescue.prRescue = GetPatientRecordRescue();//救治记录主表信息
+
+            GetPRRescueValid();//判断救治记录必填项
+            if (RescueAlert == "") {
+                var str = JSON.stringify(PRRescue);//将JSON转为字符串
+
+                //$('#btnSavePRRescue').linkbutton('disable');//禁用保存按钮
+                $('#btnSavePRRescue').css("display", "none");//隐藏保存按钮
+                $.ajax({
+                    url: '@Url.Content("~/PRRescue/SavePRRescue/")',
+                    type: "POST",
+                    data: {
+                        PRRescue: str
+                    },
+                    success: function (msg) {
+                        if (msg == 'True') {
+                            //$.messager.alert('系统提示', '保存成功', 'info');
+                            msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>保存成功！</b></span>', 'info');
+                            ClearPRRescueData();
+
+                            $('#RescueXFFSMould').combobox('setValue', ""); //心肺复苏模板选择
+                            $('#gridPRRescueList').datagrid('reload');
+                            $('#AddPatientRecordRescue').dialog('close');
+
+
+                        } else {
+                            msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;<b>存储错误，可能停留时间过长已经超时！请重新登录！</b></span>', 'error');
+
+                        }
+                    },
+                    error: function () {
+                        msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>存储错误，请联系技术人员！</b></span>', 'error');
+
+                    }
+                });
+            }
+            else {
+                $.showMsg("" + RescueAlert + "", "提示");
+                RescueAlert = "";
+            }
+        }
+        else {
+            $.showMsg("输入内容长度超过最大值！请修改红色框的内容！", "提示");
+        }
+    }
+
+    //获取"救治措施"勾选内容
+    function GetMeasureSelecteds() {
+        var get = $('#gridMeasureList').treegrid('getSelections');
+        var postArray = new Array();
+        var postMeasureArray = new Array();
+        var postMeasureCodeArray = new Array();
+        for (var i = 0; i < get.length; i++) {
+            if (get[i] != null) {
+                if (get[i].Unit != '') {
+                    var obj = new Object();
+                    obj.TaskCode = TaskCode;
+                    obj.PatientOrder = PatientOrder;
+                    //obj.RescueRecordCode = '@ViewData["RescueRecordCode"]';
+                    obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+                    obj.RescueMeasureCode = get[i].id;
+                    obj.RescueMeasureName = get[i].Name;
+                    obj.NumberOfTimes = get[i].Number;
+                    obj.Remark = get[i].Remark;
+                    obj.SelectOrder = i + 1;
+                    var Number = get[i].Number;
+                    var RemarkCode = (get[i].Remark == null || get[i].Remark == "") ? "" : " " + get[i].Remark.replace(/,/g, '、');
+                    var Remark = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、') + ")";
+                    var t = get[i].text + '*' + Number + Remark;
+                    var tCode = get[i].id + '*' + Number + RemarkCode;
+                    postMeasureArray.push(t);
+                    postMeasureCodeArray.push(tCode);
+                    postArray.push(obj);
+                }
+            }
+        }
+        $('#HidMeasureNames').val(postMeasureArray);
+        $('#HidMeasureCodes').val(postMeasureCodeArray);
+        return postArray;
+    }
+    function accMul(arg1, arg2) {
+        var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+        try { m += s1.split(".")[1].length } catch (e) { }
+        try { m += s2.split(".")[1].length } catch (e) { }
+        return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+    }
+    function GetDrugSelecteds() {
+        var get = $('#gridDrugList').treegrid('getSelections');
+        var postArray = new Array();
+        var postDrugArray = new Array();
+        var postDrugCodeArray = new Array();
+        for (var i = 0; i < get.length; i++) {
+            if (get[i] != null) {
+                if (get[i].ParentID != '-1') {
+                    //alert(get[i].Specification.match(/\d+/g));
+                    //alert(parseFloat(get[i].Specification.match(/\d+/g)));
+                    var obj = new Object();
+                    obj.TaskCode = TaskCode;
+                    obj.PatientOrder = PatientOrder;
+                    //obj.RescueRecordCode = '@ViewData["RescueRecordCode"]';
+                    obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+                    obj.DrugCode = get[i].id;
+                    obj.DrugName = get[i].Name;
+                    obj.Dosage = get[i].Number;
+                    obj.GiveMedicineWay = get[i].GiveMedicineWay;
+                    obj.Remark = get[i].Remark;
+                    obj.SelectOrder = i + 1;
+                    var Number = get[i].Number;
+                    var Remark = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、') + ")";
+                    var RemarkCode = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、');
+                    var TotalDose = "";//合计计量
+                    if (get[i].Specification != null) {
+                        var spe = get[i].Specification;
+                        var tFloat = get[i].Specification.replace(spe.replace(/[^a-zA-Z]/g, ''), '');
+                        var m = 1000;
+                        TotalDose = (((tFloat * m) * parseInt(Number)) / m) + spe.replace(/[^a-zA-Z]/g, '');
+                    }
+                    obj.TotalDose = TotalDose;
+                    var t = get[i].text + ' ' + TotalDose + ' ' + get[i].GiveMedicineWay + Remark;
+                    var tCode = get[i].id + '*' + Number + ' ' + get[i].GiveMedicineWay + RemarkCode;
+                    postDrugArray.push(t);
+                    postDrugCodeArray.push(tCode);
+                    postArray.push(obj);
+                }
+            }
+        }
+        $('#HidDrugNames').val(postDrugArray);
+        $('#HidDrugCodes').val(postDrugCodeArray);
+        return postArray;
+    }
+
+    //获取"耗材"勾选内容
+    function GetSanitationSelecteds() {
+        var get = $('#gridSanitationList').treegrid('getSelections');
+        var postArray = new Array();
+        var postSanitationArray = new Array();
+        var postSanitationCodeArray = new Array();
+        for (var i = 0; i < get.length; i++) {
+            if (get[i] != null) {
+                if (get[i].ParentID != '-1') {
+                    var obj = new Object();
+                    obj.TaskCode = TaskCode;
+                    obj.PatientOrder = PatientOrder;
+                    obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+                    obj.SanitationCode = get[i].id;
+                    obj.SanitationName = get[i].Name;
+                    obj.NumberOfTimes = get[i].Number;
+                    obj.Remark = get[i].Remark;
+                    obj.SelectOrder = i + 1;
+                    var Number = get[i].Number;
+                    var RemarkCode = (get[i].Remark == null || get[i].Remark == "") ? "" : " " + get[i].Remark.replace(/,/g, '、');
+                    var Remark = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、') + ")";
+                    var t = get[i].text + '*' + Number + Remark;
+                    var tCode = get[i].id + '*' + Number + RemarkCode;
+                    postSanitationArray.push(t);
+                    postSanitationCodeArray.push(tCode);
+                    postArray.push(obj);
+                }
+            }
+        }
+        $('#HidSanitationNames').val(postSanitationArray);
+        $('#HidSanitationCodes').val(postSanitationCodeArray);
+        return postArray;
+    }
+
+    //获取"损耗药品"勾选内容
+    function GetLossDrugSelecteds() {
+        var get = $('#gridLossDrugList').treegrid('getSelections');
+        var postArray = new Array();
+        var postLossDrugArray = new Array();
+        var postLossDrugCodeArray = new Array();
+        for (var i = 0; i < get.length; i++) {
+            if (get[i] != null) {
+                if (get[i].ParentID != '-1') {
+                    var obj = new Object();
+                    obj.TaskCode = TaskCode;
+                    obj.PatientOrder = PatientOrder;
+                    obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+                    obj.DrugCode = get[i].id;
+                    obj.DrugName = get[i].Name;
+                    obj.Dosage = get[i].Number;
+                    obj.Remark = get[i].Remark;
+                    obj.SelectOrder = i + 1;
+                    var Number = get[i].Number;
+                    var RemarkCode = (get[i].Remark == null || get[i].Remark == "") ? "" : " " + get[i].Remark.replace(/,/g, '、');
+                    var Remark = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、') + ")";
+                    var t = get[i].text + '*' + Number + Remark;
+                    var tCode = get[i].id + '*' + Number + RemarkCode;
+                    postLossDrugArray.push(t);
+                    postLossDrugCodeArray.push(tCode);
+                    postArray.push(obj);
+                }
+            }
+        }
+        $('#HidLossDrugNames').val(postLossDrugArray);
+        $('#HidLossDrugCodes').val(postLossDrugCodeArray);
+        return postArray;
+    }
+
+    //获取"损耗耗材"勾选内容
+    function GetLossSanitationSelecteds() {
+        var get = $('#gridLossSanitationList').treegrid('getSelections');
+        var postArray = new Array();
+        var postLossSanitationArray = new Array();
+        var postLossSanitationCodeArray = new Array();
+        for (var i = 0; i < get.length; i++) {
+            if (get[i] != null) {
+                if (get[i].ParentID != '-1') {
+                    var obj = new Object();
+                    obj.TaskCode = TaskCode;
+                    obj.PatientOrder = PatientOrder;
+                    obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+                    obj.SanitationCode = get[i].id;
+                    obj.SanitationName = get[i].Name;
+                    obj.NumberOfTimes = get[i].Number;
+                    obj.Remark = get[i].Remark;
+                    obj.SelectOrder = i + 1;
+                    var Number = get[i].Number;
+                    var RemarkCode = (get[i].Remark == null || get[i].Remark == "") ? "" : " " + get[i].Remark.replace(/,/g, '、');
+                    var Remark = (get[i].Remark == null || get[i].Remark == "") ? "" : "(" + get[i].Remark.replace(/,/g, '、') + ")";
+                    var t = get[i].text + '*' + Number + Remark;
+                    var tCode = get[i].id + '*' + Number + RemarkCode;
+                    postLossSanitationArray.push(t);
+                    postLossSanitationCodeArray.push(tCode);
+                    postArray.push(obj);
+                }
+            }
+        }
+        $('#HidLossSanitationNames').val(postLossSanitationArray);
+        $('#HidLossSanitationCodes').val(postLossSanitationCodeArray);
+        return postArray;
+    }
+
+    //获取救治记录主表信息
+    function GetPatientRecordRescue() {
+        var now = new Date();
+        var obj = new Object();
+        obj.TaskCode = TaskCode;
+        obj.PatientOrder = PatientOrder;
+        if (RescueState == "edit") {
+            obj.RescueRecordCode = $('#HidRescueRecordCode').val();
+        }
+        obj.DisposeOrder = $('#DisposeOrder').numberspinner('getValue');//处理序号
+        obj.PeriodOfTime = SplitArray(GetCheckBox("rblShiJianDuan")); //时间段
+        obj.PeriodOfTimeCode = GetPeriodOfTimeCode(SplitArray(GetCheckBox("rblShiJianDuan"))); //时间段编码
+        obj.Measures = $('#HidMeasureNames').val();//救治措施
+        obj.MeasureCodes = $('#HidMeasureCodes').val();//救治措施编码串
+        obj.Drugs = $('#HidDrugNames').val();
+        obj.DrugCodes = $('#HidDrugCodes').val();
+        obj.Sanitations = $('#HidSanitationNames').val();
+        obj.SanitationCodes = $('#HidSanitationCodes').val();
+        obj.Remark = $('#PRRescueRemark').val();
+        obj.LossDrugs = $('#HidLossDrugNames').val();
+        obj.LossDrugCodes = $('#HidLossDrugCodes').val();
+        obj.LossSanitations = $('#HidLossSanitationNames').val();
+        obj.LossSanitationCodes = $('#HidLossSanitationCodes').val();
+        obj.DiseaseIFChanges = SplitArray(GetCheckBox("rblDiseaseChanges"));
+        obj.DiseaseChangesSupplement = $('#DiseaseChangesSupplement').val();
+        obj.LastUpdatePerson = '@ViewData["AgentName"]';//最好一次填写病历的人员
+        obj.LastUpdateTime = now;//最好一次填写时间
+        var XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏模板选择
+        obj.RescueXFFSMouldChoose = XFFSMould;
+        return obj;
+    }
+
+
+    //判断病历--救治记录必填项是否都填写
+    function GetPRRescueValid() {
+        var AlarmType = SplitArray(GetCheckBox("alarmEventType")); //事件类型
+        if (AlarmType == "回家") {
+            var MeasureNames = $('#HidMeasureNames').val();//救治措施
+            if (MeasureNames == "") {
+                RescueAlert += " 救治措施(未勾选“搬运”或“护送”)";
+            }
+            if (MeasureNames != "" && (MeasureNames.indexOf("搬运") < 0 || MeasureNames.indexOf("护送") < 0)) {
+                RescueAlert += " 救治措施(未勾选“搬运”或“护送”)";
+            }
+        }
+        var PeriodOfTime = SplitArray(GetCheckBox("rblShiJianDuan"));//时间段
+
+        if (PeriodOfTime == "") {
+            RescueAlert += " 时间段";
+        }
+        var DiseaseIFChanges = SplitArray(GetCheckBox("rblDiseaseChanges"));//病历变化是否
+        var DiseaseChangesSupplement = $('#DiseaseChangesSupplement').val();//病历变化补充
+        if (DiseaseIFChanges == "") {
+            RescueAlert += " 病情变化";
+        }
+        if (DiseaseIFChanges == "有") {
+            if (DiseaseChangesSupplement == "") {
+                RescueAlert += " 病情变化补充";
+            }
+        }
+        if (RescueAlert.length > 0)
+            RescueAlert += " 没有填写！";
+    }
+
+    //清空内容
+    function ClearPRRescueData() {
+        unCheckBoxAll("rblShiJianDuan", "");//清除时间段
+        $('#DisposeOrder').numberspinner('setValue', 1);//处理序号
+        $('#PRRescueRemark').val("");
+        //unCheckBoxAll("rblDiseaseChanges", "");//清除病历变化有无
+        $('#DiseaseChangesSupplement').val("");//病历变化补充
+
+        $('#HidMeasureNames').val("");//清空--救治措施
+        $('#HidMeasureCodes').val("");//清空--救治措施
+        $('#HidDrugNames').val("");//清空--药品
+        $('#HidDrugCodes').val("");//清空--药品
+        $('#HidSanitationNames').val("");//清空--耗材
+        $('#HidSanitationCodes').val("");//清空--耗材
+        $('#HidLossDrugNames').val("");//清空--损耗药品
+        $('#HidLossDrugCodes').val("");//清空--损耗药品
+        $('#HidLossSanitationNames').val("");//清空--损耗耗材
+        $('#HidLossSanitationCodes').val("");//清空--损耗耗材
+    }
+
+    //新增样式
+    function AddStyle() {
+        RescueState = "new";
+        //document.getElementById("btnSavePRRescue").style.display = "";//显示
+        $('#btnSavePRRescue').css("display", "");//显示保存按钮
+        //XFFSMould = isNullOrEmptyString($('#RescueXFFSMould').combobox('getValue'));//心肺复苏选择
+    }
+
+    //修改和查看绑定信息
+    function BindEditPRRescueData(editmodel, edit) {
+        RescueState = edit;//救治记录状态
+        if (RescueState == "look") {
+            //$('#btnSavePRRescue').linkbutton('disable');
+            document.getElementById("btnSavePRRescue").style.display = "none";//隐藏
+        }
+        else {
+            //$('#btnSavePRRescue').linkbutton('enable');
+            document.getElementById("btnSavePRRescue").style.display = "";//显示
+        }
+
+        RescueRecordCode = editmodel.RescueRecordCode == null ? "" : editmodel.RescueRecordCode;
+        var DisposeOrder = editmodel.DisposeOrder == null ? "" : editmodel.DisposeOrder;
+        var PeriodOfTime = editmodel.PeriodOfTime == null ? "" : editmodel.PeriodOfTime;
+        var Measures = editmodel.Measures == null ? "" : editmodel.Measures;
+        var MeasureCodes = editmodel.MeasureCodes == null ? "" : editmodel.MeasureCodes;
+        var Drugs = editmodel.Drugs == null ? "" : editmodel.Drugs;
+        var DrugCodes = editmodel.DrugCodes == null ? "" : editmodel.DrugCodes;
+        var Sanitations = editmodel.Sanitations == null ? "" : editmodel.Sanitations;
+        var SanitationCodes = editmodel.SanitationCodes == null ? "" : editmodel.SanitationCodes;
+        var Remark = editmodel.Remark == null ? "" : editmodel.Remark;
+        var LossDrugs = editmodel.LossDrugs == null ? "" : editmodel.LossDrugs;
+        var LossDrugCodes = editmodel.LossDrugCodes == null ? "" : editmodel.LossDrugCodes;
+        var LossSanitations = editmodel.LossSanitations == null ? "" : editmodel.LossSanitations;
+        var LossSanitationCodes = editmodel.LossSanitationCodes == null ? "" : editmodel.LossSanitationCodes;
+        var DiseaseIFChanges = editmodel.DiseaseIFChanges == null ? "" : editmodel.DiseaseIFChanges;
+        var DiseaseChangesSupplement = editmodel.DiseaseChangesSupplement == null ? "" : editmodel.DiseaseChangesSupplement;
+
+        $('#HidRescueRecordCode').val(RescueRecordCode);//救治记录编码
+        SetRescueRadioOfList("rblShiJianDuan", PeriodOfTime); //时间段
+        $('#DisposeOrder').numberspinner('setValue', DisposeOrder);//处理序号
+
+
+        $('#HidMeasureNames').val(Measures);
+        $('#HidMeasureCodes').val(MeasureCodes);
+        $('#HidDrugNames').val(Drugs);
+        $('#HidDrugCodes').val(DrugCodes);
+        $('#HidSanitationNames').val(Sanitations);
+        $('#HidSanitationCodes').val(SanitationCodes);
+        $('#HidLossDrugNames').val(LossDrugs);
+        $('#HidLossDrugCodes').val(LossDrugCodes);
+        $('#HidLossSanitationNames').val(LossSanitations);
+        $('#HidLossSanitationCodes').val(LossSanitationCodes);
+
+        $('#PRRescueRemark').val(Remark);
+        SetRescueRadioOfList("rblDiseaseChanges", DiseaseIFChanges); //病历变化是否
+        $('#DiseaseChangesSupplement').val(DiseaseChangesSupplement);//病历变化补充
+    }
+
+    //根据选择的时间段转换为对应的编码
+    function GetPeriodOfTimeCode(value) {
+        var new_value = 1;
+        switch (value) {
+            case "救治现场":
+                new_value = 1;
+                break;
+            case "搬运过程":
+                new_value = 2;
+                break;
+            case "护送途中":
+                new_value = 3;
+                break;
+            case "到院":
+                new_value = 4;
+                break;
+            default:
+                new_value = 1;
+                break;
+        }
+        return new_value;
+    }
+
+    //当勾选损耗后执行
+    function LossCheck() {
+        if (document.getElementById("LossSelect").checked == true) {
+
+            $('#trLoss').css("display", "");//损耗药品和损耗耗材显示
+            $('#gridLossDrugList').treegrid('reload');
+            $('#gridLossSanitationList').treegrid('reload');
+        }
+        else
+            $('#trLoss').css("display", "none");//损耗药品和损耗耗材隐藏
+
+    }
+    //#region 获取
+    /*
+    Name:控件名称
+    */
+    //function GetCheckBox(Name) {
+    //    var chk_value = [];
+    //    $('input[name="' + Name + '"]:checked').each(function () {
+    //        chk_value.push($(this).val());
+    //    });
+    //    return chk_value;
+    //}
+    //#endregion
+
+    //#region 遍历数组，组成带","号的字符串
+    /*
+    Array:数组名称
+    */
+    //function SplitArray(Array) {
+    //    var ArrayValue = '';
+    //    if (Array.length > 1) {
+    //        $.each(Array, function (key, val) {
+    //            ArrayValue += val + ",";
+    //        });
+    //    } else {
+    //        $.each(Array, function (key, val) {
+    //            ArrayValue += val;
+    //        });
+    //    }
+    //    return ArrayValue;
+    //}
+    //#endregion
+
+    function SetRescueRadioOfList(Name, List) {
+        if (!isNullOrEmpty(List))
+            $('input[name=' + Name + '][value=' + List + ']').prop("checked", true);
+
+    }
+
+    function DrugPinYinSearch() {
+        var PinYin = $("#DrugPinYin").val();
+        var ParentID = "";
+        if (PinYin == "") {
+            ParentID = -1;
+        }
+        GetDrugSelecteds();
+        alert($("#HidDrugCodes").val());
+        searchBindByPinYinDrug("", PinYin, ParentID);
+    }
+    function searchBindByPinYinDrug(urinfo, keyWord, ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/PR/Dictionary/GetChargeItemDictionaryTrees")',
+            dataType: "json",
+            data: {
+                ParentID: ParentID,
+                TypeID: 'PRDrugType',
+                treeState: '1'
+            },
+            success: function (jsData) {
+                //var value = $("#HidQDrugCodes").val().substring(0, $('#HidQDrugCodes').val().length - 1);
+                $("#HidDrugCodes").val();
+
+                if (keyWord == "") {
+                    $("#gridDrugList").treegrid("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                            jsData.remove(jsData[i]);
+                            i--;
+                        }
+                    }
+                    $("#gridDrugList").treegrid("loadData", jsData);
+                }
+            }
+        });
+    }
+</script>
+
+@*<style type="text/css">
+        .style8 {
+            height: 22px;
+        }
+
+        .style9 {
+            height: 22px;
+            background-color: #F0F0F0;
+        }
+
+        /** {
+            font-size: 9pt;
+        }*/
+
+        .textbox {
+            height: 20px;
+            margin: 0;
+            padding: 0 2px;
+            box-sizing: content-box;
+        }
+    </style>*@
+
+<div id="AddPatientRecordRescue" class="easyui-window" title="救治记录" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPatientRecord'" style="width:1050px;height:650px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div class="easyui-panel" style="padding:5px;" data-options="region:'center'">
+            <table border="0" cellpadding="0" cellspacing="0" style="width:970px;">
+                <tr id="tr7">
+                    <td style="color: Red; font-weight: bold; width:60px; text-align: right" class="style8">
+                        时间段
+                    </td>
+                    <td style="width:450px" class="style8">
+                        <input name="HidRescueRecordCode" type="hidden" id="HidRescueRecordCode" />
+                        <span id="rblShiJianDuan">
+                            <input id="rblShiJianDuan_0" type="radio" name="rblShiJianDuan" value="救治现场" checked="checked" /><label for="rblShiJianDuan_0">救治现场</label>
+                            <input id="rblShiJianDuan_1" type="radio" name="rblShiJianDuan" value="搬运过程" /><label for="rblShiJianDuan_1">搬运过程</label>
+                            <input id="rblShiJianDuan_2" type="radio" name="rblShiJianDuan" value="护送途中" /><label for="rblShiJianDuan_2">护送途中</label>
+                            <input id="rblShiJianDuan_3" type="radio" name="rblShiJianDuan" value="到院" /><label for="rblShiJianDuan_3">到院</label>
+                        </span>
+                    </td>
+                    <td style="width: 60px; text-align: right" class="style8">
+                        处理序号
+                    </td>
+                    <td style="width: 450px; " class="style8">
+                        <input id="DisposeOrder" class="easyui-numberspinner" value="1" data-options="min:1" style="width:45px;" />
+                    </td>
+                </tr>
+                <tr id="trMeasureAndSanitation">
+                    <td colspan="2">
+                        <span id="lblMeasureSelect" style="color:Blue;"></span>
+                        <input name="HidMeasureCodes" type="hidden" id="HidMeasureCodes" style="width: 1px" />
+                        <input name="HidMeasureNames" type="hidden" id="HidMeasureNames" style="width: 1px" />
+                        <div data-options="region:'center'" style="background: #fafafa;">
+                            <table id="gridMeasureList"></table>
+                        </div>
+                    </td>
+                    <td colspan="2" align="left">
+                        <span id="lblSanitationSelect" style="color:Blue;"></span>
+                        <input name="HidSanitationCodes" type="hidden" id="HidSanitationCodes" style="width: 1px" />
+                        <input name="HidSanitationNames" type="hidden" id="HidSanitationNames" style="width: 1px" />
+                        <div data-options="region:'center'" style="background: #fafafa;">
+                            <table id="gridSanitationList"></table>
+                        </div>
+                    </td>
+                </tr>
+                @*<tr>
+                        <td colspan="4">
+                            <span class="font">【药品拼音首字母】：</span>
+                            <input id="DrugPinYin" class="easyui-textbox" type="text" style="width:20%;" data-options="onChange:function (newValue, oldValue) { DrugPinYinSearch(); }" />
+                            &nbsp;&nbsp;<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" href="javascript:void(0)" onclick="DrugPinYinSearch()">查询</a>
+
+                        </td>
+                    </tr>*@
+                <tr id="tr9">
+                    <td class="style9" colspan="4" align="left">
+                        <span id="lblDrugSelect" style="color:Blue;"></span>
+                        <input name="HidQDrugCodes" type="hidden" id="HidQDrugCodes" />
+                        <input name="HidQDrugNames" type="hidden" id="HidQDrugNames" />
+                        <input name="HidDrugCodes" type="hidden" id="HidDrugCodes" style="width: 1px" />
+                        <input name="HidDrugNames" type="hidden" id="HidDrugNames" style="width: 1px" />
+                        <table id="gridDrugList"></table>
+                    </td>
+                </tr>
+                <tr id="trLossSelect" hidden="hidden">
+                    <td colspan="4">
+                        <input name="LossSelect" type="CheckBox" id="LossSelect" value="损耗" onclick="LossCheck();" />
+                        <label for="LossSelect_0">损耗药品/耗材</label>
+                    </td>
+                </tr>
+                <tr id="trLoss">
+                    <td colspan="2" align="left">
+                        <span id="lblLossDrugSelect" style="color:Blue;"></span>
+                        <input name="HidLossDrugCodes" type="hidden" id="HidLossDrugCodes" style="width: 1px" />
+                        <input name="HidLossDrugNames" type="hidden" id="HidLossDrugNames" style="width: 1px" />
+                        <table id="gridLossDrugList" style="vertical-align:top"></table>
+                    </td>
+                    <td colspan="2" align="left">
+                        <span id="lblLossSanitationSelect" style="color:Blue;"></span>
+                        <input name="HidLossSanitationCodes" type="hidden" id="HidLossSanitationCodes" style="width: 1px" />
+                        <input name="HidLossSanitationNames" type="hidden" id="HidLossSanitationNames" style="width: 1px" />
+                        <table id="gridLossSanitationList" style="vertical-align:top"></table>
+                    </td>
+                </tr>
+                <tr id="tr11">
+                    <td style=" font-weight: bold; text-align: right" class="style9" colspan="1">
+                        备注
+                    </td>
+                    <td class="style9" colspan="3">
+                        <input id="PRRescueRemark" class="easyui-validatebox textbox" type="text" style="width:85%;" data-options="validType:'length[1,100]'" />
+                    </td>
+                </tr>
+
+                <tr id="tr10">
+                    <td style="color: Red;  font-weight: bold; text-align: right" class="style8" colspan="1">
+                        病情变化
+                    </td>
+                    <td class="style8" colspan="3">
+                        <input name="Hidden1" type="hidden" id="Hidden1" style="width: 1px" />
+                        <input name="Hidden2" type="hidden" id="Hidden2" style="width: 1px" />
+                        <span id="rblDiseaseChanges">
+                            <input id="rblBingQingBianHua_0" type="radio" name="rblDiseaseChanges" value="无" checked="checked" /><label for="rblBingQingBianHua_0">无</label>
+                            <input id="rblBingQingBianHua_1" type="radio" name="rblDiseaseChanges" value="有" /><label for="rblBingQingBianHua_1">有</label>
+                        </span>
+                        <input id="DiseaseChangesSupplement" class="easyui-validatebox textbox" type="text" style="width:76%;" data-options="validType:'length[1,100]'" />
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:center;padding:5px 0 0;">
+            <a class="easyui-linkbutton" id="btnSavePRRescue" data-options="iconCls:'icon-save'" href="javascript:void(0)" onclick="SavePRRescue()">保存</a>&nbsp;&nbsp;
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#AddPatientRecordRescue').window('close')">关闭</a>
+        </div>
+    </div>
+
+</div>

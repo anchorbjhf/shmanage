@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "患者病历管理";
+    Layout = "~/Areas/PR/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layout();
+
+        });
+        $(window).resize(function () {
+            layout();
+        });
+
+        function layout() {
+            var height = $(window).height() - 80;
+            var heightdivmain = $(window).height() - 20;
+            $('#PatientMain').layout({
+                width: '100%',
+                height: height
+            });
+            $('#PatientCharge').layout({
+                width: '100%',
+                height: height
+            });
+            $("#divmain").layout({
+                height: heightdivmain
+            })
+        }
+
+        ////function addTab(title, url) {
+        ////    if ($('#tt').tabs('exists', title)) {
+        ////        $('#tt').tabs('select', title);
+        ////    } else {
+        ////        var content = '<iframe scrolling="auto" frameborder="0"  src="' + url + '" style="width:100%;height:100%;"></iframe>';
+        ////        $('#tt').tabs('add', {
+        ////            title: title,
+        ////            content: content,
+        ////            closable: true
+        ////        });
+        ////    }
+        ////}
+    </script>
+}
+
+<div id="divmain" class="easyui-tabs" style="width: 100%;text-align:center">
+    <div id="tabPatientMain" title="电子病历" style="padding: 10px; width: 100%;">
+        <iframe name="PatientMain" id="PatientMain" frameborder="0" style="width: 100%; height: 100%" src="@Url.Content("~/PR/Medical/AddPatientRecord/?taskCode=")@ViewData["taskCode"]&PatientOrder=@ViewData["patientOrder"]&state=@ViewData["state"]"></iframe>
+    </div>
+    <div id="tabPatientCharge" title="收费清单" style="padding: 10px;  width: 100%;" op>
+        <iframe name="PatientCharge" id="PatientCharge" frameborder="0" style="width: 100%; height: 100%" src="@Url.Content("~/PR/Charge/PatinetCharge/?taskCode=")@ViewData["taskCode"]&PatientOrder=@ViewData["patientOrder"]"></iframe>
+    </div>
+</div>

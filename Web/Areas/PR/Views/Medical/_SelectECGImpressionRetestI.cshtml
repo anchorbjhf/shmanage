@@ -1,0 +1,150 @@
+﻿
+<script type="text/javascript">
+
+    function ECGImpressionRetestILoad() {
+        $('#ECGImpressionRetestITree').tree({
+            //method: 'get',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            animate: true,
+            checkbox: true,
+            onlyLeafCheck: true,
+            queryParams: {
+                tableName: 'M_ZECGImpression',
+                ParentID: '0',
+                TypeID: ''
+            },
+            onLoadSuccess: function () {
+
+                if ($('#HidECGImpressionRetestICodes').val() != "") {
+                    var ECGImpressionRetestI = $('#HidECGImpressionRetestICodes').val().substring(0, $('#HidECGImpressionRetestICodes').val().length - 1);
+                    var array = ECGImpressionRetestI.split(',');
+                    for (var i = 0; i < array.length ; i++) {
+                        var node = $('#ECGImpressionRetestITree').tree('find', array[i]);
+                        if (node != null) {
+                            $(this).tree('check', node.target);
+                            var parent = $(this).tree('getParent', node.target);
+                        }
+                        if (parent != null) {
+                            $(this).tree('expand', parent.target);
+                            var parent1 = $(this).tree('getParent', parent.target);
+                            if (parent1 != null) {
+                                $(this).tree('expand', parent1.target);
+                                var parent2 = $(this).tree('getParent', parent1.target);
+                                if (parent2 != null) {
+                                    $(this).tree('expand', parent2.target);
+                                    var parent3 = $(this).tree('getParent', parent2.target);
+                                    if (parent3 != null) {
+                                        $(this).tree('expand', parent3.target);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            onDblClick: function (node) {
+                $(this).tree(node.state === 'closed' ? 'expand' : 'collapse', node.target);//双击展开，再次双击折叠
+                node.state = node.state === 'closed' ? 'open' : 'closed';
+            },
+            onCheck: function (node, checked) {
+                var value = $('#HidECGRetestIID').val();
+                var text = $('#HidECGRetestIName').val();
+                if (checked == true) {
+                    if (node != null) {
+                        if (value.indexOf(node.id + ",") < 0) {
+                            value += node.id + ",";
+                            text += node.text + ",";
+                        }
+                    }
+                }
+                else {
+                    value = value.replace(node.id + ",", "");
+                    text = text.replace(node.text + ",", "");
+                }
+                $('#HidECGRetestIID').val(value);
+                $('#HidECGRetestIName').val(text);
+
+            }
+        });
+    }
+
+    //获取隐藏编码串和名称串
+    function GetHidECGImpressionRetestIDetaile() {
+        $('#ECGImpressionRetestI').val("");//清空
+        $('#HidECGImpressionRetestICodes').val("");//清空
+        $('#HidECGImpressionRetestINames').val("");//清空
+        var text = $('#HidECGRetestIName').val();
+        var value = $('#HidECGRetestIID').val();
+        $('#ECGImpressionRetestI').val(text);
+        $('#HidECGImpressionRetestICodes').val(value);
+        $('#HidECGImpressionRetestINames').val(text);
+        $('#HidECGRetestIID').val("");//清空
+        $('#HidECGRetestIName').val("");//清空
+        HidInstrumentalExamination();//重新加载-是否显示
+        $('#SelectECGImpressionRetestI').window('close');
+    }
+
+    //清空
+    function ClearECGImpressionRetestI() {
+        $('#HidECGRetestIID').val("");//清空
+        $('#HidECGRetestIName').val("");//清空
+        $("#ECGImpressionRetestIPinYin").val("");
+        $('#ECGImpressionRetestIPinYin').textbox('setText', "");//拼音
+    }
+
+    //查询
+    function ECGImpressionRetestIPinYinSearch() {
+        var PinYin = $("#ECGImpressionRetestIPinYin").val();
+        var ParentID = "";
+        if (PinYin == "") {
+            ParentID = 0;
+        }
+        searchBindByPinYinECGRetestI("", PinYin, ParentID);
+    }
+
+    function searchBindByPinYinECGRetestI(urinfo, keyWord, ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/PR/Medical/GetAllDictionaryTrees")',
+            dataType: "json",
+            data: {
+                tableName: 'M_ZECGImpression',
+                ParentID: ParentID,
+                TypeID: ''
+            },
+            success: function (jsData) {
+                var value = $('#HidECGRetestIID').val();
+                $('#HidECGImpressionRetestICodes').val(value);//心电图印象复查1编码串
+                if (keyWord == "") {
+                    $("#ECGImpressionRetestITree").tree("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                            jsData.remove(jsData[i]);
+                            i--;
+                        }
+                    }
+                    $("#ECGImpressionRetestITree").tree("loadData", jsData);
+                }
+            }
+        });
+    }
+</script>
+<div id="SelectECGImpressionRetestI" class="easyui-window" title="心电图印象复查一" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPatientRecord'" style="width:300px;height:560px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div class="easyui-panel" style="padding:5px;" data-options="region:'center'">
+            <span class="font">【拼音首字母小写】：</span>
+            <input id="ECGImpressionRetestIPinYin" class="easyui-textbox" type="text" style="width:60%;" data-options="onChange:function (newValue, oldValue) { ECGImpressionRetestIPinYinSearch(); }" />
+            &nbsp;&nbsp;<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" href="javascript:void(0)" onclick="ECGImpressionRetestIPinYinSearch()">查询</a>
+            <br />
+            <ul id="ECGImpressionRetestITree"></ul>
+
+            <input name="HidECGRetestIID" type="hidden" id="HidECGRetestIID" />
+            <input name="HidECGRetestIName" type="hidden" id="HidECGRetestIName" />
+        </div>
+        <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" href="javascript:void(0)" onclick="GetHidECGImpressionRetestIDetaile()">确认</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#SelectECGImpressionRetestI').window('close')">关闭</a>
+        </div>
+    </div>
+</div>

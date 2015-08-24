@@ -1,0 +1,487 @@
+﻿@{
+    ViewBag.Title = "收费清单";
+    Layout = "~/Areas/PR/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var chargeSum = 0;
+        var chargeTotal = 0;
+        var ChargeType;
+        $(document).ready(function () {
+            $.InitControlDateTime("#txtDate");
+            $('#txtDDLM').numberbox({
+                onChange: function (oldV, newV) {
+                    var y = $('#txtDDLM').numberbox('getText');
+                    var z = $('#txtDYLM').numberbox('getText');
+                    if (z != "") {
+                        if (parseFloat(z) >= parseFloat(y)) {
+                            var n = parseFloat(z) - parseFloat(y);
+                            if (n <= 3) {
+                                $('#txtSingleKilometer').numberbox('setValue', 3);
+                                $('#txtKilometer').numberbox('setValue', 3);
+                            }
+                            else {
+                                $('#txtSingleKilometer').numberbox('setValue', n);
+                                $('#txtKilometer').numberbox('setValue', n);
+                            }
+                        } else {
+                            $.showMsg("[到点路码]应小于等于[到院路码]！", "提示");
+                        }
+                    }
+                }
+            });
+            $('#txtDYLM').numberbox({
+                onChange: function (oldV, newV) {
+                    var y = $('#txtDDLM').numberbox('getText');
+                    var z = $('#txtDYLM').numberbox('getText');
+                    if (y != "") {
+                        if (parseFloat(z) >= parseFloat(y)) {
+                            var n = parseFloat(z) - parseFloat(y);
+                            if (n <= 3) {
+                                $('#txtSingleKilometer').numberbox('setValue', 3);
+                                $('#txtKilometer').numberbox('setValue', 3);
+                            }
+                            else {
+                                $('#txtSingleKilometer').numberbox('setValue', n);
+                                $('#txtKilometer').numberbox('setValue', n);
+                            }
+                        } else {
+                            $.showMsg("[到点路码]应小于等于[到院路码]！", "提示");
+                        }
+                    }
+                }
+            });
+            $('#txtKilometer').numberbox({
+                onChange: function (oldV, newV) {
+                    var i = $('#txtKilometer').numberbox('getText');
+                    if (parseFloat(i) <= 3) {
+                        $('#txtAmbulanceCharge').numberbox('setValue', 30);
+                    } else {
+                        var c = (parseFloat(i) - 3) * 7 + 30;
+                        $('#txtAmbulanceCharge').numberbox('setValue', c);
+                    }
+                }
+            });
+            getChargeSum('#txtAmbulanceCharge');
+            getChargeSum('#txtWaitCharge');
+            getChargeSum('#txtFirstAidCharge');
+            getChargeSum('#txtYPTotalFee');
+            getChargeSum('#txtCLTotalFee');
+            getChargeSum('#txtJCTotalFee');
+            getChargeSum('#txtZLTotalFee');
+            CraetDataGrid('#YPdatagird', "药品费清单");
+            CraetDataGrid('#CLdatagird', "材料费清单");
+            CraetDataGrid('#JCdatagird', "检查费清单");
+            CraetDataGrid('#ZLdatagird', "治疗费清单");
+            IFCharge();
+        });
+        function IFCharge() {
+           
+            ChargeType = $("#ChargeTypeId").val();
+            //打印收费添加
+            $('#PrintCharge').linkbutton({
+                onClick: function () {
+                    openChargePrint();
+                }
+            });
+            if (ChargeType == "未收") {
+                $('#PrintCharge').linkbutton('disable');
+                $.GID("PrintCharge").style.display = "none";
+                $('#SaveCharge').linkbutton({
+                    onClick: function () {
+                        submitForm();
+                    }
+                });
+                getCharge();
+                getChargeTotal();
+                document.getElementById("Tchargetype").innerHTML = "当前状态:未收费";
+                //$('#Tchargetype').text = "（未收,新增）";
+                $('#SaveCharge').linkbutton({
+                    iconCls: 'icon-custom-cSaveCharge',
+                    size: 'middle',
+                    iconAlign: 'top',
+                    text: '保存收费信息'
+                });
+            }
+                //已收
+            else {
+                $('#PrintCharge').linkbutton('enable');
+                $.GID("PrintCharge").style.display = "block";
+                $('#SaveCharge').linkbutton({
+                    onClick: function () {
+                        submitEditForm();
+                    }
+                });
+                getEditCharge();
+                document.getElementById("Tchargetype").innerHTML = "当前状态:已收费";
+                $('#SaveCharge').linkbutton({
+                    iconCls: 'icon-custom-cSaveCharge',
+                    size: 'middle',
+                    iconAlign: 'top',
+                    text: '更新收费信息'
+                });
+            }
+        }
+        function CraetDataGrid(cid, titleInfo) {
+            $(cid).datagrid({
+                title: titleInfo,
+                //iconCls: 'icon-custom-Entry',
+                scrollbarSize: 18,
+                rownumbers: true,
+                singleSelect: true,
+                width: '98%',
+                height: 220,
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                loadMsg: '数据加载中请稍后……',
+                pagination: false,//启用分页，默认每页10行
+                columns: [
+                    [
+                   { title: '名称', field: 'Name', width: '35%', sortable: false },
+                   { title: '收费标注', field: 'ChargeWay', width: '35%', sortable: false },
+                   { title: '数量', field: 'Counts', width: '13%', sortable: false },
+                   { title: '总价格', field: 'TotalPrice', width: '14%', sortable: false }
+                    ]
+                ]
+            });
+        }
+        //未收,新增的页面填充取到的值
+        function getCharge() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/PR/Charge/GetPatientCharge")',
+                data:
+                    {
+                        TaskCode: $("#PRID").val(),
+                        PatientOrder: $("#PROrderId").val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    //从病历主表取的值
+                    //('#txtTaskSD').textbox('setValue', jsData.PRInfo.CallOrder);//任务流水号，不显示
+                    $('#txtName').textbox('setValue', jsData.PRInfo.Name);
+                    $('#txtAddressStart').textbox('setValue', jsData.PRInfo.LocalAddress);
+                    $('#txtAddressEnd').textbox('setValue', jsData.PRInfo.SendAddress);
+                    //从收费表取值
+                    if (jsData.listYP.length > 1) {
+                        $('#txtYPTotalFee').numberbox('setValue', jsData.listYP[jsData.listYP.length - 1].TotalPrice);
+                        $('#YPdatagird').datagrid("loadData", jsData.listYP);
+                    }
+                    if (jsData.listCL.length > 1) {
+                        $('#txtCLTotalFee').numberbox('setValue', jsData.listCL[jsData.listCL.length - 1].TotalPrice);
+                        $('#CLdatagird').datagrid("loadData", jsData.listCL);
+                    }
+                    if (jsData.listJC.length > 1) {
+                        $('#txtJCTotalFee').numberbox('setValue', jsData.listJC[jsData.listJC.length - 1].TotalPrice);
+                        $('#JCdatagird').datagrid("loadData", jsData.listJC);
+                    }
+                    if (jsData.listZL.length > 1) {
+                        $('#txtZLTotalFee').numberbox('setValue', jsData.listZL[jsData.listZL.length - 1].TotalPrice);
+                        $('#ZLdatagird').datagrid("loadData", jsData.listZL);
+                    }
+                }
+            });
+        }
+        //已收，编辑的页面填充取到的值
+        function getEditCharge() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/PR/Charge/GetPatientCharge")',
+                data:
+                    {
+                        TaskCode: $("#PRID").val(),
+                        PatientOrder: $("#PROrderId").val()
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    //从收费表取的值
+                    $('#txtName').textbox('setValue', jsData.EditPRInfo.PatientName);
+                    $('#txtAddressStart').textbox('setValue', jsData.EditPRInfo.AddressEnd);
+                    $('#txtAddressEnd').textbox('setValue', jsData.EditPRInfo.AddressStart);
+                    $('#txtNumber').numberbox('setValue', jsData.EditPRInfo.InvoiceNumber);
+                    $('#txtCZLM').numberbox('setValue', jsData.EditPRInfo.OutStationRoadCode);
+                    $('#txtDDLM').numberbox('setValue', jsData.EditPRInfo.PointRoadCode);
+                    $('#txtDYLM').numberbox('setValue', jsData.EditPRInfo.ArriveHospitalRoadCode);
+                    $('#txtDZLM').numberbox('setValue', jsData.EditPRInfo.ReturnStationRoadCode);
+                    $('#txtSingleKilometer').numberbox('setValue', jsData.EditPRInfo.OneWayKM);
+                    $('#txtKilometer').numberbox('setValue', jsData.EditPRInfo.ChargeKM);
+                    $('#txtAmbulanceCharge').numberbox('setValue', jsData.EditPRInfo.CarFee);
+                    $('#txtWaitCharge').numberbox('setValue', jsData.EditPRInfo.WaitingFee);
+                    $('#txtFirstAidCharge').numberbox('setValue', jsData.EditPRInfo.EmergencyFee);
+                    $('#txtRealTotalFee').numberbox('clear');
+                    $('#txtRealTotalFee').numberbox('setValue', jsData.EditPRInfo.PaidMoney);
+
+                    $('#txtTotalFee').numberbox('setValue', jsData.EditPRInfo.ReceivableTotal);
+
+                    $('#txtYPTotalFee').numberbox('setValue', jsData.EditPRInfo.DrugFeeTotal);
+                    $('#txtCLTotalFee').numberbox('setValue', jsData.EditPRInfo.ConsumableFeeTotal);
+                    $('#txtJCTotalFee').numberbox('setValue', jsData.EditPRInfo.ExamineFeeTotal);
+                    $('#txtZLTotalFee').numberbox('setValue', jsData.EditPRInfo.MeasureFeeTotal);
+
+                    if (jsData.listYP.length > 1) {
+                       
+                        $('#YPdatagird').datagrid("loadData", jsData.listYP);
+                    }
+                    if (jsData.listCL.length > 1) {
+                      
+                        $('#CLdatagird').datagrid("loadData", jsData.listCL);
+                    }
+                    if (jsData.listJC.length > 1) {
+                        $('#JCdatagird').datagrid("loadData", jsData.listJC);
+                    }
+                    if (jsData.listZL.length > 1) {
+                        $('#ZLdatagird').datagrid("loadData", jsData.listZL);
+                    }
+                }
+            });
+        }
+        //将所有收费项目合计相加。调用该方法动态改变,并赋值给应收合计，实收合计
+        function getChargeTotal() {
+            var a = $('#txtAmbulanceCharge').numberbox('getValue');
+            var b = $('#txtWaitCharge').numberbox('getValue');
+            var c = $('#txtFirstAidCharge').numberbox('getValue');
+            var d = $('#txtYPTotalFee').numberbox('getValue');
+            var e = $('#txtCLTotalFee').numberbox('getValue');
+            var f = $('#txtJCTotalFee').numberbox('getValue');
+            var g = $('#txtZLTotalFee').numberbox('getValue');
+            chargeTotal = Number(a) + Number(b) + Number(c) + Number(d) + Number(e) + Number(f) + Number(g);
+            $('#txtTotalFee').numberbox('setValue', chargeTotal);
+            ChargeType = $("#ChargeTypeId").val();
+            if (ChargeType == "未收")
+            { $('#txtRealTotalFee').numberbox('setValue', chargeTotal); }
+            //$('#txtRealTotalFee').numberbox('setValue', chargeTotal);
+        }
+        //所有numberbox框，改变时，onCharge事件，将同时改变收费总计
+        function getChargeSum(cid) {
+            $(cid).numberbox({
+                onChange: function (oldV, newV) {
+                    getChargeTotal();
+                    //var i = $(cid).numberbox('getText');
+                    //chargeSum = chargeSum + parseFloat(i);
+                }
+            });
+        }
+        //新增保存
+        function submitForm() {
+            $('#formSubmit').form('submit', {
+                url: '@Url.Content("~/PR/Charge/SavePatientCharge")',
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (data) {
+                    var jsData = $.parseJSON(data);
+                    //$.handleJsonResult(jsData);
+                    $.showMsg(jsData.Message, "系统提示", function () { });
+                    $('#PrintCharge').linkbutton('enable');
+                    $.GID("PrintCharge").style.display = "block";
+                    parent.window.opener.bindGrid(); //调用父页面查询方法--刷新
+                    $("#ChargeTypeId").val("已收");
+                    IFCharge();
+                }
+            });
+        }
+        //更改信息
+        function submitEditForm() {
+            $('#formSubmit').form('submit', {
+                url: '@Url.Content("~/PR/Charge/EditPatientCharge")',
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (data) {
+                    var jsData = $.parseJSON(data);
+                   // $.handleJsonResult(jsData);
+                    $.showMsg(jsData.Message, "系统提示", function () { });
+                }
+            });
+        }
+        //打印收费
+        function openChargePrint() {
+            TaskCode = $("#PRID").val();
+            PatientOrder = $("#PROrderId").val();
+            AlarmeventType = $("#AlarmeventTypeId").val();
+            var url = '@Url.Content("~/PR/Print/PatientChargePrint/?TaskCode=")' + encodeURIComponent(TaskCode) + '&PatientOrder=' + PatientOrder + '&AlarmeventType=' + AlarmeventType;
+            window.open(url);
+        }
+    </script>
+}
+<style>
+    .DIVHEJI {
+        margin: 0 auto;
+        height: 30px;
+        width: 98%;
+        background-color: #afd3fe;
+    }
+</style>
+
+<form id="formSubmit" method="post">
+    <input name="TaskCode" type="hidden" id="PRID" value="@ViewBag.TaskCode" />
+    <input name="PatientOrder" type="hidden" id="PROrderId" value="@ViewBag.PatientOrder" />
+    <input name="AlarmeventType" type="hidden" id="AlarmeventTypeId" value="@ViewBag.AlarmeventType" />
+    <input name="ChargeType" type="hidden" id="ChargeTypeId" value="@ViewBag.ChargeType" />
+    @*<input name="TaskSD" type="hidden" id="txtTaskSD" />*@
+    <div style="width:98%; margin-left:20px; margin-right:20px">
+        <div style="margin: 0 0 0 0; width: 98%; height: 50px;">
+            @*<table style="vertical-align:middle" border="0">*@
+            <table border="0" style="width:inherit">
+                <tr>
+                    <td width="20%">&nbsp;</td>
+                    <td width="10%" align="right">
+                        <img src="~/Images/Custom/yiliao.png" style="width:40px;height:40px" />
+                    </td>
+                    <td width="35%" align="left"><span style="font-weight: bold; font-size: 20pt; margin-top:5px">上海市急救中心院前急救收费清单</span></td>
+                    <td width="10%"></td>
+                    <td width="15%" valign="bottom"><label id="Tchargetype" style="font-weight: bold; font-size: 11pt;"></label></td>
+                </tr>
+            </table>
+        </div>
+        <div class="easyui-panel" title="车辆基础信息" style="width:98%;height:150px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 95%; height: 120px; text-align: left; margin-left: 20px; margin-right: 20px">
+                <tr>
+                    <td align="left" style=" width: 69px;">
+                        日期
+                    </td>
+                    <td colspan="3">
+                        <input name="Date" class="easyui-datetimebox" id="txtDate" style="width:150px;" />
+                    </td>
+                    <td style="width: 8%;">
+                        发票号码
+                    </td>
+                    <td colspan="3">
+                        <input name="InvoiceNumber" id="txtNumber" class="easyui-numberbox" style="width:120px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        姓名
+                    </td>
+                    <td>
+                        <input name="PatientName" id="txtName" class="easyui-textbox" data-options="readonly:true" style="width:120px;" />
+                    </td>
+                    <td>
+                        起讫地点
+                    </td>
+                    <td colspan="4">
+                        <input name="AddressStart" class="easyui-textbox" id="txtAddressStart" style="width:200px;" />至
+                        <input name="AddressEnd" class="easyui-textbox" id="txtAddressEnd" style="width:200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        出站路码
+                    </td>
+                    <td>
+                        <input name="OutStationRoadCode" id="txtCZLM" class="easyui-numberbox" style="width:100px;" data-options="precision:2">
+                    </td>
+                    <td>
+                        到点路码
+                    </td>
+                    <td>
+                        <input name="PointRoadCode" id="txtDDLM" class="easyui-numberbox" style="width:100px;" data-options="precision:2">
+                    </td>
+                    <td>
+                        到院路码
+                    </td>
+                    <td>
+                        <input name="ArriveHospitalRoadCode" id="txtDYLM" class="easyui-numberbox" style="width:100px;" data-options="precision:2">
+                    </td>
+                    <td>
+                        返站路码
+                    </td>
+                    <td>
+                        <input name="ReturnStationRoadCode" id="txtDZLM" class="easyui-numberbox" style="width:100px;" data-options="precision:2">
+                    </td>
+                </tr>
+                <tr>
+                    <td>单程公里</td>
+                    <td><input name="OneWayKM" id="txtSingleKilometer" class="easyui-numberbox" style="width:100px;" data-options="precision:2"></td>
+                    <td>收费公里</td>
+                    <td><input name="ChargeKM" id="txtKilometer" class="easyui-numberbox" style="width:100px;" data-options="precision:2,required:true"></td>
+                    <td colspan="4"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="easyui-panel" title="费用清单" style="width:98%;height:60px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 95%; text-align: left; margin-left:20px; margin-right:20px">
+                <tr style="height: 30px; text-align: center;">
+                    <td style="width:33%">
+                        车&nbsp;&nbsp;费：
+                        <input name="CarFee" id="txtAmbulanceCharge" class="easyui-numberbox" style="color:red;width:100px;" data-options="precision:2,prefix:'￥',required:true,readonly:true">
+                    </td>
+                    <td style="width:33%">
+                        等候费：
+                        <input name="WaitingFee" id="txtWaitCharge" class="easyui-numberbox" style="width:100px;" data-options="precision:2,prefix:'￥'">
+                    </td>
+                    <td style="width:33%">
+                        急救费：
+                        <input name="EmergencyFee" id="txtFirstAidCharge" class="easyui-numberbox" style="width:100px;" value="30" data-options="precision:2,prefix:'￥'">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="easyui-panel" style="width:98%;height:260px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 250px; text-align: left; margin-top: 5px">
+                <tr>
+                    <td style="width:25%;" align="center">
+                        <table id="YPdatagird"></table>
+                    </td>
+                    <td style="width:25%;" align="center">
+                        <table id="CLdatagird"></table>
+                    </td>
+                    <td style="width:25%;" align="center">
+                        <table id="JCdatagird"></table>
+                    </td>
+                    <td style="width:25%;" align="center">
+                        <table id="ZLdatagird"></table>
+                    </td>
+                </tr>
+                <tr style=" text-align :center; ">
+                    <td>
+                        <div class="DIVHEJI">
+                            药品合计费：
+                            <input name="DrugFeeTotal" id="txtYPTotalFee" class="easyui-numberbox" style="width:100px;" data-options="precision:2,prefix:'￥'">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="DIVHEJI">
+                            材料合计费：
+                            <input name="ConsumableFeeTotal" id="txtCLTotalFee" class="easyui-numberbox" style="width:100px;" data-options="precision:2,prefix:'￥'">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="DIVHEJI">
+                            检查合计费：
+                            <input name="ExamineFeeTotal" id="txtJCTotalFee" class="easyui-numberbox" style="width:100px;" data-options="precision:2,prefix:'￥'">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="DIVHEJI">
+                            治疗合计费：
+                            <input name="MeasureFeeTotal" id="txtZLTotalFee" class="easyui-numberbox" style="width:100px;" data-options="precision:2,prefix:'￥'">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="easyui-panel" title="合计费用" style="width:98%;height:100px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 95%; height:70px; text-align: left; margin-left:20px; margin-right:20px">
+                <tr>
+                    <td style="font-weight: bold; font-size: 16pt; margin-top:5px;width:120px">应收费用：</td>
+                    <td><input name="ReceivableTotal" id="txtTotalFee" class="easyui-numberbox" style="width: 300px; height: 32px;" data-options="precision:2,prefix:'￥'"></td>
+
+                    <td style="font-weight: bold; font-size: 16pt; color:red">实际收费：</td>
+                    <td><input name="PaidMoney" id="txtRealTotalFee" class="easyui-numberbox" style="width: 300px;height:32px;" data-options="precision:2,prefix:'￥',required:true"></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td> <a href="#" id="SaveCharge" class="easyui-linkbutton" style="width: 100px; font-size: 16pt;"></a></td>
+                                <td> <a href="#" id="PrintCharge" class="easyui-linkbutton" data-options="iconCls:'icon-print',size:'middle',iconAlign:'top'" style="width: 100px; font-size: 16pt;">打印</a></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</form>

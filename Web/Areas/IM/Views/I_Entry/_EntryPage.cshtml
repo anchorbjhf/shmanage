@@ -1,0 +1,451 @@
+﻿<script type="text/javascript">
+    var jsondate;
+    var boolSearch = true;
+    function submitEntryDetailForm() {
+        $('#btnEntry').linkbutton('disable');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/IM/I_Entry/SaveEntry")',
+            data:
+                {
+                    EntryDate: $("#EntryDateTime").datebox("getValue"),
+                    StorageCode: $("#EntryStorage").combobox("getValue"),
+                    Remark: $("#EntryDetailRemark").val(),
+                    sEntryDetailInfo: JSON.stringify(jsondate)
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    $("#gridEntryList").datagrid("reload")
+                    $('#NewEntryDetailList').dialog("close");
+                }, function () {
+                    $('#btnEntry').linkbutton('enable');
+                });
+            }
+        });
+
+    }
+    function inputEntryDetailJsondate() {
+        var isValid = $("#NewEntryDetail").form("validate");
+        if (isValid) {
+            var list = EntryDetailModel();
+            jsondate.push(list);
+            $("#gridEntryDetailList").datagrid("loadData", jsondate);
+            $('#NewEntryDetail').dialog('close');
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+    }
+    function deleteEntryDetailJsondate(ecode) {
+        var obj;
+        for (var i = 0; i < jsondate.length; i++) {
+            if (ecode == jsondate[i].EntryCode) {
+                obj = jsondate[i];
+                break;
+            }
+        }
+        jsondate.remove(obj);
+        $("#gridEntryDetailList").datagrid("loadData", jsondate);
+    }
+    function EntryDetailModel() {
+        var obj = new Object();
+        obj.MaterialName = $("#Material").combogrid("getText");
+        obj.MaterialID = $("#MaterialID").val();
+        if ($.GID("isValidityDate").checked) {
+            obj.BatchNo = $("#MaterialID").val() + "99991231";
+            obj.ValidityDateStr = "无有效期";
+        } else {
+            obj.BatchNo = $("#MaterialID").val() + $("#ValidityDate").datebox("getValue").replace("-", "").replace("-", "");
+            obj.ValidityDateStr = $("#ValidityDate").datebox("getValue");
+        }
+        if ($.GID("isRealBatchNoe").checked) {
+            obj.RealBatchNo = obj.BatchNo;
+        } else {
+            obj.RealBatchNo = $('#realBatchNo').val();
+        }
+        obj.EntryDate = $("#EntryDate").datebox("getValue");
+        obj.EntryCounts = $("#EntryCounts").val();
+        if ($("#TotalPrice").val() == "") {
+            obj.TotalPrice = 0;
+            obj.UnitPrice = 0;
+        } else {
+            obj.TotalPrice = $("#TotalPrice").val();
+            obj.UnitPrice = $("#UnitPrice").val();;
+        }
+        obj.StorageCode = $("#Storage").combobox("getValue");
+        obj.Storage = $("#Storage").combotree("getText");
+        obj.Remark = $("#EntryDetailRemark").val();
+        obj.Specification = $("#Specification").val();
+        obj.Unit = $("#Unit").val();
+        obj.UnitName = $("#UnitName").val();
+        obj.RelatedOrderNum = $("#RelatedOrderNum").val();
+        obj.Remark = $("#EntryDetailPageRemark").val();
+        obj.EntryCode = obj.BatchNo + $("#EntryDate").datebox("getValue").replace("-", "").replace("-", "").replace(" ", "").replace(":", "").replace(":", "");
+        obj.RedEntryDetailCode = "";
+        return obj;
+    }
+    function bindDetailGrid() {
+        $("#gridEntryDetailList").datagrid("loadData", jsondate);
+    }
+    function checkisValidityDate(isTrue) {
+        if (isTrue) {
+            $("#ValidityDate").datebox({ disabled: true });
+            $.readyonlyDatebox("#ValidityDate");
+        } else {
+            $("#ValidityDate").datebox({ disabled: false });
+            $.readyonlyDatebox("#ValidityDate");
+        }
+    }
+    function checkisRealBatchNo(isTrue) {
+        if (isTrue) {
+            $('#realBatchNo').textbox({ disabled: true });
+        } else {
+            $("#realBatchNo").textbox({ disabled: false });
+        }
+        $('#realBatchNo').textbox('clear');
+    }
+
+    function initDetailGrid() {
+        $('#btnEntry').linkbutton('enable');
+
+        jsondate = new Array();
+        $('#EntryStorage').combobox({
+            prompt: '--请选择--',
+            url: '@Url.Content("~/IM/AllDictionary/GetStorageCombo")',//ajax后台取数据路径，返回的是json格式的数据
+            valueField: 'ID',
+            textField: 'Name',
+            editable: false,
+            method: 'POST'
+        });
+        $.InitControlDateTime("#EntryDateTime");
+        $("#EntryDetailRemark").textbox("clear");
+        $("#gridEntryDetailList").datagrid({
+            //title: '入库详细清单',
+            //iconCls: 'icon-custom-Entry',
+            scrollbarSize: 18,
+            rownumbers: true,
+            singleSelect: true,
+            width: 'auto',
+            height: 240,
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            loadMsg: '数据加载中请稍后……',
+            pagination: false,//启用分页，默认每页10行
+            frozenColumns: [
+                [
+               { title: '批次号', field: 'RealBatchNo', width: '10%', sortable: false },
+               { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+               { title: '入库日期', field: 'EntryDate', width: '15%', sortable: false },
+               { title: '有效期', field: 'ValidityDateStr', width: '8%', sortable: false },
+               { title: '总数量', field: 'EntryCounts', width: '9%', sortable: false },
+               { title: '总金额', field: 'TotalPrice', width: '8%', sortable: false },
+               { title: '单价', field: 'UnitPrice', width: '5%', sortable: false },
+               { title: '规格', field: 'Specification', width: '5%', sortable: false },
+               { title: '单位', field: 'UnitName', width: '5%', sortable: false },
+               { title: '仓库', field: 'Storage', width: '10%', sortable: false },
+               { title: '单据号', field: 'RelatedOrderNum', width: '5%', sortable: false },
+               { title: '备注', field: 'Remark', width: '10%', sortable: false },
+               { title: 'EntryCode', field: 'EntryCode', sortable: false, hidden: true },
+               { title: 'BatchNo', field: 'BatchNo', sortable: false, hidden: true }
+                ]
+            ],
+            toolbar: [
+                    {
+                        id: 'btnDetailadd',
+                        text: '添加入库物资',
+                        iconCls: 'icon-custom-Entry',
+                        handler: function () {
+                            var isValid = $("#EntryInfo").form("validate");
+                            if (isValid) {
+                                $('#NewEntryDetail').dialog('open');
+                                var scode = $("#EntryStorage").combobox("getValue");
+                                initDetailAllInfo(scode);
+                            } else {
+                                $.showMsg("请先选择入库仓库！", "提示");
+                            }
+                        }
+                    },
+                    {
+                        id: 'btnDetailDelete',
+                        text: '删除入库信息',
+                        iconCls: 'icon-custom-Delete',
+                        handler: function () {
+                            var selected = $('#gridEntryDetailList').datagrid('getSelected');
+                            if (selected) {
+                                deleteEntryDetailJsondate(selected.EntryCode);
+                            } else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+            ]
+        });
+        $("#gridEntryDetailList").datagrid("loadData", jsondate);
+    }
+
+    function initDetailAllInfo(scode) {
+        $.InitControlDateTime("#EntryDate");
+        $.initTextBoxNum('#EntryCounts', "请填写入库总数量", true);
+        $.initTextBoxMoney('#TotalPrice', "请填写入库总金额", false);
+        $("#Material").combogrid("setValue", "");
+        $("#EntryCounts").numberbox("clear");
+        $("#UnitPrice").numberbox("clear");
+        $("#TotalPrice").numberbox("clear");
+        $.GID("isValidityDate").checked = false;
+        $("#ValidityDate").datebox({ disabled: false });
+        $.readyonlyDatebox("#ValidityDate");
+        $('#realBatchNo').textbox({ disabled: false });
+        $('#realBatchNo').textbox('clear');
+        $.GID("isRealBatchNoe").checked = false;
+        $("#RelatedOrderNum").textbox("clear");
+        $("#EntryDetailPageRemark").textbox("clear");
+
+        $("#TotalPrice").numberbox({
+            "onChange": function () {
+                var iprice = $("#TotalPrice").numberbox("getValue");
+                var entryCount = $("#EntryCounts").numberbox("getValue");
+                var total = iprice / entryCount;
+                $("#UnitPrice").numberbox("setValue", total);
+            }
+        });
+        $("#EntryCounts").numberbox({
+            "onChange": function () {
+                var iprice = $("#TotalPrice").numberbox("getValue");
+                var entryCount = $("#EntryCounts").numberbox("getValue");
+                var total = iprice / entryCount;
+                $("#UnitPrice").numberbox("setValue", total);
+            }
+        });
+        $('#Storage').combobox({
+            prompt: '--请选择--',
+            url: '@Url.Content("~/IM/AllDictionary/GetStorageCombo")',//ajax后台取数据路径，返回的是json格式的数据
+            valueField: 'ID',
+            textField: 'Name',
+            editable: false,
+            method: 'POST',
+            disabled:true
+        });
+        $('#Storage').combobox('select', scode);
+        //t.tree('select', node.target);    //node为要选中的节点
+        var urlstr2 = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeByUserInfo")';
+        $("#MaterialType").combotree({
+            prompt: '--请选择--',
+            url: urlstr2,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            onSelect: function (rec) {
+                var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetMaterial?mType=")' + rec.id;
+                $("#Material").combogrid({
+                    prompt: '--请选择--',
+                    panelWidth: 320,
+                    idField: 'ID',
+                    textField: 'Name',
+                    groupField: 'QRCode',
+                    columns: [[
+                        { field: 'MCode', title: '代码', width: 50, align: 'right' },
+                        { field: 'Name', title: '名称', width: 100 },
+                        { field: 'UnitName', title: '单位', width: 50 },
+                        { field: 'Specification', title: '规格', width: 50, align: 'right' },
+                        { field: 'RealPrice', title: '售价', width: 50 },
+                        { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                    ]],
+                    fitColumns: true,
+                    filter: function (inputText, row) {
+                        var opts = $(this).combogrid('options');
+                        if (row[opts.groupField] == inputText) {
+                            return true;
+                        } else if (row[opts.textField] == inputText) {
+                            return true;
+                        } else {
+                            if (boolSearch) {
+                                boolSearch = false;
+                                searchBindMeterialbyName(urlstr3, inputText);
+                            }
+                        }
+                    },
+                    onChange: function (n, o) {
+                        if (n == "")
+                            searchBindMeterialbyName(urlstr3, n);
+                    },
+                    onSelect: function (rec) {
+                        var g = $("#Material").combogrid("grid");	// 获取数据表格对象
+                        var r = g.datagrid('getSelected');	// 获取选择的行
+                        $("#MaterialID").val($('#Material').combobox('getValue'));
+                        $("#Unit").val(r.Unit);
+                        $("#UnitName").val(r.UnitName);
+                        $("#Specification").val(r.Specification);
+                        $("#QrCode").val(rec.QRCode);
+                    }
+                });
+                searchBindMeterialbyName(urlstr3, "");
+            }
+        });
+    }
+    function searchBindMeterialbyName(urinfo, keyWord) {
+        $.ajax({
+            type: 'POST',
+            url: urinfo,
+            dataType: "json",
+            success: function (jsData) {
+                if (keyWord == "") {
+                    $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                } else {
+                    for (var i = 0; i < jsData.length; i++) {
+                        if (jsData[i].Name.indexOf(keyWord) < 0) {
+                            if (jsData[i].MCode.indexOf(keyWord) < 0) {
+                                if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                                    jsData.remove(jsData[i]);
+                                    i--;
+                                }
+                            }
+                        }
+                    }
+                    $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                }
+                boolSearch = true;
+            }
+        });
+    }
+
+</script>
+
+<div id="NewEntryDetailList" class="easyui-dialog" title="入库详细清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Entry'" style="width:1000px;height:400px;padding:0px;">
+    <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+        <table id="gridEntryDetailList"></table>
+    </div>
+    <div id="EntryInfo" data-options="region:'north'" style="overflow: hidden; padding: 10px;width:900px;">
+        <table>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">入库时间：</td>
+                <td width="200px" style="vertical-align:text-top">
+                    <input id="EntryDateTime" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                </td>
+                <td rowspan="2" width="100px" style="vertical-align: text-top; text-align: right">备注：</td>
+                <td rowspan="2" width="300px">
+                    <input id="EntryDetailRemark" class="easyui-textbox" data-options="multiline:true" style="width:500px;height:50px">
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:text-top;text-align:right">
+                    仓库：
+                </td>
+                <td style="vertical-align:text-top">
+                    <input id="EntryStorage" class="easyui-combobox" data-options="required:true" style="width:150px" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align:right;margin-top:5px">
+                    <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-custom-Add'" onclick="submitEntryDetailForm()">&nbsp;&nbsp;确认入库&nbsp;&nbsp;</a>
+                    &nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="NewEntryDetail" class="easyui-dialog" title="入库详单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-Entry'" style="width:355px;height:400px;padding:5px;">
+    <form id="NewEntryDetailform">
+        <input id="MaterialID" type="hidden" />
+        <input id="BatchNo" type="hidden" />
+        <input id="QrCode" type="hidden" />
+        <input id="UnitName" type="hidden" />
+        <input id="Unit" type="hidden" />
+        <input id="Specification" type="hidden" />
+        <table>
+            <tr>
+                <td width="100px">分类：</td>
+                <td width="250px">
+                    <input id="MaterialType" class="easyui-combotree" data-options="required:true" style="width:160px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    物资：
+                </td>
+                <td>
+                    <input id="Material" class="easyui-combogrid" style="width:160px" data-options="required:true" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    入库时间：
+                </td>
+                <td>
+                    <input id="EntryDate" class="easyui-datetimebox" data-options="required:true" style="width:160px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    仓库：
+                </td>
+                <td>
+                    <input id="Storage" class="easyui-combobox" data-options="required:true" style="width:160px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    批次号：
+                </td>
+                <td>
+                    <input id="realBatchNo" class="easyui-textbox" style="width:160px" data-options="required:true" />
+                    <input id="isRealBatchNoe" type="checkbox" onchange="checkisRealBatchNo(this.checked)">无批次号
+                </td>
+            </tr>
+            <tr id="trZJE">
+                <td>
+                    总金额：
+                </td>
+                <td>
+                    <input id="TotalPrice" class="easyui-numberbox" style="width:160px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    数量：
+                </td>
+                <td>
+                    <input id="EntryCounts" style="width:160px" />
+                </td>
+            </tr>
+            <tr id="trDJ">
+                <td>
+                    单价：
+                </td>
+                <td>
+                    <input id="UnitPrice" style="width:160px" class="easyui-numberbox" data-options="prompt:'系统自动计算入库单价',precision:2,groupSeparator:',',decimalSeparator:'.',prefix:'￥',readonly:true,required:false" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    有效期：
+                </td>
+                <td style="vertical-align:text-top">
+                    <input id="ValidityDate" class="easyui-datebox" data-options="required:true" style="width:160px" />
+                    <input id="isValidityDate" type="checkbox" onchange="checkisValidityDate(this.checked)">无有效期
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    单据号：
+                </td>
+                <td><input id="RelatedOrderNum" class="easyui-textbox" style="width:160px" /></td>
+            </tr>
+            <tr>
+                <td>
+                    备注：
+                </td>
+                <td>
+                    <input id="EntryDetailPageRemark" class="easyui-textbox" data-options="multiline:true" style="width:200px;height:50px">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:right">
+                    <a href="javascript:void(0)" id="btnEntry" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="inputEntryDetailJsondate()">添加入库单</a>&nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

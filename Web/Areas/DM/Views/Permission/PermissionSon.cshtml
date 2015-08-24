@@ -1,0 +1,159 @@
+﻿@{
+    Layout = "~/Areas/DM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        var parentPemissionId = @Request.QueryString["pid"]
+        $(function () {
+
+            $("#tbList").datagrid({
+                title: '权限信息',
+                iconCls: 'icon-custom-cPermission',
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/DM/Permission/PermissionSon?pid=")' + parentPemissionId,
+                //queryParams:{},
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 15,//设置 页容量5为
+                pageList: [15, 20, 30],//设置 页容量下拉框
+                columns: [[
+                    {
+                        field: 'IsShow', title: '显示', width: 20, formatter: function (value) {
+                            return value ? "是" : "否";
+                        }
+                    },
+                    { field: 'Name', title: '权限名', width: 100 },
+                    { field: 'AreaName', title: '区域名', width: 100 },
+                    { field: 'ControllerName', title: '控制名', width: 100 },
+                    { field: 'ActionName', title: '方法', width: 100 },
+                    {
+                        field: 'FormMethod', title: '请求方式', width: 100, align: "center",
+                        formatter: function (value) {
+                            switch (value.toString()) {
+                                case "1":
+                                    return "Get";
+                                case "2":
+                                    return "Post";
+                                case "3":
+                                    return "Both";
+                            }
+                        }
+                    },
+                    { field: 'SN', title: '序号', width: 100 }
+                ]],
+                toolbar: [{
+                    iconCls: 'icon-add',
+                    text: "新增",
+                    handler: addRow
+                }, '-', {
+                    iconCls: 'icon-remove',
+                    text: "删除",
+                    handler: removeRow
+                }, '-', {
+                    iconCls: 'icon-edit',
+                    text: "编辑",
+                    handler: editRow
+                }, '-', {
+                    iconCls: 'icon-undo',
+                    text: "返回",
+                    handler: function () { window.location = "@Url.Content("~/DM/Permission/Index")"; }
+                }],
+                onSelect: function (rowI, rowD) {
+                    selectedRowIndex = rowI;//将选中行的下标 设置给全局变量
+                },
+                onDblClickRow: function () {
+                    editRow();
+                }
+            });
+
+            $.setGridOnly("#TableForm", "#tbList");
+        })
+
+
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridOnly("#TableForm", "#tbList");
+        });
+
+        //选中行的下标
+        var selectedRowIndex = -1;
+
+        //编辑按钮方法
+        function editRow() {
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+                $('#editWindow').dialog('open');
+
+                $.ajax({
+                    type: 'POST',
+                    async: false, //设置同步方式
+                    cache: false,//缓存
+                    url: '@Url.Content("~/DM/Permission/GetEditPerView")',
+                    data: { id: rowData.ID },
+                    success: function (jsonObj) {
+                        if (jsonObj.Result)
+                            $.handleJsonResult(jsonObj);
+                        else {
+                            $('#editWindow').window('open'); // 编辑窗口
+                            $("#editWindow").html(jsonObj);
+                        }
+                    },
+                    error: function (data) {
+                        alert(data.statusText);
+                    }
+                });
+            }
+        }
+
+        //新增按钮方法
+        function addRow() {
+            $.ajax({
+                type: 'GET',
+                async: false, //设置同步方式
+                cache: false,//缓存
+                url: '@Url.Content("~/DM/Permission/GetAddPerView")',
+                data: "id=" + parentPemissionId,
+                success: function (jsonObj) {
+                    if (jsonObj.Result)
+                        $.handleJsonResult(jsonObj);
+                    else {
+                        $('#editWindow').dialog('open'); // 编辑窗口
+                        $("#editWindow").html(jsonObj);
+                    }
+                },
+                error: function (data) {
+                    alert(data.statusText);
+                }
+            });
+        }
+
+        //删除方法
+        function removeRow() {
+            //获取选中行里的数据！
+            var rowData = $("#tbList").datagrid("getSelected");
+            if (rowData) {
+                $.post("@Url.Content("~/DM/Permission/delpemission")", "id=" + rowData.ID, function (jsonObj) {
+                    $.procAjaxData(jsonObj, function () {
+                        $("#tbList").datagrid("reload");//删除成功后 刷新页面
+                    });
+                }, "JSON");
+            }
+        }
+
+    </script>
+}
+
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <table id="tbList"></table>
+    <div id="editWindow" class="easyui-dialog" title="权限编辑" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-save'" style="width: 600px; height: 400px; padding: 5px; ">
+    </div>
+</div>
+
+

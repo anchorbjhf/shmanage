@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "入库清单";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script type="text/javascript">
+
+        //页面加载
+        $(document).ready(function () {
+            $.InitDateTime();
+            var urlstr = '@Url.Content("~/IM/AllDictionary/GetMSDictionaryInfo?TypeCode=MatertalInType")';
+            $.EUIcombobox("#EntryType", {
+                url: urlstr,
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            bindGrid();
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridEntryList");
+            $('#CheckEntryDetailList').window({
+                onBeforeClose: function () { //当面板关闭之前触发的事件
+                    $("#gridEntryList").datagrid("reload");
+                    initJurisdiction();
+                }
+            });
+            var urlstr1 = '@Url.Content("~/IM/AllDictionary/GetStorageCombo")';
+            $.EUIcombobox("#SelectStorage", {
+                url: urlstr1,
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                datainfo: {},
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+        });
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridEntryList");
+        });
+        //权限判断
+        function initJurisdiction() {
+            if ('@ViewBag.RKHC'=='False') { //红冲功能
+                $('#btnRedadd').linkbutton('disable');
+            }
+            if ('@ViewBag.ZJXG'=='False') { // 修改总价功能
+                $('#btnCountMoneyEdit').linkbutton('disable');
+            }
+            if ('@ViewBag.RK' == 'False') {//入库功能禁用
+                $('#btnadd').linkbutton('disable');
+            }
+            if ('@ViewBag.RKBDZJE' == 'True') {
+                $.GID("trZJE").style.display = 'none';
+                $.GID("trDJ").style.display = 'none';
+            }
+        }
+        function reSearch() {
+            $("#gridEntryList").datagrid({
+                queryParams: {
+                    StartDate: $('#StartDate').datebox('getValue'),
+                    EndDate: $('#EndDate').datebox('getValue'),
+                    EntryCode: $('#EntryCode').textbox('getValue'),
+                    StroageID:$('#SelectStorage').combobox('getValue'),
+                    EntryType: $('#EntryType').combobox('getValue')
+                }
+            });
+        }
+        function bindGrid() {
+            $("#gridEntryList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/IM/I_Entry/LoadEntryList")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                queryParams: {
+                    StartDate: $('#StartDate').datebox('getValue'),
+                    EndDate: $('#EndDate').datebox('getValue'),
+                    EntryCode: $('#EntryCode').textbox('getValue'),
+                    StroageID: $('#SelectStorage').combobox('getValue'),
+                    EntryType: $('#EntryType').combobox('getValue')
+                },
+                frozenColumns: [[
+                   { title: '入库日期', field: 'EntryDate', width: '10%', sortable: false, formatter: $.formatTime },
+                   { title: '入库单号', field: 'EntryCode', width: '10%', sortable: false },
+                   { title: '入库类型', field: 'EntryTypeName', width: '10%', sortable: false },
+                   { title: '入库仓库', field: 'EntryStorageName', width: '15%', sortable: false },
+                   { title: '经办人', field: 'OperatorName', width: '10%', sortable: false },
+                   { title: '经办时间', field: 'OperationTime', width: '20%', sortable: false, formatter: $.formatTime },
+                   { title: '备注', field: 'Remark', width: '20%', sortable: false },
+                   { title: 'EntryType', field: 'EntryType', sortable: false, hidden: true },
+                   { title: 'EntryStorageID', field: 'EntryStorageID', sortable: false, hidden: true }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.EntryType == "MatertalInType-3") {
+                        return 'color:red;';
+                    } else if (row.EntryType == "MatertalInType-2") {
+                        return 'color:blue;';
+                    }
+                },
+                toolbar: [
+                    {
+                        id: 'btnadd',
+                        text: '新增入库单',
+                        iconCls: 'icon-custom-Add',
+                        handler: function () {
+                            $('#NewEntryDetailList').dialog('open');
+                            initDetailGrid();
+                        }
+                    },
+                    {
+                        id: 'btnView',
+                        text: '查看入库单',
+                        iconCls: 'icon-custom-View',
+                        handler: function () {
+                            var selected = $('#gridEntryList').datagrid('getSelected');
+                            if (selected) {
+                                initCheckDetailGrid(selected.EntryCode, selected.EntryType);
+                                $('#CheckEntryDetailList').dialog('open');
+                            } else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ]
+            });
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridEntryList");
+            initJurisdiction();
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'入库列表清单',iconCls:'icon-custom-Entry'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>查询时间：</td>
+                    <td>
+                        <input id="StartDate" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                    </td>
+                    <td>至</td>
+                    <td>
+                        <input id="EndDate" class="easyui-datetimebox" style="width:150px" data-options="required:true" />
+                    </td>
+                    <td>入库仓库：</td>
+                    <td>
+                        <input id="SelectStorage" class="easyui-combobox" style="width:150px" />
+                    </td>
+                    <td>入库单类型：</td>
+                    <td>
+                        <input id="EntryType" class="easyui-combobox" />
+                    </td>
+                    <td rowspan="2">
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>入库单号：</td>
+                    <td>
+                        <input id="EntryCode" class="easyui-textbox" type="text" />
+                    </td>
+                    <td colspan="6"></td>
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridEntryList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/IM/Views/I_Entry/_EntryPage.cshtml")
+@Html.Partial("~/Areas/IM/Views/I_Entry/_CheckEntryPage.cshtml")

@@ -1,0 +1,175 @@
+﻿<script type="text/javascript">
+    var m_BalanceList;
+    function initPage() {
+        var urlstr = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeForBalanceList")';
+        $.EUIcomboboxTree("#MType", {
+            url: urlstr,//ajax后台取数据路径，返回的是json格式的数据
+            panelHeight: 350,
+            OneOption: [{
+                id: "",
+                text: "--请选择--",
+            }],
+            onSelect: function (rec) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/IM/I_Balance/GetMaxReportTime")',
+                    data:
+                        {
+                            MonthTime: rec.id
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        if (jsData.success) {
+                            $('#ReportTime').textbox('setText', jsData.reportTime);
+                        } else {
+                            $.showMsg("该物资种类上月未产生数据", "系统提示");
+                            $('#ReportTime').textbox('setText', jsData.reportTime);
+                        }
+                    }
+                });
+            }
+        });
+        $("#gridBalanceDetailList").datagrid({
+            width: '990',
+            height: 'auto',
+            fitColumns: true,
+            striped: true,
+            singleSelect: true,
+            selectOnCheck: false,
+            checkOnSelect: false,
+            loadMsg: '数据加载中请稍后……',
+            pagination: false,//启用分页，默认每页10行
+            rownumbers: false,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            frozenColumns: [
+                [
+               { title: '月份', field: 'ReportTime', width: '60', sortable: false },
+               { title: '名称', field: 'MName', width: '100', sortable: false },
+               { title: "月初数量", field: "BeginningCounts", width: '60', align: "right" },
+               { title: "月初总价", field: "BeginningPrice", width: '80', align: "right" },
+               { title: "入库数量", field: "IncomeCounts", width: '60', align: "right" },
+               { title: "入库总价", field: "IncomePrice", width: '80', align: "right" },
+               { title: "出库数量", field: "PayCounts", width: '60', align: "right" },
+               { title: "出库总价", field: "PayPrice", width: '80', align: "right" },
+               { title: "月末数量", field: "SurplusCounts", width: '60', align: "right" },
+               { title: "月末总价", field: "SurplusPrice", width: '80', align: "right" },
+               { title: '统计时间', field: 'SurplusTime', width: '130', align: 'right', sortable: false, formatter: $.formatTime },
+               {
+                   title: "财务修改价", field: "UpdataPrice", width: '80', align: "right",
+                   formatter: function (value, rec, rowIndex) {
+                       return '  <input class="UpdataPricecls" id=\"UpdataPrice' + rowIndex + '\" name = \"UpdataPriceText\" value=\'' + value + '\'/>';
+                   }
+               },
+                {
+                    field: 'opt', title: '', width: '80', align: 'center', frozen: 'true',
+                    formatter: function (value, rec, rowIndex) {
+                        return '<a  class="quedingcls" href="javascript:void(0)"  onclick="clickRow(' + rec.MaterialID + ',' + rowIndex + ')">确定</a>';
+                    }
+                },
+               { title: 'MaterialID', field: 'MaterialID', sortable: false, hidden: true }
+                ]
+            ],
+            onLoadSuccess: function (data) {
+                $('.quedingcls').linkbutton({
+                    text: '确定',
+                    plain: true,
+                    iconCls: 'icon-custom-cChange'
+                })
+                $('.UpdataPricecls').numberbox({
+                    width: 60,
+                    precision: 2
+                });
+            }
+        });
+    }
+
+    function clickRow(id, rid) {
+        var upinfo = $('#UpdataPrice' + rid).numberbox('getValue');
+        for (var i = 0; i < m_BalanceList.length; i++) {
+            if (m_BalanceList[i].MaterialID == id) {
+                m_BalanceList[i].SurplusPrice = parseFloat(m_BalanceList[i].SurplusPrice) + parseFloat(upinfo);
+                m_BalanceList[i].UpdataPrice = upinfo;
+            }
+        }
+        $('#gridBalanceDetailList').datagrid('loadData', m_BalanceList);
+
+    }
+    function SelectReport() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/IM/I_Balance/SelectBalanceReport")',
+            data:
+                {
+                    MType: $('#MType').combobox('getValue'),
+                    reportTime: $('#ReportTime').textbox('getText')
+                },
+            dataType: "json",
+            success: function (jsData) {
+                if (jsData.success) {
+                    m_BalanceList = jsData.list;
+                    $("#gridBalanceDetailList").datagrid('loadData', jsData.list);
+                } else {
+                    $.showMsg(jsData.errorMsg, "系统错误提示！", function () {
+                        $('#BalanceDetailList').dialog('close');
+                    });
+                }
+            }
+        });
+    }
+
+    function SubmitReport() {
+        $('#btnSelect').linkbutton('disable');
+        $('#btnSubmit').linkbutton('disable');
+        var addInfo = m_BalanceList;
+        for (var i = 0; i < addInfo.length; i++) {
+            addInfo[i].SurplusTime = $.formatTime(addInfo[i].SurplusTime);
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/IM/I_Balance/SubmitReport")',
+            data:
+                {
+                    ReportStr: JSON.stringify(addInfo),
+                    MType: $('#MType').combobox('getValue'),
+                    reportTime: $('#ReportTime').textbox('getText')
+                },
+            dataType: "json",
+            success: function (jsData) {
+                $.handleJsonResult(jsData, function () {
+                    m_BalanceList.length = 0;
+                    $('#balancegrid').datagrid("reload");
+                    $('#BalanceDetailList').dialog("close");
+                }, function () {
+                    $('#btnSelect').linkbutton('enable');
+                    $('#btnSubmit').linkbutton('enable');
+                });
+            }
+        });
+    }
+</script>
+
+
+<div id="BalanceDetailList" class="easyui-dialog" title="库存出入信息财务清单" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cPrice'" style="width:1000px;height:500px;padding:0px;">
+    <div data-options="region:'center'" style="overflow: hidden; padding: 10px;width:900px;">
+        <table>
+            <tr>
+                <td width="100px" style="vertical-align:text-top;text-align:right">物资类型：</td>
+                <td width="200px" style="vertical-align:text-top">
+                    <select id="MType" class="easyui-combobox" style="width: 200px"></select>
+                </td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">报表月份：</td>
+                <td width="200px">
+                    <input id="ReportTime" class="easyui-textbox" data-options="readonly:true" />
+                </td>
+                <td width="100px" style="vertical-align: text-top; text-align: right">
+                    <a href="javascript:void(0)" id="btnSelect" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="SelectReport()">查询数据</a>
+                </td>
+                <td width="200px" style="vertical-align: text-top; text-align: right">
+                    <a href="javascript:void(0)" id="btnSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="SubmitReport()">生成报表</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'north'" style="background: #fafafa; overflow: hidden;height:400px">
+        <table id="gridBalanceDetailList"></table>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "角色物资关系";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+
+    <script type="text/javascript">
+        //页面动态改动
+        $(window).resize(function () {
+            $.setGridOnly("#TableForm", "#grid");
+        });
+        //页面初始化
+        $(document).ready(function () {
+            $('#editWindow').window('close'); // 默认隐藏编辑窗口
+            $("#grid").datagrid({
+                title: '角色物资关系',
+                iconCls: 'icon-custom-Entry',
+                rownumbers: true,
+                singleSelect: true,
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: true,
+                url: '@Url.Content("~/RoleMaterial/DataLoad")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页
+                rownumbers: true,//显示页码
+                pageSize: 50,//设置 页容量
+                pageList: [50],//设置 页容量下拉框
+                columns: [[
+                        { title: '编码', field: 'roleID', width: '10%', sortable: false, align: 'center' },
+                        { title: '角色名称', field: 'roleName', width: '44%', sortable: false, align: 'center' },
+                        { title: '物资类型', field: 'materialTypeName', width: '44%', sortable: false, align: 'center' }
+                ]],
+                toolbar: [
+                    {
+                        id: 'btnedit',
+                        text: '编辑',
+                        iconCls: 'icon-edit',
+                        handler: function () {
+                            var row = $('#grid').datagrid('getSelected');
+                            if (row) {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Content("~/IM/RoleMaterial/RoleMaterialEditNew/")' + row.roleID,
+                                    success: function (jsonObj) {
+                                        if (jsonObj.Result)
+                                            $.handleJsonResult(jsonObj);
+                                        else {
+                                            $('#editWindow').dialog('open'); // 编辑窗口
+                                            $("#editWindow").html(jsonObj);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        alert(data.statusText);
+                                    }
+                                });
+                            }
+                            else {
+                                $.messager.alert('提示', '请选择数据行', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ]
+            });
+            $.setGridOnly("#TableForm", "#grid");
+        })
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+        <table id="grid"></table>
+    </div>
+    <div id="editWindow" class="easyui-dialog" title="编辑页面" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-save'" style="width:350px;height:200px;">
+    </div>
+</div>
+
+
+

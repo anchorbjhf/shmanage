@@ -1,0 +1,273 @@
+﻿<script type="text/javascript">
+
+    // 取度量单位的字典表 （在AllDictionary/GetMSDictionaryInfo 是调用字典表，传TypeCode即可）
+    function fillCombobox() {
+        var urlstr = '@Url.Content("~/IM/AllDictionary/GetMSDictionaryInfo?TypeCode=MatertalUnit")';
+        $.BindCombox("#Unit", urlstr);
+        @*var urlstr2 = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeByUserInfo")';
+        $("#MType").combotree({
+            prompt: '--请选择--',
+            url: urlstr2,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            onSelect: function (rec) {
+                $("#MaterialTypeInfo").val(rec.id);
+            }
+        });
+
+        var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetOtherType")';
+        $("#OtherType").combotree({
+            prompt: '--请选择--',
+            url: urlstr3,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            onBeforeSelect: function (node) {
+                var rows = node.children;
+                if (rows.length > 0) {
+                    $("#OtherType").treegrid("unselect");
+                }
+            },
+            onSelect: function (rec) {
+                $("#OtherTypeInfo").val(rec.id);
+            }
+        });*@
+
+        var urlstr4 = '@Url.Content("~/IM/AllDictionary/GetMeasureType")';
+        $("#MeasureTypeID").combotree({
+            prompt: '--请选择--',
+            url: urlstr4,//ajax后台取数据路径，返回的是json格式的数据
+            method: 'POST',
+            editable: false,
+            //onBeforeSelect: function (node) {
+            //    var rows = node.children;
+            //    if (rows.length > 0) {
+            //        $("#MeasureType").treegrid("unselect");
+            //    }
+            //},
+            onSelect: function (rec) {
+                $("#MeasureTypeInfo").val(rec.id);              
+            }
+        });
+        $('#sp').hide();
+
+    }
+
+    //新增措施方法
+    function submitAddForm() {
+        var isValid = $("#NewMeasureList").form("validate");
+        if (isValid) {
+            $('#btnadd').linkbutton('disable');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/DM/Measures/MeasureAdd")',
+                data:
+                    {
+                        sMaterialInfo: JSON.stringify(MeasureModel(false))
+                    },
+                dataType: "json",
+                success: function (jsData) {
+                    $.handleJsonResult(jsData, function () {
+                        $('#NewMeasureList').dialog("close");
+                        $("#gridMeasureList").datagrid("reload");
+                    }, function () {
+                        $('#btnadd').linkbutton('enable');
+                    });
+                }
+            });
+        } else {
+            $.showMsg("请填写必填项！", "提示");
+        }
+    }
+    //post form to edit
+    function submitEditForm() {
+        $.messager.confirm('提示', '确认修改该数据?', function (r) {
+            if (r) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/DM/Measures/MeasureEdit")',
+                    data:
+                        {
+                            sMaterialInfo: JSON.stringify(MeasureModel(true))
+                        },
+                    dataType: "json",
+                    success: function (jsData) {
+                        $.handleJsonResult(jsData, function () {
+                            $('#NewMeasureList').dialog("close");
+                            $("#gridMeasureList").datagrid("reload");
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    //获取填写所有值
+    function MeasureModel(isEdit) {
+        var obj = new Object();
+        if (isEdit)
+            obj.ID = $('#ID').val();
+        obj.Name = $("#Name").textbox('getText');
+        obj.MTypeID = $("#MType").combobox("getValue");
+        obj.Unit = $("#Unit").combobox("getValue");
+        obj.AlarmCounts = $("#AlarmCounts").numberbox('getValue');;
+        obj.RealPrice = $("#RealPrice").textbox('getValue');;
+        obj.PinYin = $("#PinYin").textbox('getText');;               
+        obj.FeeScale = $("#FeeScale").textbox('getText');
+        obj.LimitMaxPrice = $("#LimitMaxPrice").textbox('getText');;
+        obj.Remark = $("#Remark").textbox('getText');
+        obj.SN = $("#SN").numberbox('getValue');;
+        obj.MeasureTypeID = $("#MeasureTypeInfo").val();
+        obj.OtherTypeID = $("#MeasureTypeInfo").val();
+        obj.IsActive = $("#IsActive").combobox("getValue");
+        return obj;
+    }
+    //新增入口
+    function initAddInfo() {
+        //将修改按钮禁用
+        $('#btnedit').linkbutton('disable');
+        $.GID("btnedit").style.display = "none";
+        $('#btnadd').linkbutton('enable');
+        $.GID("btnadd").style.display = "block";
+        $.initTextBoxMoney("#RealPrice", "价格", false);
+        $('#ID').val("");
+        $("#Name").textbox("clear");
+        $("#MType").combobox("setValue", "NULLTYPE");      
+        $("#PinYin").textbox("clear"); 
+        $("#AlarmCounts").numberbox("clear");
+        $("#AlarmCounts").numberbox("setValue", 0);
+        $("#Remark").textbox("clear");
+        $("#Unit").combobox("setValue", "");
+        $("#RealPrice").textbox("clear");
+        $("#FeeScale").textbox("clear");
+        $("#LimitMaxPrice").textbox("clear");
+        $("#MeasureTypeID").combotree("clear");
+        $("#MeasureTypeInfo").val("");
+        //$("#OtherType").combotree("clear");
+        //$("#OtherTypeInfo").val("");
+        $("#SN").numberbox("clear");
+        $("#SN").numberbox("setValue", 255);
+        $("#IsActive").combobox("setText", "有效");
+    }
+    function initUpdateInfo() {
+        $('#btnadd').linkbutton('disable');
+        $.GID("btnadd").style.display = "none";
+        $('#btnedit').linkbutton('enable');
+        $.GID("btnedit").style.display = "block";
+        $.initTextBoxMoney("#RealPrice", "价格", false);
+    }
+</script>
+
+<div id="NewMeasureList" class="easyui-dialog" title="填写措施信息" data-options="modal:true,collapsible:false,minimizable:false,maximizable:false,closed:true,resizable:false,iconCls:'icon-custom-cWuZiWeiHu'" style="width:550px;height:340px;padding:10px;">
+    <input id="ID" type="hidden">    
+    <table>
+        <tr>
+            @*<td style="width:90px">
+                物资类型：
+            </td>*@
+            <td>
+                <span id="sp">
+                    <input id="MType" class="easyui-combobox" style="width:160px" data-options="required:true,editable:false" />
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                类型：
+            </td>
+            <td>
+                <input class="easyui-combotree" style="width: 160px" id="MeasureTypeID" data-options="required:true">
+                <input id="MeasureTypeInfo" type="hidden">
+            </td>
+            <td style="width:90px">
+                名称：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="Name" data-options="prompt:'请输入措施名称',required:true">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                单位：
+            </td>
+            <td>
+                <select class="easyui-combobox" style="width: 160px" id="Unit" data-options="required:true"></select>
+            </td>
+            <td style="width:90px">
+                拼音头代码：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="PinYin" data-options="prompt:'请输入首字母'">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                销售价格：
+            </td>
+            <td>
+                <input class="easyui-textbox" style="width: 160px" id="RealPrice">
+            </td>
+            <td style="width:90px">
+                顺序号：
+            </td>
+            <td>
+                <input id="SN" class="easyui-numberbox" style="width:160px;">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                是否有效：
+            </td>
+            <td>
+                <select class="easyui-combobox" style="width: 160px" id="IsActive" data-options="required:true,panelHeight:70, editable:false">
+                    <option value="true">有效</option>
+                    <option value="false">无效</option>
+                </select>
+            </td>
+            <td style="width:90px">
+                剩余预警数量：
+            </td>
+            <td>
+                <input id="AlarmCounts" class="easyui-numberbox" style="width:160px;" data-options="min:0">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                收费刻度：
+            </td>
+            <td>
+                <input id="FeeScale" class="easyui-numberbox" style="width:160px;">
+            </td>
+            <td style="width:90px">
+                最大限制金额：
+            </td>
+            <td>
+                <input id="LimitMaxPrice" class="easyui-numberbox" style="width:160px;">
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px">
+                收费刻度说明：
+            </td>
+            <td colspan="3">
+                <a>
+                    正常收费:例子：1表示 1支按1收，2支按2收，以此类推（文本框输入1）;
+                    封顶收费:例子：-1表示 多少次都按1收（文本框中输入-1），-3表示 少于3次按正常收费收，多于3次按3次收（文本框输入-3），以此类推;
+                    范围收费：例子：2表示 1-2支都按1支收（文本框输入2）,3表示 1-3支按1收（文本框输入3），以此类推
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>备注：</td>
+            <td colspan="3">
+                <input id="Remark" class="easyui-textbox" data-options="multiline:true" style="width:300px;height:40px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:right">
+                <a href="javascript:void(0)" id="btnedit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="submitEditForm();">确认修改措施</a>
+                <a href="javascript:void(0)" id="btnadd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="submitAddForm();">确认新增措施</a>
+            </td>
+        </tr>
+    </table>
+
+</div>

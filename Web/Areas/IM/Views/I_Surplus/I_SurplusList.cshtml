@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "出库仓储流水表";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Scripts{
+    <script type="text/javascript">
+        var Materials;
+        var boolSearch = true;
+        $(document).ready(function () {
+            bindGrid();
+            initSearch();
+            Materials = new Array();
+        });
+        $(window).resize(function () {
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridSurplusList");
+        });
+        function bindGrid() {
+            $("#gridSurplusList").datagrid({
+                width: 'auto',
+                height: 'auto',
+                fitColumns: true,
+                striped: true,
+                singleSelect: false,
+                selectOnCheck: true,
+                checkOnSelect: true,
+                url: '@Url.Content("~/IM/I_Surplus/GetSurplusList")',
+                loadMsg: '数据加载中请稍后……',
+                pagination: true,//启用分页，默认每页10行
+                rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+                pageSize: 10,//设置 页容量5为
+                pageList: [5, 10, 20],//设置 页容量下拉框
+                queryParams: {
+                    SurplusCode: $("#Storage").combobox("getValue"),
+                    MaterialType: $("#MaterialTypeInfo").val(),
+                    MaterialID: $("#MaterialID").val()
+                },
+                //[{"ID":9,"MaterialID":2,"BatchNo":"220150415","EntryCounts":2,"Surplus":2,"SurplusPrice":4.0000,"StorageCode":"00001","ValidityDate":"\/Date(1429027200000)\/","MaterialName":"感冒药","StorageName":"中心仓储总库"}]
+                frozenColumns: [
+                    [
+                   { field: 'ck', checkbox: true },
+                   { title: '名称', field: 'MaterialName', width: '10%', sortable: false },
+                   { title: '批次号', field: 'RealBatchNo', width: '10%', sortable: false, formatter: $.formatRealBatchNo },
+                   { field: "MaterialManufacturer", title: "生产厂家", width: '10%', align: "center" },
+                   { field: "MaterialVendor", title: "供应商", width: '10%', align: "center" },
+                   { field: "MaterialUnitName", title: "单位", width: '5%', align: "center" },
+                   { field: "MaterialSpecification", title: "规格", width: '5%', align: "center" },
+                   { title: '有效期', field: 'ValidityDate', width: '15%', align: 'center', sortable: false, formatter: $.formatValidityDate },
+                   { field: 'EntryCounts', title: '总库存', width: '10%', align: 'right', sortable: false },
+                   { field: 'Surplus', width: '10%', title: '当前结余', align: 'right', sortable: false },
+                   { title: '仓库', field: 'StorageName', width: '15%', sortable: false },
+                   { title: 'ID', field: 'ID', sortable: false, hidden: true },
+                   { title: 'StorageCode', field: 'StorageCode', sortable: false, hidden: true },
+                   { title: 'MaterialID', field: 'MaterialID', sortable: false, hidden: true }
+                    ]
+                ],
+                rowStyler: function (index, row) { },
+                toolbar: [
+                    {
+                        id: 'btnDeliveryView',
+                        text: '出库数量共计[0]种',
+                        iconCls: 'icon-custom-cGoods',
+                        iconWidth: 22,
+                        handler: function () {
+                            if (Materials.length > 0) {
+                                $('#DeliveryDetailList').dialog('open');
+                                initDetailGrid();
+                            } else {
+                                $.messager.alert('提示', '请选择物资', 'info', function () {
+                                });
+                            }
+                        }
+                    }
+                ],
+                onCheck: function (index, row) {
+                    if (Materials.length == 0) {
+                        Materials.push(row);
+                        changeDeliveryViewNum();
+                        return;
+                    }
+                    var boolContain = false;
+                    $.each(Materials, function (i, info) {
+                        if (info.ID == row.ID) {
+                            boolContain = true;
+                        }
+                    });
+                    if (!boolContain) {
+                        Materials.push(row);
+                        changeDeliveryViewNum();
+                    }
+                },
+                onUncheck: function (index, row) {
+                    var obj;
+                    $.each(Materials, function (i, info) {
+                        if (info.ID == row.ID) {
+                            obj = info;
+                        }
+                    });
+                    Materials.remove(obj);
+                    changeDeliveryViewNum();
+                },
+                onLoadSuccess: function (data) {
+                    setDeliveryViewNumCheck();
+                    changeDeliveryViewNum();
+                }
+            });
+            $(".datagrid-header-check").attr("disabled", "disabled");
+            $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridSurplusList");
+        }
+        function reSearch() {
+            $("#gridSurplusList").datagrid({
+                queryParams: {
+                    SurplusCode: $("#Storage").combotree("getValue"),
+                    MaterialType: $("#MaterialTypeInfo").val(),
+                    MaterialID: $("#MaterialID").val()
+                }
+            });
+        }
+        function changeDeliveryViewNum() {
+            if (Materials.length == 0) {
+                $("#btnDeliveryView").linkbutton({
+                    text: "出库数量共计[" + Materials.length + "]种",
+                    iconCls: "icon-custom-cGoods"
+                });
+            } else if (Materials.length > 0) {
+                $("#btnDeliveryView").linkbutton({
+                    text: "出库数量共计[<strong><span style='color:red'>" + Materials.length + "</span></strong>]种",
+                    iconCls: "icon-custom-cGoodsFull"
+                });
+            }
+        }
+        function setDeliveryViewNumCheck() {
+            var rows = $('#gridSurplusList').datagrid('getRows');
+            $('#gridSurplusList').datagrid('uncheckAll');
+            $.each(rows, function (index, item) {
+                $.each(Materials, function (i, info) {
+                    if (item.ID == info.ID) {
+                        $('#gridSurplusList').datagrid('checkRow', index);
+                    }
+                });
+            });
+        }
+        function initSearch() {
+            var urlstr1 = '@Url.Content("~/IM/AllDictionary/GetStorageCombo")';
+            $.EUIcombobox("#Storage", {
+                url: urlstr1,
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                datainfo: {},
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+
+            var urlstr2 = '@Url.Content("~/IM/AllDictionary/GetMaterialTypeByUserInfo")';
+            $.EUIcomboboxTree("#MaterialType", {
+                url: urlstr2,//ajax后台取数据路径，返回的是json格式的数据
+                OneOption: [{
+                    id: "",
+                    text: "--请选择--",
+                }],
+                datainfo: {},
+                onSelect: function (rec) {
+                    if (rec.id == "") {
+                        $("#MaterialID").val("");
+                        $("#MaterialTypeInfo").val("");
+                        return;
+                    }
+                    var urlstr3 = '@Url.Content("~/IM/AllDictionary/GetMaterial?mType=")' + rec.id;
+                    $("#MaterialTypeInfo").val(rec.id);
+                    $("#Material").combogrid({
+                        prompt: '--请选择--',
+                        panelWidth: 320,
+                        idField: 'ID',
+                        textField: 'Name',
+                        groupField: 'QRCode',
+                        columns: [[
+                            { field: 'MCode', title: '代码', width: 50, align: 'right' },
+                            { field: 'Name', title: '名称', width: 100 },
+                            { field: 'UnitName', title: '单位', width: 50 },
+                            { field: 'Specification', title: '规格', width: 50, align: 'right' },
+                            { field: 'RealPrice', title: '售价', width: 50 },
+                            { field: 'Unit', title: '单位', width: 50, sortable: false, hidden: true }
+                        ]],
+                        fitColumns: true,
+                        filter: function (inputText, row) {
+                            var opts = $(this).combogrid('options');
+                            if (row[opts.groupField] == inputText) {
+                                return true;
+                            } else if (row[opts.textField] == inputText) {
+                                return true;
+                            } else {
+                                if (boolSearch) {
+                                    boolSearch = false;
+                                    searchBindMeterialbyName(urlstr3, inputText);
+                                }
+                            }
+                        },
+                        onChange: function (n, o) {
+                            if (n == "") {
+                                searchBindMeterialbyName(urlstr3, n);
+                                $("#MaterialID").val("");
+                            }
+                        },
+                        onSelect: function (rec) {
+                            var g = $("#Material").combogrid("grid");	// 获取数据表格对象
+                            var r = g.datagrid('getSelected');	// 获取选择的行
+                            $("#MaterialID").val($('#Material').combobox('getValue'));
+
+                        }
+                    });
+                    searchBindMeterialbyName(urlstr3, "");
+                }
+            });
+        }
+        function searchBindMeterialbyName(urinfo, keyWord) {
+            $.ajax({
+                type: 'POST',
+                url: urinfo,
+                dataType: "json",
+                success: function (jsData) {
+                    if (keyWord == "") {
+                        $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                    } else {
+                        for (var i = 0; i < jsData.length; i++) {
+                            if (jsData[i].Name.indexOf(keyWord) < 0) {
+                                if (jsData[i].MCode.indexOf(keyWord) < 0) {
+                                    if (jsData[i].PinYin.indexOf(keyWord) < 0) {
+                                        jsData.remove(jsData[i]);
+                                        i--;
+                                    }
+                                }
+                            }
+                        }
+                        $("#Material").combogrid("grid").datagrid("loadData", jsData);
+                    }
+                    boolSearch = true;
+                }
+            });
+        }
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'出库物资清单',iconCls:'icon-custom-cDelivery'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 10px">
+            <table>
+                <tr>
+                    <td>仓库：</td>
+                    <td>
+                        <input id="Storage" class="easyui-combotree" data-options="required:true" style="width:160px" />
+                    </td>
+                    <td>分类：</td>
+                    <td>
+                        <input id="MaterialType" class="easyui-combobox" style="width:160px" />
+                        <input id="MaterialTypeInfo" type="hidden" />
+                    </td>
+                    <td>物资：</td>
+                    <td>
+                        <input id="Material" class="easyui-combogrid" style="width:160px" />
+                        <input id="MaterialID" type="hidden" />
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" id="btnsearch" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="reSearch()">查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridSurplusList"></table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Areas/IM/Views/I_Surplus/_DeliveryPage.cshtml")

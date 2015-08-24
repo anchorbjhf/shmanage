@@ -1,0 +1,57 @@
+﻿@model  Anke.SHManage.Model.ViewModel.Department
+
+@*<link type="text/css" href="~/Content/EasyUI/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/EasyUI/themes/icon.css" rel="stylesheet" />*@
+
+@*<script type="text/javascript" src="~/Content/EasyUI/jquery.easyui.js"></script>*@
+
+<style type="text/css">
+    #modifyTb {
+        width: 90%;
+        border: 1px solid #0094ff;
+        margin: 10px auto;
+        border-collapse: collapse;
+    }
+
+        #modifyTb td, #modifyTb th {
+            border: 1px solid #0094ff;
+            padding: 4px;
+        }
+</style>
+
+<table id="modifyTb">
+    @Html.HiddenFor(model => model.ID)
+    @Html.HiddenFor(model => model.ParentID)
+
+    <tr>
+        <td style="width: 20%;">@Html.LabelFor(model => model.Name)</td>
+        @*<td style="width: 30%;">@Html.TextBoxFor(model => model.Name, new { @class = "easyui-textbox", @style = "width:100px;" })</td>*@
+        <td style="width: 30%;">@Html.TextBoxFor(model => model.Name)</td>
+        <td>@Html.ValidationMessageFor(model => model.Name)</td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.SN)</td>
+        <td>@Html.TextBoxFor(model => model.SN)</td>
+        <td>@Html.ValidationMessageFor(model => model.SN)</td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.IsActive)</td>
+        <td>@Html.EditorFor(model => model.IsActive)</td>
+        <td>@Html.ValidationMessageFor(model => model.IsActive)</td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.Remark)</td>
+        <td>@Html.TextAreaFor(model => model.Remark)</td>
+        <td>@Html.ValidationMessageFor(model => model.Remark)</td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.DispatchSationID)</td>
+        <td>@Html.EditorFor(model => model.DispatchSationID)</td>
+        <td>@Html.ValidationMessageFor(model => model.DispatchSationID)</td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.DispatchSubCenterID)</td>
+        <td>@Html.EditorFor(model => model.DispatchSubCenterID)</td>
+        <td>@Html.ValidationMessageFor(model => model.DispatchSubCenterID)</td>
+    </tr>
+</table>

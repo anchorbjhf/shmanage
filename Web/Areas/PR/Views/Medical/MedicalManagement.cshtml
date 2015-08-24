@@ -1,0 +1,766 @@
+﻿@{
+    ViewBag.Title = "病历填写";
+    Layout = "~/Areas/PR/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        //#region 为Combobox增加--请选择--
+        function EUIcombobox(jqS, o) {
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: o.url,
+                dataType: "JSON",
+                success: function (data1, textStatus, jqXHR) {
+                    o.data = o.OneOption.concat(data1);
+                    delete o.url;
+                    delete o.OneOption;
+                    $(jqS).combobox(o);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("获取字典数据失败！可能是已经超时，请重新登录！");
+                }
+            });
+        }
+        //#endregion
+
+        //#region 弹出信息窗口
+        /*
+        title:标题
+        msgString:提示信息
+        msgType:信息类型 [error,info,question,warning]
+        */
+        function msgShow(title, msgString, msgType) {
+            $.messager.alert(title, msgString, msgType);
+        }
+        //#endregion
+
+
+        //#region 禁用Backspace键
+        window.onload = function () {
+            document.getElementsByTagName("body")[0].onkeydown = function () {
+
+                //获取事件对象
+                var elem = event.relatedTarget || event.srcElement || event.target || event.currentTarget;
+
+                if (event.keyCode == 8) {//判断按键为backSpace键
+
+                    //获取按键按下时光标做指向的element
+                    var elem = event.srcElement || event.currentTarget;
+
+                    //判断是否需要阻止按下键盘的事件默认传递
+                    var name = elem.nodeName;
+
+                    if (name != 'INPUT' && name != 'TEXTAREA') {
+                        return StopBackspace(event);
+                    }
+                    var type_e = elem.type.toUpperCase();
+                    if (name == 'INPUT' && (type_e != 'TEXT' && type_e != 'TEXTAREA' && type_e != 'PASSWORD' && type_e != 'FILE')) {
+                        return StopBackspace(event);
+                    }
+                    if (name == 'INPUT' && (elem.readOnly == true || elem.disabled == true)) {
+                        return StopBackspace(event);
+                    }
+                }
+            }
+        }
+        function StopBackspace(e) {
+            if (e.returnValue) {
+                e.returnValue = false;
+            }
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+
+            return false;
+        }
+        //#endregion
+
+        //页面初始化
+        $(document).ready(function () {
+            $(".datebox :text").attr("readonly", "readonly");//设置时间控件只能选择，不可手动输入
+
+            //#region 事件类型
+            EUIcombobox("#alarmEventType", {
+                url: '@Url.Content("~/Medical/GetAlarmEventType/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                panelHeight: 'auto',
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //#endregion
+
+            //#region 分中心
+            EUIcombobox("#centerCode", {
+                url: '@Url.Content("~/Medical/GetCenter/")',
+                valueField: 'ID',
+                textField: 'Name',
+                //prompt: '--请选择--',
+                //editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }],
+                onSelect: function (rec) {
+                    var urlstation = '@Url.Content("~/Medical/GetStation?code=")' + rec.ID;
+                    EUIcombobox("#stationCode", {
+                        url: urlstation,
+                        valueField: 'ID',
+                        textField: 'Name',
+                        //prompt: '--请选择--',
+                        editable: false,
+                        OneOption: [{
+                            ID: "",
+                            Name: "--请选择--"
+                        }]
+                    });
+                }
+            });
+            //#endregion
+
+            //#region 出车分站
+            EUIcombobox("#stationCode", {
+                url: '@Url.Content("~/Medical/GetStation?code=")',
+                valueField: 'ID',
+                textField: 'Name',
+                //prompt: '--请选择--',
+                editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }],
+                onSelect: function (rec) {
+                    var urlambCode = '@Url.Content("~/Medical/GetAmbulance?code=")' + rec.ID;
+                    EUIcombobox("#ambCode", {
+                        url: urlambCode,
+                        valueField: 'ID',
+                        textField: 'Name',
+                        //prompt: '--请选择--',
+                        //editable: false,
+                        OneOption: [{
+                            ID: "",
+                            Name: "--请选择--"
+                        }]
+                    });
+                }
+            });
+            //#endregion
+
+            //#region 车辆
+            EUIcombobox("#ambCode", {
+                url: '@Url.Content("~/Medical/GetAmbulance?code=")',
+                valueField: 'ID',
+                textField: 'Name',
+                //editable: false,
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //#endregion
+
+            //#region 调度员
+            @*EUIcombobox("#disCode", {
+            url: '@Url.Content("~/Medical/GetDispatcher/")',
+            valueField: 'ID',
+            textField: 'Name',
+            //editable: false,
+            OneOption: [{
+                ID: "",
+                Name: "--请选择--"
+            }]
+        });*@
+            //#endregion
+
+            //#region 异常结束原因
+            EUIcombobox("#taskAbendReason", {
+                url: '@Url.Content("~/Medical/GetZTaskAbendReason/")',
+                valueField: 'ID',
+                textField: 'Name',
+                editable: false,
+                panelHeight: 'auto',
+                OneOption: [{
+                    ID: "",
+                    Name: "--请选择--"
+                }]
+            });
+            //#endregion
+
+            ////#region 出车结果
+            //$('#taskResult').combobox({
+            //    valueField: 'ID',
+            //    textField: 'Name',
+            //    method: 'get',
+            //    editable: false,
+            //    panelHeight: 'auto',
+            //    value: '',
+            //    data: [{
+            //        ID: '-1',
+            //        Name: '--请选择--',
+            //        //selected: true //默认选中项
+            //    }, {
+            //        ID: 'True',
+            //        Name: '正常',
+            //    }, {
+            //        ID: 'False',
+            //        Name: '异常结束'
+            //    }],
+            //    //onChange: function (rec) {
+            //    //    //选中事件
+            //    //}
+            //});
+            ////#endregion
+
+            ////#region 病历情况
+            //$('#isFill').combobox({
+            //    valueField: 'ID',
+            //    textField: 'Name',
+            //    method: 'get',
+            //    editable: false,
+            //    panelHeight: 'auto',
+            //    value: '',
+            //    data: [{
+            //        ID: '-1',
+            //        Name: '--请选择--',
+            //        //selected: true //默认选中项
+            //    }, {
+            //        ID: 'True',
+            //        Name: '已填',
+            //    }, {
+            //        ID: 'False',
+            //        Name: '未填'
+            //    }],
+            //});
+            ////#endregion
+
+            ////#region 收费情况
+            //$('#isCharge').combobox({
+            //    valueField: 'ID',
+            //    textField: 'Name',
+            //    method: 'get',
+            //    editable: false,
+            //    panelHeight: 'auto',
+            //    value: '',
+            //    data: [{
+            //        ID: '-1',
+            //        Name: '--请选择--',
+            //        //selected: true //默认选中项
+            //    }, {
+            //        ID: 'True',
+            //        Name: '已收',
+            //    }, {
+            //        ID: 'False',
+            //        Name: '未收'
+            //    }, {
+            //        ID: 'Qian',
+            //        Name: '欠费',
+            //    }],
+            //});
+            ////#endregion
+
+            var now = new Date();
+            //$("#startTime").datetimebox("setValue", $.GetYesterday());//开始时刻
+            //$("#endTime").datetimebox("setValue", $.GetTomorrow());//终止时刻
+            $('#startTime').datetimebox('setValue', '@ViewData["startTime"]');
+            $('#endTime').datetimebox('setValue', '@ViewData["endTime"]');
+
+            bindGrid();
+
+        });
+
+        function bindGrid() {
+            var WorkCode = '@ViewData["WorkCode"]';
+            if (WorkCode == '' && '@ViewData["WorkCode"]' != "") {
+                $.showMsg("请联系技术人员！管理系统人员工号为空，无法查询信息！", "提示");
+            }
+            var startTime = $("#startTime").datetimebox('getValue');
+            var endTime = $('#endTime').datetimebox('getValue');
+            startTime = startTime.replace(/-/g, "/");
+            endTime = endTime.replace(/-/g, "/");
+            var date1 = Date.parse(startTime);
+            var date2 = Date.parse(endTime);
+
+            //var d1 = new Date(startTime.replace(/-/g, "/"));
+            //var d2 = new Date(endTime.replace(/-/g, "/"));
+            var day = Math.ceil((date2 - date1) / (24 * 60 * 60 * 1000));
+            if (day < 60) {
+                $('#gridPatientList').datagrid({
+                    //title: '病历填写',
+                    type: "POST",
+                    url: '@Url.Content("~/PR/Medical/DataLoad")',
+                    height: 'auto',
+                    nowrap: false,
+                    striped: true,
+                    border: true,
+                    collapsible: false,//是否可折叠的
+                    pagination: true,//分页控件
+                    rownumbers: true,//行号
+                    //sortName: 'code',
+                    //sortOrder: 'desc',
+                    remoteSort: false,
+                    //idField: 'TaskCode',
+                    singleSelect: true,//是否单选
+                    fit: true,//自动大小
+                    fitColumns: false,
+                    toolbar: '#tb',
+                    loadMsg: '数据加载中请稍后……',
+                    pageSize: 15,//每页显示的记录条数，默认为10
+                    pageList: [10, 15, 20],//可以设置每页记录条数的列表
+                    queryParams: {
+                        startTime: $("#startTime").datetimebox('getValue'),
+                        endTime: $('#endTime').datetimebox('getValue'),
+                        isTest: $('#isTest').val(),
+                        patientName: $('#patientName').val(),
+                        linkPhone: $('#linkPhone').val(),
+                        alarmEventType: $('#alarmEventType').combobox('getValue') == "" ? -1 : $('#alarmEventType').combobox('getValue'),
+                        localAddr: $('#localAddr').val(),
+                        driver: $('#driver').val(),
+                        centerCode: $('#centerCode').combobox('getValue') == "" ? -1 : $('#centerCode').combobox('getValue'),
+                        stationCode: $('#stationCode').combobox('getValue') == "" ? -1 : $('#stationCode').combobox('getValue'),
+                        ambCode: $('#ambCode').combobox('getValue') == "" ? -1 : $('#ambCode').combobox('getValue'),
+                        doctor: $('#doctor').val(),
+                        litter: $('#litter').val(),
+                        nurse: $('#nurse').val(),
+                        taskResult: $('#taskResult').combobox('getValue') == "" ? -1 : $('#taskResult').combobox('getValue'),
+                        taskAbendReason: $('#taskAbendReason').combobox('getValue') == "" ? -1 : $('#taskAbendReason').combobox('getValue'),
+                        CPRIFSuccess: $('#CPRIFSuccess').combobox('getValue') == "" ? -1 : $('#CPRIFSuccess').combobox('getValue'),
+                        PatientState: $('#PatientState').combobox('getValue') == "" ? -1 : $('#PatientState').combobox('getValue'),
+                        isCharge: $('#isCharge').combobox('getValue') == "" ? -1 : $('#isCharge').combobox('getValue'),
+                        isFill: $('#isFill').combobox('getValue') == "" ? -1 : $('#isFill').combobox('getValue'),
+                        searchBound: '@ViewData["searchBound"]'
+                    },
+                    view: detailview,
+                    detailFormatter: function (index, row) {
+                        return '<div style="padding:2px"><table id="ddv' + index + '"></table></div>';
+                    },
+
+                    onExpandRow: function (index, row) {
+                        //var ddv = $(this).datagrid('getRowDetail', index).find('table.ddv');
+                        if (row.PatientNumber >= 1) {
+                            $('#ddv' + index).datagrid({
+                                url: '@Url.Content("~/PR/Medical/GetPatientCommonByTask/?taskCode=")' + row.TaskCode,
+                                fitColumns: true,
+                                singleSelect: true,
+                                rownumbers: true,
+                                loadMsg: '',
+                                height: 'auto',
+                                width: 650,
+                                //heigth: 30,
+                                columns: [[
+                                    { field: 'Name', title: '姓名', width: 10, align: 'center', sortable: false, resizable: false },
+                                    { field: 'Sex', title: '性别', width: 10, align: 'center', sortable: false, resizable: false },
+                                    { field: 'Age', title: '年龄', width: 10, align: 'center', sortable: false, resizable: false },
+                                    { field: 'PatientVersion', title: '事件类型', width: 10, align: 'center', sortable: false, resizable: false },
+                                    { field: 'ForArea', title: '病历状态', width: 10, align: 'center', sortable: false, resizable: false },
+                                    { field: 'SubmitLogo', title: 'SubmitLogo', width: '1%', sortable: false, hidden: true },
+                                    { field: 'ForHelpTelephone', title: 'ForHelpTelephone', width: '1%', sortable: false, hidden: true },
+                                 {
+                                     field: 'opt', title: '操作', width: 10, align: 'center', frozen: 'true',
+                                     formatter: function (value, rec) {
+                                         if ((rec.SubmitLogo == true && '@ViewData["SuperRole"]' == "") || '@ViewData["RolePermissionEdit"]' == "") {
+                                             return btn = '<a id="edit" style="color: #7B7B7B;" onclick="" >编辑</a>';
+                                         }
+                                         else {
+                                             if ((rec.PatientVersion == "救治" || rec.PatientVersion == "急救转院" || rec.PatientVersion == "一般转院" || rec.PatientVersion == "取暖箱") && '@ViewData["PatientRole"]' == "Driver") {
+                                                 return btn = '<a id="edit" style="color: #7B7B7B;" onclick="" >编辑</a>';
+                                             }
+                                             else
+                                                 return btn = '<a id="editcls' + index + '" onclick="editRow(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + 'edit' + '\')" href="javascript:void(0)">编辑</a>';
+                                         }
+                                         //
+                                     }
+                                 }, {
+                                     field: 'opt1', title: '操作', width: 15, align: 'center', frozen: 'true',
+                                     formatter: function (value, rec) {
+                                         if ('@ViewData["RolePermissionLook"]' == "Look" && rec.SubmitLogo == true)
+                                             return btn = '<a id="lookcls' + index + '" onclick="editRow(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + 'look' + '\')" href="javascript:void(0)">查看/回访</a>';
+                                         else if ('@ViewData["RolePermissionLook"]' == "Look" && rec.SubmitLogo == false)
+                                             return btn = '<a id="lookcls' + index + '" onclick="editRow(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + 'look' + '\')" href="javascript:void(0)">查看</a>';
+                                         else
+                                             return btn = '<a id="look" style="color: #7B7B7B;" onclick="" >查看</a>';
+                                     }
+                                 },
+                                    @*{
+                                field: 'opt2', title: '操作', width: 10, align: 'center', frozen: 'true',
+                                formatter: function (value, rec) {
+                                    if (rec.SubmitLogo == true || '@ViewData["RolePermissionDelete"]' == "") {
+                                        return btn = '<a id="delete" style="color: #7B7B7B;" onclick="" >删除</a>';
+                                    }
+                                    else
+                                        return btn = '<a id="deletecls'+index+'" onclick="Delete(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + rec.Name + '\')" href="javascript:void(0)">编辑</a>';
+
+                                }
+                            },*@
+                                    {
+                                        field: 'opt3', title: '预览', width: 10, align: 'center', frozen: 'true',
+                                        formatter: function (value, rec) {
+                                            var btn = '<a id="printcls' + index + '" onclick="openPrint(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + rec.PatientVersion + '\')" href="javascript:void(0)">打印</a>';
+                                            return btn;
+                                        }
+                                    },
+                                    {
+                                        field: 'opt4', title: '收费', width: 10, align: 'center', frozen: 'true',
+                                        formatter: function (value, rec) {
+                                            if (rec.ForHelpTelephone == '未收')
+                                                return btn = '<a id="chargecls' + index + '" style="color:red;" onclick="editChargeRow(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + rec.PatientVersion + '\',\'' + rec.ForHelpTelephone + '\')" href="javascript:void(0)">' + rec.ForHelpTelephone + '</a>';
+                                            else
+                                                return btn = '<a id="chargecls' + index + '" onclick="editChargeRow(\'' + rec.TaskCode + '\',\'' + rec.PatientOrder + '\',\'' + rec.PatientVersion + '\',\'' + rec.ForHelpTelephone + '\')" href="javascript:void(0)">' + rec.ForHelpTelephone + '</a>';
+
+                                        }
+                                    }
+                                ]],
+                                onResize: function () {
+                                    $('#gridPatientList').datagrid('fixDetailRowHeight', index);
+                                },
+                                onLoadSuccess: function (data) {
+                                    setTimeout(function () {
+                                        $('#gridPatientList').datagrid('fixDetailRowHeight', index);
+                                    }, 0);
+                                    $('#editcls' + index).linkbutton({ text: '编辑', plain: true, iconCls: 'icon-edit', url: '/' });
+                                    $('#lookcls' + index).linkbutton({ text: '查看/回访', plain: true, iconCls: 'icon-custom-View', url: '/' });
+                                    $('#deletecls' + index).linkbutton({ text: '删除', plain: true, iconCls: 'icon-remove', url: '/' });
+                                    $('#printcls' + index).linkbutton({ text: '预览', plain: true, iconCls: 'icon-print', url: '/' });
+                                    //$('#chargecls' + index).linkbutton({ text: '收费', plain: true, iconCls: 'icon-custom-cSaveCharge', url: '/' });
+                                }
+                            });
+                        }
+                        $('#gridPatientList').datagrid('fixDetailRowHeight', index);
+                    }
+                });
+                //$("#gridPatientList").datagrid('hideColumn', 'Code');//隐藏编码列20150111
+            }
+            else {
+                $.showMsg("查询时间超过60天！请修改时间后重新查询！", "提示");
+            }
+
+            //设置分页控件
+            var p = $('#gridPatientList').datagrid('getPager');
+            $(p).pagination({
+                beforePageText: '第',//页数文本框前显示的汉字
+                afterPageText: '页    共 {pages} 页',
+                displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+
+            });
+        }
+
+        //查询方法
+        function reSearch() {
+            var WorkCode = '@ViewData["WorkCode"]';
+            if (WorkCode == '' && '@ViewData["WorkCode"]' != "") {
+                $.showMsg("请联系技术人员！管理系统人员工号为空，无法查询信息！", "提示");
+            }
+            var startTime = $("#startTime").datetimebox('getValue');
+            var endTime = $('#endTime').datetimebox('getValue');
+            startTime = startTime.replace(/-/g, "/");
+            endTime = endTime.replace(/-/g, "/");
+            var date1 = Date.parse(startTime);
+            var date2 = Date.parse(endTime);
+
+            //var d1 = new Date(startTime.replace(/-/g, "/"));
+            //var d2 = new Date(endTime.replace(/-/g, "/"));
+            var day = Math.ceil((date2 - date1) / (24 * 60 * 60 * 1000));
+            if (day < 60) {
+                $('#gridPatientList').datagrid({
+                    pageNumber: 1,
+                    queryParams: {
+                        startTime: $("#startTime").datetimebox('getValue'),
+                        endTime: $('#endTime').datetimebox('getValue'),
+                        isTest: $('#isTest').val(),
+                        patientName: $('#patientName').val(),
+                        linkPhone: $('#linkPhone').val(),
+                        alarmEventType: $('#alarmEventType').combobox('getValue') == "" ? -1 : $('#alarmEventType').combobox('getValue'),
+                        localAddr: $('#localAddr').val(),
+                        driver: $('#driver').val(),
+                        centerCode: $('#centerCode').combobox('getValue') == "" ? -1 : $('#centerCode').combobox('getValue'),
+                        stationCode: $('#stationCode').combobox('getValue') == "" ? -1 : $('#stationCode').combobox('getValue'),
+                        ambCode: $('#ambCode').combobox('getValue') == "" ? -1 : $('#ambCode').combobox('getValue'),
+                        doctor: $('#doctor').val(),
+                        litter: $('#litter').val(),
+                        nurse: $('#nurse').val(),
+                        taskResult: $('#taskResult').combobox('getValue') == "" ? -1 : $('#taskResult').combobox('getValue'),
+                        taskAbendReason: $('#taskAbendReason').combobox('getValue') == "" ? -1 : $('#taskAbendReason').combobox('getValue'),
+                        CPRIFSuccess: $('#CPRIFSuccess').combobox('getValue') == "" ? -1 : $('#CPRIFSuccess').combobox('getValue'),
+                        PatientState: $('#PatientState').combobox('getValue') == "" ? -1 : $('#PatientState').combobox('getValue'),
+                        isCharge: $('#isCharge').combobox('getValue') == "" ? -1 : $('#isCharge').combobox('getValue'),
+                        isFill: $('#isFill').combobox('getValue') == "" ? -1 : $('#isFill').combobox('getValue'),
+                        searchBound: '@ViewData["searchBound"]'
+                    }
+                });
+            }
+            else {
+                $.showMsg("查询时间超过60天！请修改时间后重新查询！", "提示");
+            }
+        }
+
+        //EasyUI用DataGrid用日期格式化
+        function DateFormatter(value, row, index) {
+            if (value == undefined) {
+                return "";
+            }
+            /*json格式时间转js时间格式*/
+            //if (dateValue.getFullYear() < 1900) {
+            //    return "";
+            //}
+            var unixTimestamp = new Date(parseInt(value.substring(value.indexOf('(') + 1, value.indexOf(')'))));
+            var y = unixTimestamp.getFullYear();
+            var m = unixTimestamp.getMonth() + 1;
+            var d = unixTimestamp.getDate();
+            return y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d);
+            //return unixTimestamp.getFullYear() + "-" + unixTimestamp.getMonth() + "-" + unixTimestamp.getDate();
+        }
+
+        //弹出病历修改页面
+        function editRow(taskCode, PatientOrder, state) {
+            var url = '@Url.Content("~/PR/Medical/AddPatientRecord/?taskCode=")' + encodeURIComponent(taskCode) + '&PatientOrder=' + PatientOrder + '&state=' + state;//传编码
+            //window.open(url, '_blank');
+            window.open(url);
+        }
+        //弹出收费页面
+        function editChargeRow(taskCode, PatientOrder, AlarmeventType, ChargeType) {
+            var url = '@Url.Content("~/PR/Charge/PatinetCharge/?taskCode=")' + encodeURIComponent(taskCode) + '&PatientOrder=' + PatientOrder + '&AlarmeventType=' + AlarmeventType + '&ChargeType=' + ChargeType;//传编码
+            //window.open(url, '_blank');
+            window.open(url);
+        }
+        //判断病历数大于等于1的变为红色；
+        function formatPRNumber(val, row) {
+            if (val >= 1) {
+                return '<span style="color:red;">' + val + '</span>';
+            } else {
+                return val;
+            }
+        }
+
+        function selctRadioButton(mainID, node) {
+            document.getElementById("RadioButtonList_" + mainID + "_" + node + "").checked = "checked";
+            document.getElementById("" + mainID + "").value = document.getElementById("RadioButtonList_" + mainID + "_" + node + "").value;
+
+        }
+        function formatNew(value, row) {
+            if ('@ViewData["RolePermissionInsert"]' == "Insert") {
+                if (row.PatientNumber >= 1) {
+                    return '<a class="easyui-linkbutton" data-options="iconCls:\'icon-cut\',disabled:true" >已增加</a>';
+                }
+                else {
+                    if ((row.EventType == "救治" || row.EventType == "转院") && '@ViewData["PatientRole"]' == "Driver") {
+                        return '<a class="easyui-linkbutton" data-options="iconCls:\'icon-cut\',disabled:true" >无权限</a>';
+                    }
+                    else
+                        return '<a id="news' + row.TaskCode + '" plain="true" iconCls="icon-edit" onclick="editRow(\'' + row.TaskCode + '\',\'' + -1 + '\',\'' + 'new' + '\')" href="javascript:void(0)">新增</a>';
+                }
+            }
+            else {
+                return '<a class="easyui-linkbutton" data-options="iconCls:\'icon-cut\',disabled:true" >无权限</a>';
+            }
+        }
+
+        //删除病历
+        function Delete(TaskCode, PatientOrder, Name) {
+            $.messager.confirm('删除病人信息', '是否确定要删除姓名为："' + Name + '"的病历？', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: '@Url.Content("~/PR/Medical/DelectPatient")',
+                        type: "POST",
+                        data: {
+                            TaskCode: TaskCode,
+                            PatientOrder: PatientOrder
+                        },
+                        success: function (msg) {
+                            if (msg == 'True') {
+                                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>删除成功！</b></span>', 'info');
+                                $("#gridPatientList").datagrid("reload");
+                                //bindGrid();//执行查询按钮，刷新数据
+                            } else {
+                                msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>存储错误，请联系技术人员！</b></span>', 'error');
+
+                            }
+                        },
+                        error: function () {
+                            msgShow('系统提示', '</br><span style="color:#15428B;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>存储错误，请联系技术人员！</b></span>', 'error');
+
+                        }
+                    });
+                }
+            });
+        }
+
+        //打开打印页面
+        function openPrint(TaskCode, PatientOrder, AlarmeventType) {
+            var url = '@Url.Content("~/PR/Print/PatientRecordPrint/?TaskCode=")' + encodeURIComponent(TaskCode) + '&PatientOrder=' + PatientOrder + '&AlarmeventType=' + AlarmeventType;//传编码
+
+            window.open(url);
+        }
+
+    </script>
+}
+
+<div style="margin: 10px 0;"></div>
+<table id="gridPatientList" class="easyui-datagrid" align="center"
+       @*data-options="pagination:true,rownumbers:true,singleSelect:true,fit:true,fitColumns:true" *@>
+    <thead>
+        <tr>
+            <th data-options="field:'TaskCode', width:0,hidden: 'true'">编码</th>
+            <th data-options="field:'PatientNumber', width:'4%',align:'center',formatter:formatPRNumber">病历数</th>
+            <th data-options="field:'PatientName', width:'6%',align:'center'">患者</th>
+            <th data-options="field:'FirstAcceptTime', width:'12%',align:'center'">呼救时刻</th>
+            <th data-options="field:'AcceptType', width:'6%',align:'center',sortable: false, resizable: false">受理类型</th>
+            <th data-options="field:'ContactTelephone', width:'9%',align:'center'">联系电话</th>
+            <th data-options="field:'EventType', width:'5%',align:'center',sortable: false, resizable: false">事件类型</th>
+            <th data-options="field:'SceneAddress', width:'17%' ,align:'left'">现场地址</th>
+            <th data-options="field:'Station', width:'6%',align:'center'">分站</th>
+            <th data-options="field:'ActualLogo', width:'5%',align:'center'">车辆</th>
+            <th data-options="field:'Driver', width:'5%',align:'center'">司机</th>
+            <th data-options="field:'Doctor', width:'5%',align:'center'">医生</th>
+            <th data-options="field:'Nurse', width:'5%',align:'center'">护士</th>
+            <th data-options="field:'OutCarResults', width:'6%',align:'center'">出车结果</th>
+            <th data-options="field:'new', width:'5%',align:'center',resizable:false,iconCls:'icon-edit',formatter:formatNew">病历</th>
+        </tr>
+    </thead>
+</table>
+
+<div id="tb" style="padding: 5px; height: auto">
+    <div data-options="region:'north',split:true">
+        <table style="width: 100%;" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td align="right">开始时刻：</td>
+                <td>
+                    <input class="easyui-datetimebox" style="width:142px" id="startTime">
+                </td>
+                <td align="right">终止时刻：</td>
+                <td>
+                    <input class="easyui-datetimebox" style="width: 142px" id="endTime">
+                </td>
+                <td align="right">是否测试：</td>
+                <td>
+                    <span id="isTest">
+                        <input id="RadioButtonList_isTest_0" type="radio" name="isTest" value="-1" checked="checked" onclick="javascript: setTimeout('selctRadioButton(\'isTest\',\'0\')', 0)" /><label for="RadioButtonList_isTest_0">全部</label>
+                        <input id="RadioButtonList_isTest_1" type="radio" name="isTest" value="True" onclick="javascript: setTimeout('selctRadioButton(\'isTest\',\'1\')', 0)" />是
+                        <input id="RadioButtonList_isTest_2" type="radio" name="isTest" value="False" onclick="javascript: setTimeout('selctRadioButton(\'isTest\',\'2\')', 0)" />否
+                    </span>
+
+                </td>
+                <td align="right">患者姓名：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 120px" id="patientName">
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td align="right">现场地址：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 142px" id="localAddr">
+                </td>
+                <td align="right">事件类型：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="alarmEventType"></select>
+                </td>
+                <td align="right">联系电话：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 120px" id="linkPhone">
+                </td>
+                <td align="right">护士：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 120px" id="nurse">
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td align="right">分中心：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 142px" id="centerCode" data-options="editable: false,panelHeight: 'auto'"></select>
+                </td>
+                <td align="right">分站：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px;" id="stationCode" data-options=""></select>
+                </td>
+                <td align="right">车辆：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="ambCode" data-options=""></select>
+                </td>
+                <td align="right">司机：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 120px" id="driver">
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td align="right">医生：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 142px" id="doctor">
+                </td>
+                <td align="right">担架员：</td>
+                <td>
+                    <input class="easyui-textbox" type="text" style="width: 120px;" id="litter">
+                </td>
+                <td align="right">出车结果：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="taskResult" data-options="editable: false,panelHeight: 'auto'">
+                        <option value="-1">--请选择--</option>
+                        <option value="True">正常</option>
+                        <option value="False">异常结束</option>
+                    </select>
+                </td>
+                <td align="right">异常结束原因：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="taskAbendReason"></select>
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td align="right">病历情况：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 142px" id="isFill" data-options="editable: false,panelHeight: 'auto'">
+                        <option value="-1">--请选择--</option>
+                        <option value="True">已填</option>
+                        <option value="False">未填</option>
+                    </select>
+                </td>
+                <td align="right">病历状态：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="PatientState" data-options="editable: false,panelHeight: 'auto'">
+                        <option value="-1">--请选择--</option>
+                        <option value="0">暂存</option>
+                        <option value="1">已提交</option>
+                    </select>
+                </td>
+                <td align="right">心肺复苏：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px;" id="CPRIFSuccess" data-options="editable: false,panelHeight: 'auto'">
+                        <option value="-1">--请选择--</option>
+                        @*<option value="未做">未做</option>*@
+                        <option value="ROSC">ROSC</option>
+                        <option value="已审核">已审核</option>
+                        <option value="未审核">未审核</option>
+                        <option value="通过">审核通过</option>
+                        <option value="未通过">审核未通过</option>
+                        @*<option value="无变化">无变化</option>*@
+                    </select>
+                </td>
+                <td align="right">收费情况：</td>
+                <td>
+                    <select class="easyui-combobox" style="width: 120px" id="isCharge" data-options="editable: false,panelHeight: 'auto'">
+                        <option value="-1">--请选择--</option>
+                        <option value="True">已收</option>
+                        <option value="False">未收</option>
+                        @*<option value="Qian">欠费</option>*@
+                    </select>
+                </td>
+                <td>
+                    <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" onclick="reSearch()" data-options="iconCls:'icon-search'">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

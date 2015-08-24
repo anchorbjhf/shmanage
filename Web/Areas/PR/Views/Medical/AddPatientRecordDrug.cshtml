@@ -1,0 +1,990 @@
+﻿@{
+    ViewBag.Title = "用药情况";
+    Layout = "~/Areas/PR/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    * {
+        font-size: 9pt;
+    }
+</style>
+
+<div>
+    <table style="width:100%" border="1" cellspacing="0" cellpadding="0">
+        <tr id="trJ88">
+            <td colspan="8">
+                <div id="UpdatePanel3">
+
+                    <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                        <tr>
+                            <td style="align-content:center">
+                                剂型/类别:<select name="ddlType" class="easyui-combobox" onchange="javascript:setTimeout('__doPostBack(\'ddlType\',\'\')', 0)" id="ddlType">
+                                    <option value="">--请选择--</option>
+                                    <option selected="selected" value="注射剂">注射剂</option>
+                                    <option value="丸剂">丸剂</option>
+                                    <option value="气雾剂">气雾剂</option>
+                                    <option value="片剂">片剂</option>
+                                    <option value="精神类">精神类</option>
+                                    <option value="毒麻药">毒麻药</option>
+
+                                </select>
+                                &nbsp;<span id="Label8">处理序号:</span><input name="txtCNumber" class="easyui-numberspinner" id="txtCNumber" value="1" data-options="min:1" style="width:45px;" />
+                                <div id="cbGeiYaoFangShi" style="display:inline;">
+                                    &nbsp;&nbsp;<label id="Label9" style="">给药方式:</label>
+                                    <span id="geiYaoFangShi">
+                                        <input id="Radio_geiYaoFangShi_0" type="radio" name="geiYaoFangShi" value="静滴" onclick="javascript: setTimeout('selctRadioButton(\'geiYaoFangShi\',\'0\')', 0)" />静滴
+                                        <input id="Radio_geiYaoFangShi_1" type="radio" name="geiYaoFangShi" value="静注" onclick="javascript: setTimeout('selctRadioButton(\'geiYaoFangShi\',\'1\')', 0)" />静注
+                                        <input id="Radio_geiYaoFangShi_2" type="radio" name="geiYaoFangShi" value="舌下" onclick="javascript: setTimeout('selctRadioButton(\'geiYaoFangShi\',\'2\')', 0)" />舌下
+                                        <input id="Radio_geiYaoFangShi_3" type="radio" name="geiYaoFangShi" value="其他方式" onclick="javascript: setTimeout('selctRadioButton(\'geiYaoFangShi\',\'3\')', 0)" />其他方式
+                                    </span>
+                                    <select name="geiyaofangshiqita" id="geiyaofangshiqita" class="easyui-combobox">
+                                        <option value="">--请选择--</option>
+                                        <option value="口服">口服</option>
+                                        <option value="嚼服">嚼服</option>
+                                        <option value="皮下">皮下</option>
+                                        <option value="肌注">肌注</option>
+                                        <option value="气管内">气管内</option>
+                                        <option value="骨髓腔">骨髓腔</option>
+                                        <option value="静滴泵入">静滴泵入</option>
+                                    </select>
+                                    <input type="hidden" name="cbGeiYaoFangShi$HiddenField" id="cbGeiYaoFangShi_HiddenField" value="10" />
+                                </div>
+                                &nbsp; &nbsp;<a name="btnUpdateDrugs" class="easyui-linkbutton" onclick="" id="btnUpdateDrugs" data-options="iconCls:'icon-reload'">更新药品库</a>
+                            </td>
+                        </tr>
+                        <tr id="tr1">
+                            <td>
+                                <div style="height: 320px; overflow: auto">
+                                    <div>
+                                        <table cellspacing="0" rules="all" border="1" id="gvDrug" style="width:100%;border-collapse:collapse;">
+                                            <tr>
+                                                <th scope="col">&nbsp;</th>
+                                                <th scope="col" style="width:10%;">剂型/类别</th>
+                                                <th scope="col" style="width:20%;">药品名称</th>
+                                                <th scope="col" style="width:10%;">规格</th>
+                                                <th scope="col" style="width:8%;">用量</th>
+                                                <th scope="col" style="width:10%;">合计剂量</th>
+                                                <th scope="col" style="width:35%;">备注</th>
+                                                @*<th scope="col" style="width:5%;">快捷键</th>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl02_cb" type="checkbox" name="gvDrug$ctl02$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>0.9%盐水</td>
+                                                <td>250ml/袋</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl02_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtBeiZhu" type="text" id="gvDrug_ctl02_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl03_cb" type="checkbox" name="gvDrug$ctl03$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>5%糖水</td>
+                                                <td>250ml/袋</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl03$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl03_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl03_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl03$txtBeiZhu" type="text" id="gvDrug_ctl03_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl04_cb" type="checkbox" name="gvDrug$ctl04$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>20%甘露醇</td>
+                                                <td>250ml/袋</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl04$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl04_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl04_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl04$txtBeiZhu" type="text" id="gvDrug_ctl04_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl05_cb" type="checkbox" name="gvDrug$ctl05$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>25%糖水</td>
+                                                <td>20ml/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl05$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl05_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl05_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl05$txtBeiZhu" type="text" id="gvDrug_ctl05_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl06_cb" type="checkbox" name="gvDrug$ctl06$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>50%糖水</td>
+                                                <td>20ml/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl06$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl06_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl06_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl06$txtBeiZhu" type="text" id="gvDrug_ctl06_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl07_cb" type="checkbox" name="gvDrug$ctl07$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>盐酸肾上腺素</td>
+                                                <td>1mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl07$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl07_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl07_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl07$txtBeiZhu" type="text" id="gvDrug_ctl07_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl08_cb" type="checkbox" name="gvDrug$ctl08$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>异丙肾上腺素</td>
+                                                <td>1mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl08$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl08_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl08_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl08$txtBeiZhu" type="text" id="gvDrug_ctl08_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl09_cb" type="checkbox" name="gvDrug$ctl09$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>胺碘酮</td>
+                                                <td>150mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl09$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl09_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl09_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl09$txtBeiZhu" type="text" id="gvDrug_ctl09_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl10_cb" type="checkbox" name="gvDrug$ctl10$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>利多卡因</td>
+                                                <td>0.1g/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl10$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl10_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl10_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl10$txtBeiZhu" type="text" id="gvDrug_ctl10_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl11_cb" type="checkbox" name="gvDrug$ctl11$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>心律平</td>
+                                                <td>70mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl11$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl11_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl11_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl11$txtBeiZhu" type="text" id="gvDrug_ctl11_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl12_cb" type="checkbox" name="gvDrug$ctl12$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>西地兰</td>
+                                                <td>0.4mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl12$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl12_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl12_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl12$txtBeiZhu" type="text" id="gvDrug_ctl12_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl13_cb" type="checkbox" name="gvDrug$ctl13$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>多巴酚丁胺</td>
+                                                <td>20mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl13$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl13_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl13_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl13$txtBeiZhu" type="text" id="gvDrug_ctl13_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl14_cb" type="checkbox" name="gvDrug$ctl14$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>异搏定</td>
+                                                <td>5mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl14$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl14_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl14_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl14$txtBeiZhu" type="text" id="gvDrug_ctl14_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl15_cb" type="checkbox" name="gvDrug$ctl15$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>阿托品</td>
+                                                <td>0.5mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl15$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl15_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl15_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl15$txtBeiZhu" type="text" id="gvDrug_ctl15_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl16_cb" type="checkbox" name="gvDrug$ctl16$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>阿托品</td>
+                                                <td>1mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl16$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl16_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl16_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl16$txtBeiZhu" type="text" id="gvDrug_ctl16_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl17_cb" type="checkbox" name="gvDrug$ctl17$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>硫酸镁</td>
+                                                <td>2.5g/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl17$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl17_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl17_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl17$txtBeiZhu" type="text" id="gvDrug_ctl17_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl18_cb" type="checkbox" name="gvDrug$ctl18$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>多巴胺</td>
+                                                <td>20mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl18$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl18_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl18_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl18$txtBeiZhu" type="text" id="gvDrug_ctl18_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl19_cb" type="checkbox" name="gvDrug$ctl19$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>阿拉明</td>
+                                                <td>10mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl19$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl19_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl19_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl19$txtBeiZhu" type="text" id="gvDrug_ctl19_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl20_cb" type="checkbox" name="gvDrug$ctl20$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>硝酸甘油针剂</td>
+                                                <td>5mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl20$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl20_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl20_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl20$txtBeiZhu" type="text" id="gvDrug_ctl20_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl21_cb" type="checkbox" name="gvDrug$ctl21$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>可拉明</td>
+                                                <td>0.375g/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl21$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl21_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl21_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl21$txtBeiZhu" type="text" id="gvDrug_ctl21_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl22_cb" type="checkbox" name="gvDrug$ctl22$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>洛贝林</td>
+                                                <td>3mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl22$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl22_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl22_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl22$txtBeiZhu" type="text" id="gvDrug_ctl22_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl23_cb" type="checkbox" name="gvDrug$ctl23$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>氨茶碱</td>
+                                                <td>0.25mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl23$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl23_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl23_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl23$txtBeiZhu" type="text" id="gvDrug_ctl23_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl24_cb" type="checkbox" name="gvDrug$ctl24$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>喘定</td>
+                                                <td>0.25g/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl24$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl24_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl24_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl24$txtBeiZhu" type="text" id="gvDrug_ctl24_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl25_cb" type="checkbox" name="gvDrug$ctl25$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>心律平</td>
+                                                <td>35mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl25$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl25_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl25_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl25$txtBeiZhu" type="text" id="gvDrug_ctl25_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl26_cb" type="checkbox" name="gvDrug$ctl26$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>地塞米松</td>
+                                                <td>5mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl26$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl26_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl26_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl26$txtBeiZhu" type="text" id="gvDrug_ctl26_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl27_cb" type="checkbox" name="gvDrug$ctl27$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>甲强龙</td>
+                                                <td>40mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl27$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl27_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl27_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl27$txtBeiZhu" type="text" id="gvDrug_ctl27_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl28_cb" type="checkbox" name="gvDrug$ctl28$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>止血敏</td>
+                                                <td>0.5mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl28$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl28_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl28_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl28$txtBeiZhu" type="text" id="gvDrug_ctl28_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl29_cb" type="checkbox" name="gvDrug$ctl29$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>呋塞米</td>
+                                                <td>20mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl29$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl29_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl29_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl29$txtBeiZhu" type="text" id="gvDrug_ctl29_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl30_cb" type="checkbox" name="gvDrug$ctl30$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>托拉塞米</td>
+                                                <td>20mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl30$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl30_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl30_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl30$txtBeiZhu" type="text" id="gvDrug_ctl30_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl31_cb" type="checkbox" name="gvDrug$ctl31$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>纳络酮</td>
+                                                <td>0.4mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl31$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl31_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl31_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl31$txtBeiZhu" type="text" id="gvDrug_ctl31_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl32_cb" type="checkbox" name="gvDrug$ctl32$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>巴曲亭</td>
+                                                <td>1u/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl32$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl32_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl32_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl32$txtBeiZhu" type="text" id="gvDrug_ctl32_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl33_cb" type="checkbox" name="gvDrug$ctl33$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>地西泮</td>
+                                                <td>10mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl33$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl33_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl33_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl33$txtBeiZhu" type="text" id="gvDrug_ctl33_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl34_cb" type="checkbox" name="gvDrug$ctl34$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>胃复安</td>
+                                                <td>10mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl34$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl34_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl34_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl34$txtBeiZhu" type="text" id="gvDrug_ctl34_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl35_cb" type="checkbox" name="gvDrug$ctl35$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>654-2</td>
+                                                <td>10mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl35$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl35_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl35_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl35$txtBeiZhu" type="text" id="gvDrug_ctl35_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl36_cb" type="checkbox" name="gvDrug$ctl36$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>维生素C</td>
+                                                <td>1g/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl36$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl36_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl36_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl36$txtBeiZhu" type="text" id="gvDrug_ctl36_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl37_cb" type="checkbox" name="gvDrug$ctl37$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>注射剂</td>
+                                                <td>维生素B6</td>
+                                                <td>50mg/支</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl37$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl37_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl37_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl37$txtBeiZhu" type="text" id="gvDrug_ctl37_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl38_cb" type="checkbox" name="gvDrug$ctl38$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>片剂</td>
+                                                <td>硝酸甘油片</td>
+                                                <td>0.5mg/粒</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl38$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl38_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl38_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl38$txtBeiZhu" type="text" id="gvDrug_ctl38_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl39_cb" type="checkbox" name="gvDrug$ctl39$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>丸剂</td>
+                                                <td>麝香保心丸</td>
+                                                <td>42丸/瓶</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl39$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl39_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl39_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl39$txtBeiZhu" type="text" id="gvDrug_ctl39_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl40_cb" type="checkbox" name="gvDrug$ctl40$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>片剂</td>
+                                                <td>硝苯地平片</td>
+                                                <td>10mg/粒</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl40$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl40_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl40_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl40$txtBeiZhu" type="text" id="gvDrug_ctl40_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input id="gvDrug_ctl41_cb" type="checkbox" name="gvDrug$ctl41$cb" onclick="setbox(this);" />
+                                                </td>
+                                                <td>气雾剂</td>
+                                                <td>舒喘喷雾剂</td>
+                                                <td>0.1mg/200揿</td>
+                                                <td>
+                                                    <input name="gvDrug$ctl41$txtYongLiang" class="easyui-numberspinner" value="1" id="gvDrug_ctl41_txtYongLiang" data-options="min:0" style="width:45px;" />
+                                                    <span id="gvDrug_ctl41_REVtxtBloodPressure1" style="display:inline-block;color:Red;width:30%;display:none;">整数</span>
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl02$txtHeJiYongLiang" class="easyui-textbox" value="" style="width:50px;" />
+                                                </td>
+                                                <td>
+                                                    <input name="gvDrug$ctl41$txtBeiZhu" type="text" id="gvDrug_ctl41_txtBeiZhu" style="width:80%;" />
+                                                </td>
+                                                @*<td>
+                                                    <input id="btnST" type="button" value="st" onclick="KuaiJieJianST(event);" style="width: 40px" />
+                                                </td>*@
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+        <tr id="tr2">
+            <td colspan="8">
+                <div id="UpdatePanel2">
+
+                    <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                        <tr>
+                            <td>
+                                &nbsp;<a name="btnAdd" onclick="" id="btnAdd" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加用药</a>
+                                &nbsp;&nbsp;<span id="Label1" style="color:Red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: Pink">
+                                <span id="lblYYQK" style="font-size:Large;font-weight:bold;">用药情况：2条记录</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="height: 105px; overflow: auto">
+                                    <div>
+                                        <table cellspacing="0" rules="all" border="1" id="gvAdd" style="width:100%;border-collapse:collapse;">
+                                            <tr>
+                                                <th scope="col" style="width:5%;">序号</th>
+                                                <th scope="col" style="width:10%;">给药方式</th>
+                                                <th scope="col" style="width:20%;">药品名称</th>
+                                                <th scope="col" style="width:10%;">规格</th>
+                                                <th scope="col" style="width:10%;">用量</th>
+                                                <th scope="col" style="width:10%;">合计剂量</th>
+                                                <th scope="col" style="width:30%;">备注</th>
+                                                <th scope="col" style="width:5%;">删除</th>
+                                            </tr>
+                                            <tr onmouseover="currentcolor=this.style.backgroundColor;this.style.backgroundColor='#DDEEFF'" onmouseout="this.style.backgroundColor=currentcolor">
+                                                <td>1</td>
+                                                <td>注射剂</td>
+                                                <td>20%甘露醇</td>
+                                                <td>250ml/袋</td>
+                                                <td>1</td>
+                                                <td>250</td>
+                                                <td>&nbsp;</td>
+                                                <td style="width:5%;">
+                                                    <input type="image" name="gvAdd$ctl02$ibtnDelete" id="gvAdd_ctl02_ibtnDelete" src="../Images/delete.gif" onclick="javascript:return confirm('确认要删除？');WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;gvAdd$ctl02$ibtnDelete&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" style="border-width:0px;" />
+                                                </td>
+                                            </tr>
+                                            <tr onmouseover="currentcolor=this.style.backgroundColor;this.style.backgroundColor='#DDEEFF'" onmouseout="this.style.backgroundColor=currentcolor">
+                                                <td>1</td>
+                                                <td>注射剂</td>
+                                                <td>25%糖水</td>
+                                                <td>20ml/支</td>
+                                                <td>1</td>
+                                                <td>20</td>
+                                                <td>&nbsp;</td>
+                                                <td style="width:5%;">
+                                                    <input type="image" name="gvAdd$ctl03$ibtnDelete" id="gvAdd_ctl03_ibtnDelete" src="../Images/delete.gif" onclick="javascript:return confirm('确认要删除？');WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;gvAdd$ctl03$ibtnDelete&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" style="border-width:0px;" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        <tr>
+            <td>
+                <a name="Button1" onclick="" id="Button1" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">确认用药</a>
+            </td>
+        </tr>
+    </table>
+</div>

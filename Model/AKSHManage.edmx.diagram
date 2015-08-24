@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="5e3ce017c40747e291fa23417a5528d6" Name="Diagram1" ZoomLevel="72">
+        <EntityTypeShape EntityType="AKSHManageModel.M_Dictionary" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_DictionaryType" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientCharge" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordCPR" Width="1.5" PointX="13.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordDiag" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordECGImpressions" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordTrace" Width="1.5" PointX="19.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_ZECGImpression" Width="1.5" PointX="19.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_ZPatientState" Width="1.5" PointX="17.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_ZSymptomPendingInvestigation" Width="1.5" PointX="19.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_Department" Width="1.5" PointX="1.5" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_Permission" Width="1.5" PointX="0.75" PointY="24.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_Role" Width="1.5" PointX="3.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_RolePermission" Width="1.5" PointX="9" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_SpeicalPermission" Width="1.5" PointX="3" PointY="14.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_User" Width="1.5" PointX="0.75" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.P_UserRole" Width="1.5" PointX="6" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.TDictionary" Width="1.5" PointX="0.75" PointY="20" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKSHManageModel.TDictionaryType" Width="1.5" PointX="21.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="AKSHManageModel.FK_P_Department_P_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_Role_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_User_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_P_RolePermission_P_Permission" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_P_SpeicalPermission_P_Permission" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_RolePermission_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_UserRole_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_SpeicalPermission_User" ManuallyRouted="false" />
+        <AssociationConnector Association="AKSHManageModel.FK_UserRole_User" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Delivery" Width="1.5" PointX="25.625" PointY="19.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_DeliveryDetail" Width="1.5" PointX="27.875" PointY="19.125" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Entry" Width="1.5" PointX="22.625" PointY="23.875" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_EntryDetail" Width="1.5" PointX="24.875" PointY="23.875" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_InventoryRecord" Width="1.5" PointX="30.125" PointY="19" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Storage" Width="1.5" PointX="20.375" PointY="29.25" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_StoragePerson" Width="1.5" PointX="22.625" PointY="20.375" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_StorageRole" Width="1.5" PointX="6" PointY="11.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Surplus" Width="1.5" PointX="22.625" PointY="29.75" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Delivery_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Delivery_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Delivery_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_DeliveryDetail_I_Delivery" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_DeliveryDetail_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_DeliveryDetail_I_Storage_Target" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_DeliveryDetail_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Stocktaking_I_DeliveryDetail" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Entry_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Entry_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Entry_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_EntryDetail_I_Entry" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_EntryDetail_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_EntryDetail_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Stocktaking_I_EntryDetail" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_InventoryRecord_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Stocktaking_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_StoragePerson_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Surplus_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_StoragePerson_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_StorageRole_P_Role" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_StorageRole_TDictionary" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_ZICDNew" Width="1.5" PointX="10.375" PointY="7.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_ZCaseTemplate" Width="1.5" PointX="10.375" PointY="10.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_ApplyDetail" Width="1.5" PointX="24.875" PointY="14.625" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_I_Storage1" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_I_Storage2" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_P_User" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Apply" Width="1.5" PointX="22.625" PointY="16" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Apply_I_Storage" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Apply_P_User" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Apply_P_User1" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Apply_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_I_Apply" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordAppend" Width="1.5" PointX="5.375" PointY="14.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecord" Width="1.5" PointX="9.375" PointY="18.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Material" Width="1.5" PointX="3" PointY="23.125" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_ApplyDetail_I_Material" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_DeliveryDetail_I_Material" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_EntryDetail_I_Material" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Stocktaking_I_Material" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Material_OtherType_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Material_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Material_Unit_TDictionary" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Surplus_I_Material" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordRescue" Width="1.5" PointX="12.375" PointY="7.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordDrug" Width="1.5" PointX="14.375" PointY="0.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordLossDrug" Width="1.5" PointX="14.375" PointY="6.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordLossSanitation" Width="1.5" PointX="16.375" PointY="3.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordMeasure" Width="1.5" PointX="16.375" PointY="8.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.M_PatientRecordSanitation" Width="1.5" PointX="16.375" PointY="13.75" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_BalanceList" Width="1.5" PointX="3" PointY="20" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_BalanceList_TDictionary" />
+        <EntityTypeShape EntityType="AKSHManageModel.I_Balance" Width="1.5" PointX="5.25" PointY="40" />
+        <AssociationConnector Association="AKSHManageModel.FK_I_Balance_I_Material" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

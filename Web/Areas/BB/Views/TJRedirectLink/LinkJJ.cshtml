@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "急救科统计";
+    Layout = "~/Areas/IM/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script type="text/javascript">
+
+    //页面初始化
+    $(document).ready(function () {
+        bindGrid();
+    });
+
+    $(window).resize(function () {
+        $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridLinkURLList");
+    });
+    //初始化加载数据
+    function bindGrid() {
+        $('#gridLinkURLList').datagrid({
+            width: 'auto',
+            height: 'auto',
+            fitColumns: true,
+            singleSelect: true,
+            loadMsg: '数据加载中请稍后……',
+            url: '@Url.Content("~/BB/TJRedirectLink/DataLoad")',
+            striped: true,
+            pagination: true,//启用分页，默认每页10行
+            rownumbers: true,//显示页码，默认 提供 10 - 50 的页容量选择下拉框
+            pageSize: 15,//设置 页容量5为
+            pageList: [10, 15, 20],//设置 页容量下拉框
+            queryParams: {
+                parentID: '@ViewData["parentID"]'
+            },
+            frozenColumns: [[
+               { field: "ID", title: "ID", width: '5%', align: "center", hidden: true },
+               { field: "ParentID", title: "ParentID", width: '5%', align: "center", hidden: true },
+               {
+                   field: "Name", title: "统计名称", width: '70%', align: "center"
+               },
+                {
+                    field: 'opt', title: '查看', width: '10%', align: 'center', frozen: 'true',
+                    formatter: function (value, row, index) {
+                        return '<a  class="linkURLcls" onclick="openURL(' + row.LinkURL + ');"  href="javascript:void(0)">查看</a>';
+                    }
+                },
+               //{ field: "Remark", title: "备注", width: '10%', align: "left" },+
+               { field: "LinkURL", title: "LinkURL", hidden: true },
+               { field: "IsActive", title: "IsActive", hidden: true },
+
+            ]],
+
+            onLoadSuccess: function (data) {
+
+                $('.linkURLcls').linkbutton({
+                    text: '查看',
+                    plain: true,
+                    iconCls: 'icon-search',
+                });
+            },
+            rowStyler: function (index, row) {
+                if (row.IsActive == true) {
+                    return 'color:black';
+                }
+            },
+            onClickRow: function (rowIndex, rowData) {
+                var rowURL = rowData.LinkURL;
+                //window.open(rowURL);
+                window.open('@Url.Content("~/")' + rowURL);
+            }
+
+        });
+        $.setGridWithSearchBar("#TableForm", "#SearchBar", "#gridLinkURLList");
+    }
+    function openURL(linkURL) {
+
+        window.open('@Url.Content("~/")'+linkURL);
+    }
+
+    </script>
+}
+<div id="TableForm" class="easyui-layout" style="width:auto; height: auto; margin-left: auto; margin-right: auto">
+    <div data-options="region:'center',title:'急救科统计',iconCls:'icon-custom-cWuZiWeiHu'">
+        <div id="SearchBar" data-options="region:'north'" style="overflow: hidden; padding: 3px">
+        </div>
+        <div data-options="region:'center'" style="background: #fafafa; overflow: hidden">
+            <table id="gridLinkURLList"></table>
+        </div>
+    </div>
+</div>
